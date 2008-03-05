@@ -2,8 +2,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from operator import itemgetter
-from football.recruits.models import SchoolType, City, School, Player, Outcome, Signing, Year
-from football.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference
+from fumblerooski.recruits.models import SchoolType, City, School, Player, Outcome, Signing, Year
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference
 
 def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
@@ -50,3 +50,6 @@ def game(request, team1, team2, year):
     if game.season > 2002:
         game.drivechart = True
     return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game })
+
+def game_index(request):
+    pass # do calendar-based view here

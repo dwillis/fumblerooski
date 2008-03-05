@@ -64,7 +64,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.doc.XViewMiddleware',
 )
 
-ROOT_URLCONF = 'football.urls'
+ROOT_URLCONF = 'fumblerooski.urls'
 
 TEMPLATE_DIRS = (
     '/Users/dwillis/code/football/templates'
@@ -79,6 +79,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'football.recruits',
-    'football.college'
+    'fumblerooski.recruits',
+    'fumblerooski.college'
 )

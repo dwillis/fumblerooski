@@ -2,8 +2,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from operator import itemgetter
-from football.recruits.models import SchoolType, City, School, Player, Outcome, Signing, Year
-from football.college.models import Coach, College, CollegeCoach, Position, State, Game
+from fumblerooski.recruits.models import SchoolType, City, School, Player, Outcome, Signing, Year
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game
 
 def position_index(request):
     position_list = Position.objects.all().order_by('name')

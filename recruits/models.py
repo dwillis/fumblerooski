@@ -1,5 +1,5 @@
 from django.db import models
-from football.college.models import Coach, College, CollegeCoach, Position, State
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State
 
 class SchoolType(models.Model):
     name = models.CharField(max_length=15)
@@ -40,7 +40,7 @@ class School(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return "/recruits/states/%s/%s/%s/" % (self.city.state.id.lower(), self.city.slug, self.slug)
+        return "/states/%s/%s/%s/recruits/" % (self.city.state.id.lower(), self.city.slug, self.slug)
 
     class Admin:
         list_display = ['name', 'city']
