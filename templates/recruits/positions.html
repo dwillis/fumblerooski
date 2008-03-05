@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<ul>
+{% for position in position_list %}
+<li><a href="{{ position.get_absolute_url }}">{{ position.name }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

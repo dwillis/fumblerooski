@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not recruit_total %}
+<h2>Oops!</h2>
+<h3>Did you mean one of these colleges?</h3>
+<ul>
+	{% for each in team %}
+	<li><a href="{{ each.get_absolute_url }}">{{ each.name|title }}</a></li>
+    {% endfor %}
+</ul>
+
+{% else %}
+
+<h3>{{ team.name }} Recruits</h3>
+
+This school has {{ recruit_total }} signee{{ recruit_total|pluralize }} in the database. See the most recent:
+
+{% if recent_signing_list %}
+<h4>Recently Added Signings</h4>
+<ul>
+{% for signing in recent_signing_list %}
+<li><a href="{{ signing.player.get_absolute_url }}">{{ signing.player }}</a>, {{ signing.player.position.abbrev }} from <a href="{{ signing.player.home_state.get_absolute_url }}">{{ signing.player.home_state.name }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+Or browse all signees by:
+
+<h4>Year</h4>
+
+{% for year in year_list %}
+  <a href="{{ year.id }}/">{{ year.id }}</a>{% if forloop.last %}{% else %} |{% endif %}
+{% endfor %}
+
+<h4>Position</h4>
+
+<ul>
+    {% for position in position_list %}
+    <li><a href="{{ position.abbrev.lower }}/">{{ position.name }}</a></li>
+    {% endfor %}
+</ul>
+
+
+
+<h4>Top States for Recruits</h4>
+<ul>
+    {% for state in top_states %}
+    <li><a href="{{ state.get_absolute_url }}">{{ state.name }}</a> - {{ state.number }}</li>
+    {% endfor %}
+</ul>
+
+
+<h5>See other Schools in <a href="{{ team.state.get_absolute_url }}">{{ team.state }}</a></h5>
+
+
+
+{% endif %}
+
+{% endblock %}

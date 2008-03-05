@@ -1,0 +1,46 @@
+8
+
+dir
+1
+http://svn.dwillis.beanstalkapp.com/projects/football/templates
+http://svn.dwillis.beanstalkapp.com/projects
+
+
+
+2008-02-20T14:53:54.685478Z
+1
+root
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7f18baeb-7fb7-44ed-b9ce-efe374b3afc4
+
+recruits
+dir
+
+college
+dir
+
+base.html
+file
+5
+
+
+
+2008-02-22T20:32:25.000000Z
+08f4cff64720a0767226dcc821e1a96a
+2008-03-04T21:32:08.526376Z
+5
+dwillis
+

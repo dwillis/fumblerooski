@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ conference.name }}</h3>
+
+<table>
+    <th>Team</th><th>State</th>
+    {% for team in team_list %}
+    <tr><td><a href="{{ team.get_absolute_url }}">{{ team.name }}</a></td><td>{{ team.state }}</td></tr>
+    {% endfor %}
+</table>
+
+<h4>Recent Conference Games</h4>
+<ul>
+    {% for game in recent_games %}
+    <li><a href={{ game.get_absolute_url }}>{{ game.team1 }} vs. {{ game.team2 }}</a>, {{ game.date|date:"N d, Y" }}
+    {% endfor %}
+</ul>
+
+{% endblock %}

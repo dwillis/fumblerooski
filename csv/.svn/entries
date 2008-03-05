@@ -1,0 +1,40 @@
+8
+
+dir
+1
+http://svn.dwillis.beanstalkapp.com/projects/football/csv
+http://svn.dwillis.beanstalkapp.com/projects
+
+
+
+2008-02-20T14:53:54.685478Z
+1
+root
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7f18baeb-7fb7-44ed-b9ce-efe374b3afc4
+
+ga_cities.txt
+file
+
+
+
+
+2008-02-20T15:30:34.000000Z
+26d642f944f0f2ab5c5e1a3555c76fc6
+2008-02-20T14:53:54.685478Z
+1
+root
+

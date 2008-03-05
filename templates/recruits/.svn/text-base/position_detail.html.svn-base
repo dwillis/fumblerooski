@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+Fumblerooski has {{ total }} player{{ total|pluralize }} at this position in the database, some of whom have not signed. {% if year %}Browse <a href="{{ position.get_absolute_url }}all/">all of them</a>.{% else %}{% endif %}
+
+<h3>{% if year %}{{ year }}{% else %}All{% endif %} signees at {{ position.name }} ({{ current_signee_count }})</h3>
+
+<table>
+  <th>Name</th><th>Home State</th><th>Height</th><th>Weight</th><th>Signed With</th>{% if not year %}<th>Year</th>{% endif %}
+  {% for signee in current_signee_list %}
+  <tr>
+    <td>{{ signee.player }}</td><td>{{ signee.player.home_state }}</td><td>{{ signee.player.height }}</td><td>{{ signee.player.weight }}</td><td><a href="{{ signee.school.get_absolute_url }}">{{ signee.school }}</a></td>{% if not year %}<td><a href="{{ signee.school.get_absolute_url }}{{ signee.year }}/">{{ signee.year }}</a></td>{% endif %}
+{% endfor %}
+  </tr>
+</table>
+
+<h4>Overall Top High Schools for {{ position.name }}</h4>
+
+<ul>
+    {% for school in top_high_schools %}
+    <li><a href="{{ school.get_absolute_url }}">{{ school.name }}</a>, {{ school.city.name|title }}, {{ school.city.state.id }} - {{ school.number }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

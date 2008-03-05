@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if games %}
+
+<h3>{{ team_1.name }} vs. {{ team_2.name }}</h3>
+
+Last home loss: {{ last_home_loss.date }}<br />
+Last road win: {{ last_road_win.date }}
+
+<table>
+  <th>Season</th><th>Location</th><th>Outcome</th>
+  {% for game in games %}
+  <tr><td><a href="{{ game.season }}/">{{ game.season }}</a></td><td>{{ game.get_t1_game_type_display }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
+  {% endfor %}
+</table>
+
+{% else %}
+
+{{ team_1.name }} has not played that team.
+
+{% endif %}
+
+{% endblock %}

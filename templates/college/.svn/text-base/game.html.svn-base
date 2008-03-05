@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if game %}
+
+<h3>{{ team_1.name }} vs. {{ team_2.name }}: {{ game.season }}</h3>
+
+<table>
+  <th>Season</th><th>Date</th><th>Location</th><th>Outcome</th>
+  <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.get_t1_game_type_display }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
+</table>
+
+{% if game.drivechart %}
+<h4>NCAA Drive Chart</h4>
+
+<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:"d-b-y"|upper }}">
+
+{% else %}
+{% endif %}
+
+{% else %}
+
+No game could be found.
+
+{% endif %}
+
+{% endblock %}

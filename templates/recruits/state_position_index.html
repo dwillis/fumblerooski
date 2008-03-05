@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ position.name }}s from {{ state.name }}</h2>
+
+<table>
+  <th>Name</th><th>Height</th><th>Weight</th><th>Signed With</th><th>Year</th><th>Previous Signing</th><th>Year</th>
+  {% for player in player_list %}
+  <tr>
+    <td><a href="{{ player.get_absolute_url }}">{{ player.full_name }}</a></td><td>{{ player.height }}</td><td>{{ player.weight }}</td>{% if player.signing_set.all %}{% for signing in player.signing_set.all %}<td>{{ signing.school }}</td><td>{{ signing.year }}</td> {% endfor %}{% endif %}
+{% endfor %}
+  </tr>
+</table>
+
+
+{% endblock %}

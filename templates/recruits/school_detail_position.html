@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if nst %}
+<h2>Oops!</h2>
+<h3>Did you mean one of these states?</h3>
+<ul>
+	{% for state in nst %}
+	<li><a href="{{ state.get_absolute_url }}">{{ state.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if nc %}
+<h2>Oops!</h2>
+<h3>Did you mean one of these cities in {{ state.name }}?</h3>
+<ul>
+	{% for city in nc %}
+	<li><a href="{{ city.get_city_url }}">{{ city.name|title }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if ns %}
+<h2>Oops!</h2>
+<h3>Did you mean one of these schools in {{ city.name|title }}?</h3>
+<ul>
+    {% for school in ns %}
+    <li><a href="{{ school.get_absolute_url }}">{{ school.name|title }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if school %}
+<h3>{{ school.name|title }}</h3>
+<h4>{{ school.city.name|title }}, {{ school.city.state }}</h4>
+
+Fumblerooski has {{ player_total }} {% if position %}{{ position.name|lower }}{{ player_total|pluralize }}{% else %}players{% endif %} from this school in the database:<br />
+
+<ul>
+{% for player in player_list %}
+<li>{{ player }}, <a href="{{ player.position.get_absolute_url }}">{{ player.position }}</a> {% if player.signing_set.all %}{% for signing in player.signing_set.all %} ({{ signing.school }}, {{ signing.year }}) {% endfor %}{% endif %}</li>
+{% endfor %}
+</ul>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/projects/!svn/ver/1/football/templates/recruits
+END
+team_detail_position.html
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/projects/!svn/ver/5/football/templates/recruits/team_detail_position.html
+END
+school_detail_position.html
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/projects/!svn/ver/1/football/templates/recruits/school_detail_position.html
+END
+player_detail.html
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/projects/!svn/ver/1/football/templates/recruits/player_detail.html
+END
+city_index.html
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/projects/!svn/ver/1/football/templates/recruits/city_index.html
+END
+state_detail.html
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/projects/!svn/ver/1/football/templates/recruits/state_detail.html
+END
+position_detail.html
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/projects/!svn/ver/5/football/templates/recruits/position_detail.html
+END
+positions.html
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/projects/!svn/ver/1/football/templates/recruits/positions.html
+END
+state_index.html
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/projects/!svn/ver/1/football/templates/recruits/state_index.html
+END
+team_detail.html
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/projects/!svn/ver/1/football/templates/recruits/team_detail.html
+END
+team_detail_year.html
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/projects/!svn/ver/5/football/templates/recruits/team_detail_year.html
+END
+school_detail.html
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/projects/!svn/ver/5/football/templates/recruits/school_detail.html
+END
+state_position_index.html
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/projects/!svn/ver/1/football/templates/recruits/state_position_index.html
+END

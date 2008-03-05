@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if not recruit_total %}
+<h2>Oops!</h2>
+<h3>Did you mean one of these colleges?</h3>
+<ul>
+	{% for each in team %}
+	<li><a href="{{ each.get_absolute_url }}">{{ each.name }}</a></li>
+    {% endfor %}
+</ul>
+
+{% else %}
+
+<h3>{{ team.name }} {{ year }} Recruits</h3>
+
+This school has {{ recruit_total }} signee{{ recruit_total|pluralize }} in the database for {{ year }}:<br/><br/>
+
+<table>
+<tr>
+  <th>Name</th><th>Position</th><th>High School</th><th>Post-High School</th>
+</tr>
+	{% for recruit in recruit_list %}
+   <tr>
+	<td>{{ recruit.player.full_name }}{% if recruit.outcome.id %} {{ recruit.outcome.id }}{% endif %}</td>
+	<td>{{ recruit.player.position.abbrev }}</td>
+	{% for school in recruit.player.school.all %}
+    <td><a href="{{ school.get_absolute_url }}">{{ school.name }}</a> (<a href="{{ school.city.get_city_url }}">{{ school.city.name|title }}</a>, <a href="{{ school.city.state.get_absolute_url }}">{{ school.city.state.id }}</a>)</td>
+    {% endfor %}
+   </tr>
+	{% endfor %}
+</table>
+
+<font size='-2'>
+<h4>Outcomes</h4>
+<ol>
+{% for outcome in outcome_list %}
+  <li>{{ outcome.name }}</li>
+{% endfor %}
+</ol>
+</font>
+
+<h4>See signings from other years</h4>
+
+{% for year in year_list %}
+  <a href="../{{ year.id }}/">{{ year.id }}</a>{% if forloop.last %}{% else %}|{% endif %}
+{% endfor %}
+
+
+{% endif %}
+
+{% endblock %}
