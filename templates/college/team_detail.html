@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ team.name }}</h3>
+<h5>{{ team.conference.name }}</h5>
+
+Coach: {{ coach.coach.full_name }}
+
+{% endblock %}
