@@ -19,6 +19,21 @@ def team_index(request):
     team_list = College.objects.all().order_by('name')
     return render_to_response('college/teams.html', {'team_list': team_list})
 
+def team_detail(request, team):
+    t = get_object_or_404(College, slug=team)
+    current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
+    game_list = Game.objects.filter(team1=t).order_by('-date')
+    opponents = {}
+    for game in game_list:
+        opponents[game.team2.id] = opponents.get(game.team2.id, 0) +1
+    popular_opponents = sorted(opponents.iteritems(), key=itemgetter(1), reverse=True)
+    p_o = []
+    for team, number in popular_opponents[:10]:
+        c = College.objects.get(id=team)
+        c.number = number
+        p_o.append(c)
+    return render_to_response('college/team_detail.html', {'team': t, 'coach': current_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o})
+
 def team_vs(request, team1, team2):
     team_1 = get_object_or_404(College, slug=team1)
     try:
@@ -38,6 +53,12 @@ def team_vs(request, team1, team2):
         last_road_win = None
     return render_to_response('college/team_vs.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'last_home_loss': last_home_loss, 'last_road_win': last_road_win })
 
+def coach_detail(request, coach):
+    c = get_object_or_404(Coach, slug=coach)
+    current_job = CollegeCoach.objects.get(coach=c, end_date__isnull=True)
+    college_list = CollegeCoach.objects.filter(coach=c).order_by('-start_date')[1:]
+    return render_to_response('college/coach_detail.html', {'coach': c, 'college_list': college_list, 'current_job': current_job })
+
 def game(request, team1, team2, year):
     team_1 = get_object_or_404(College, slug=team1)
     try:
@@ -46,10 +67,14 @@ def game(request, team1, team2, year):
             team_2 = None
     except:
         team_2 = None
-    game = Game.objects.get(team1=team_1, team2=team_2, season=year)
-    if game.season > 2002:
-        game.drivechart = True
-    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game })
+    games = Game.objects.filter(team1=team_1, team2=team_2, season=year)
+    for game in games:
+        if game.season > 2002:
+            game.drivechart = True
+    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'season': year })
 
 def game_index(request):
     pass # do calendar-based view here
+
+def state_detail(request, state):
+    pass # do state detail here

@@ -2,13 +2,14 @@
 
 {% block content %}
 
-{% if game %}
+{% if games %}
 
-<h3>{{ team_1.name }} vs. {{ team_2.name }}: {{ game.season }}</h3>
+<h3>{{ team_1.name }} vs. {{ team_2.name }}: {{ season }}</h3>
 (<a href="{{ game.get_matchup_url }}">See all games between these teams</a>)
 
 <table>
   <th>Season</th><th>Date</th><th>Location</th><th>Outcome</th>
+  {% for game in games %}
   <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.get_t1_game_type_display }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
 </table>
 
@@ -19,6 +20,8 @@
 
 {% else %}
 {% endif %}
+
+{% endfor %}
 
 {% else %}
 

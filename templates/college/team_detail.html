@@ -5,6 +5,12 @@
 <h3>{{ team.name }}</h3>
 <h5>{{ team.conference.name }}</h5>
 
-Coach: {{ coach.coach.full_name }}
+Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a>
 
+<h3>Popular Opponents Since 1997</h3>
+<ul>
+{% for team2 in popular_opponents %}
+   <li><a href="{{ team2.get_absolute_url }}">{{ team2.name }}</a> (<a href="/college/teams/{{ team.slug }}/vs/{{ team2.slug }}/">{{ team2.number }}</a>)</li>
+{% endfor %}
+</ul>
 {% endblock %}

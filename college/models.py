@@ -25,7 +25,7 @@ class State(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return "/recruits/states/%s/" % self.id.lower()
+        return "/states/%s/" % self.id.lower()
 
     class Admin:
         pass
@@ -63,10 +63,17 @@ class College(models.Model):
 class Coach(models.Model):
     first_name = models.CharField(max_length=75)
     last_name = models.CharField(max_length=90)
+    slug = models.SlugField(prepopulate_from=('first_name', 'last_name'))
     birth_date = models.DateField(null=True, blank=True)
 
     def __unicode__(self):
         return "%s %s" % (self.first_name, self.last_name)
+
+    def full_name(self):
+        return "%s %s" % (self.first_name, self.last_name)
+
+    def get_absolute_url(self):
+        return '/college/coaches/%s/' % self.slug
 
     class Admin:
         pass
@@ -116,7 +123,7 @@ class Game(models.Model):
     
     class Admin:
         list_display = ('team1', 'team2', 'date', 't1_result', 'team1_score', 'team2_score')
-        list_filter = ['t1_result']
+        list_filter = ['t1_result', 'team1_score', 'team2_score']
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)

@@ -6,8 +6,8 @@
 
 <h3>{{ team_1.name }} vs. {{ team_2.name }}</h3>
 
-Last home loss: {{ last_home_loss.date }}<br />
-Last road win: {{ last_road_win.date }}
+{% if last_home_loss %}Last home loss: {{ last_home_loss.date }}<br />{% endif %}
+{% if last_road_win %}Last road win: {{ last_road_win.date }}{% endif %}
 
 <table>
   <th>Season</th><th>Location</th><th>Outcome</th>
