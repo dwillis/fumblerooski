@@ -61,16 +61,18 @@ class College(models.Model):
         search_fields = ('name',)
 
 class Coach(models.Model):
-    first_name = models.CharField(max_length=75)
-    last_name = models.CharField(max_length=90)
+    ncaa_name = models.CharField(max_length=90)
+    name = models.CharField(max_length=75)
     slug = models.SlugField(prepopulate_from=('first_name', 'last_name'))
+    alma_mater = models.CharField(max_length=75)
     birth_date = models.DateField(null=True, blank=True)
+    years = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    losses = models.IntegerField(default=0)
+    ties = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return "%s %s" % (self.first_name, self.last_name)
-
-    def full_name(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return self.name
 
     def get_absolute_url(self):
         return '/college/coaches/%s/' % self.slug
