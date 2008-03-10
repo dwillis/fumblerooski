@@ -63,7 +63,7 @@ class College(models.Model):
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     name = models.CharField(max_length=75)
-    slug = models.SlugField(prepopulate_from=('first_name', 'last_name'))
+    slug = models.SlugField(prepopulate_from=('name',))
     alma_mater = models.CharField(max_length=75)
     birth_date = models.DateField(null=True, blank=True)
     years = models.IntegerField(default=0)
