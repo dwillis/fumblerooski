@@ -66,10 +66,10 @@ class Coach(models.Model):
     slug = models.SlugField(prepopulate_from=('name',))
     alma_mater = models.CharField(max_length=75)
     birth_date = models.DateField(null=True, blank=True)
-    years = models.IntegerField(default=0)
-    wins = models.IntegerField(default=0)
-    losses = models.IntegerField(default=0)
-    ties = models.IntegerField(default=0)
+    years = models.IntegerField(default=0, blank=True)
+    wins = models.IntegerField(default=0, blank=True)
+    losses = models.IntegerField(default=0, blank=True)
+    ties = models.IntegerField(default=0, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -83,9 +83,20 @@ class Coach(models.Model):
     class Meta:
         verbose_name_plural = 'Coaches'
 
+class CoachingJob(models.Model):
+    name = models.CharField(max_length=75)
+    slug = models.SlugField(prepopulate_from=('name',))
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Admin:
+        pass
+
 class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)
     college = models.ForeignKey(College)
+    job = models.ForeignKey(CoachingJob)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
 
@@ -93,7 +104,7 @@ class CollegeCoach(models.Model):
         return "%s - %s" % (self.coach, self.college)
 
     class Admin:
-        list_display = ['coach', 'college', 'start_date', 'end_date']
+        list_display = ['coach', 'college', 'job', 'start_date', 'end_date']
 
     class Meta:
         verbose_name_plural = 'College coaches'
