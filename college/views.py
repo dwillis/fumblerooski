@@ -2,8 +2,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from operator import itemgetter
-from fumblerooski.recruits.models import SchoolType, City, School, Player, Outcome, Signing, Year
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference
+from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear
 
 def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
@@ -78,3 +78,8 @@ def game_index(request):
 
 def state_detail(request, state):
     pass # do state detail here
+
+def team_players(request, team, year=2007):
+    t = get_object_or_404(College, slug=team)
+    player_list = PlayerYear.objects.select_related().filter(team=t, year=year).order_by('college_player.last_name')
+    return render_to_response('college/team_players.html', {'team': t, 'year': year, 'player_list': player_list })

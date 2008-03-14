@@ -167,7 +167,7 @@ class Player(models.Model):
         pass
         
     def __unicode__(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return "%s %s" % (self.first_name_fixed, self.last_name)
 
 class PlayerYear(models.Model):
     player = models.ForeignKey(Player)

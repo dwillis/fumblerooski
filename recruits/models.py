@@ -46,7 +46,7 @@ class School(models.Model):
         list_display = ['name', 'city']
         search_fields = ['name']
 
-class Player(models.Model):
+class Recruit(models.Model):
     first_name = models.CharField(max_length=75)
     last_name = models.CharField(max_length=90)
     slug = models.SlugField(prepopulate_from=('id','full_name'), blank=True)
@@ -61,7 +61,7 @@ class Player(models.Model):
         return "%s %s" % (self.first_name, self.last_name)
 
     def get_absolute_url(self):
-        return "/players/%s/" % (self.slug)
+        return "/recruits/%s/" % (self.slug)
 
     def __unicode__(self):
         return self.full_name()
@@ -72,9 +72,9 @@ class Player(models.Model):
         ordering = ('last_name', 'first_name')
     
     def save(self):
-        super(Player, self).save()
+        super(Recruit, self).save()
         self.slug = str(self.id)+'_'+self.full_name().lower().replace(' ','_').replace(',','').replace('.','').replace("'","")
-        super(Player, self).save()
+        super(Recruit, self).save()
 
 class Outcome(models.Model):
     name = models.CharField(max_length=50)
@@ -97,7 +97,7 @@ class Year(models.Model):
 
 class Signing(models.Model):
     school = models.ForeignKey(College, raw_id_admin=True)
-    player = models.ForeignKey(Player, raw_id_admin=True)
+    player = models.ForeignKey(Recruit, raw_id_admin=True)
     year = models.ForeignKey(Year)
     outcome = models.ForeignKey(Outcome, blank=True, null=True)
 

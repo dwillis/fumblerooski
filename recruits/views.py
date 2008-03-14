@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from operator import itemgetter
-from fumblerooski.recruits.models import SchoolType, City, School, Player, Outcome, Signing, Year
+from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
 from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game
 
 def position_index(request):
@@ -18,7 +18,7 @@ def position_detail(request, pos, year=2008):
         position = Position.objects.get(abbrev=pos.upper())
     except:
         raise Http404
-    player_list = Player.objects.filter(position__abbrev=pos.upper())
+    player_list = Recruit.objects.filter(position__abbrev=pos.upper())
     total = player_list.count()
     if year == None:
         current_signee_list = Signing.objects.select_related().filter(player__position__abbrev=pos.upper()).order_by('recruits_player.last_name')
@@ -93,7 +93,7 @@ def state_detail(request, state):
     except:
         nst = State.objects.filter(id__startswith=state[0].upper())
         return render_to_response('recruits/state_detail.html', {'nst': nst})
-    player_list = Player.objects.select_related().filter(home_state=st)
+    player_list = Recruit.objects.select_related().filter(home_state=st)
     player_total = player_list.count()
     state_colleges = College.objects.filter(state=st).order_by('name')
     recent_signing_list = Signing.objects.select_related().filter(player__home_state=st).order_by('-id')
@@ -133,9 +133,9 @@ def school_detail(request, state, city, school, pos=None):
         oc = Outcome.objects.get(id=3)
         if pos:
             p = Position.objects.get(abbrev=pos)
-            player_list = Player.objects.select_related().filter(school=s, position=p).order_by('last_name')
+            player_list = Recruit.objects.select_related().filter(school=s, position=p).order_by('last_name')
         else:
-            player_list = Player.objects.select_related().filter(school=s).order_by('last_name')
+            player_list = Recruit.objects.select_related().filter(school=s).order_by('last_name')
             p = None
         player_total = player_list.count()
         if player_total > 1:
@@ -178,7 +178,7 @@ def city_index(request, state, city):
     s_t = SchoolType.objects.get(id=1)
     school_list = School.objects.select_related().filter(city=c).order_by('name')
     for school in school_list:
-        school.players = Player.objects.filter(school=school).count()
+        school.players = Recruit.objects.filter(school=school).count()
         if school.players == 0:
             school.delete()
         else:
@@ -187,7 +187,7 @@ def city_index(request, state, city):
 
 def player_detail(request, slug):
     try:
-        player = Player.objects.select_related().get(slug=slug)
+        player = Recruit.objects.select_related().get(slug=slug)
     except:
         raise Http404
     return render_to_response('recruits/player_detail.html', {'player': player})
@@ -195,6 +195,6 @@ def player_detail(request, slug):
 def state_position_index(request, state, pos):
     st = State.objects.get(id=state.upper())
     p = Position.objects.get(abbrev=pos.upper())
-    player_list = Player.objects.select_related().filter(home_state=st, position=p).order_by('last_name', 'first_name')
+    player_list = Recruit.objects.select_related().filter(home_state=st, position=p).order_by('last_name', 'first_name')
     return render_to_response('recruits/state_position_index.html', {'state': st, 'position': p, 'player_list': player_list})
 
