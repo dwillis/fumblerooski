@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ team.name }} Players - {{ year }}</h3>
+<h5>{{ team.conference.name }}</h5>
+
+{% if player_list %}
+<table>
+  <th>Player</th><th>Position</th><th>Number</th><th>Year</th>
+  {% for player in player_list %}
+  <tr><td>{{ player.player }}</td><td>{{ player.position.abbrev }}</td><td>{{ player.number }}</td><td>{{ player.status }}</td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}
