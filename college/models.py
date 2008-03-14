@@ -1,4 +1,12 @@
 from django.db import models
+#from fumblerooski.recruits.models import Year
+
+STATUS_CHOICES = (
+    ('FR', 'Freshman'),
+    ('SO', 'Sophomore'),
+    ('JR', 'Junior'),
+    ('SR', 'Senior'),
+)
 
 POSITION_TYPE_CHOICES = (
     ('O', 'Offense'),
@@ -47,6 +55,8 @@ class College(models.Model):
     name = models.CharField(max_length=90)
     slug = models.SlugField(prepopulate_from=("name",))
     state = models.ForeignKey(State, blank=True)
+    official_url = models.CharField(max_length=120, blank=True)
+    official_rss = models.CharField(max_length=120, blank=True)
     conference = models.ForeignKey(Conference, null=True, blank=True)
 
     def __unicode__(self):
@@ -146,3 +156,29 @@ class Game(models.Model):
 
     def get_matchup_url(self):
         return '/college/teams/%s/vs/%s/' % (self.team1.slug, self.team2.slug)
+
+class Player(models.Model):
+    ncaa_id = models.IntegerField(primary_key=True)
+    last_name = models.CharField(max_length=90)
+    first_name = models.CharField(max_length=75, blank=True)
+    first_name_fixed = models.CharField(max_length=75, blank=True)
+    
+    class Admin:
+        pass
+        
+    def __unicode__(self):
+        return "%s %s" % (self.first_name, self.last_name)
+
+class PlayerYear(models.Model):
+    player = models.ForeignKey(Player)
+    team = models.ForeignKey(College)
+    year = models.IntegerField()
+    position = models.ForeignKey(Position)
+    number = models.CharField(max_length=4)
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES)
+    
+    class Admin:
+        pass
+        
+    def __unicode__(self):
+        return "%s - %s" % (self.player, self.year)

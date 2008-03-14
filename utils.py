@@ -1,10 +1,12 @@
 import re
+import csv
 import urllib
 import datetime
+from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime
 import time
-from fumblerooski.recruits.models import SchoolType, School, City, Position
-from fumblerooski.college.models import State, College, Game, Coach
+from fumblerooski.recruits.models import SchoolType, School, City, Position, Year
+from fumblerooski.college.models import State, College, Game, Coach, Player, PlayerYear
 
 #<td width="200">East Bay High School</td><td width="200">7710 Old Big Bend Road<br>Gibsonton, Florida 33534</td>
 
@@ -59,7 +61,7 @@ def get_games(year):
                 t2_s = int(t2_s.replace('&nbsp;', '0'))
             g = Game.objects.get_or_create(season=year, team1=t1, team2=t2, date = date, t1_game_type=type[0], t1_result=result[0], team1_score=t1_s, team2_score=t2_s)
 
-def load_players():
+def load_recruits():
     import csv
     reader = csv.reader(open("players2007.csv"))
     for row in reader:
@@ -67,6 +69,30 @@ def load_players():
         p = Position.objects.get(abbrev=row[2])
         pl, created = Player.objects.get_or_create(first_name=row[0], last_name=row[1], pos=p, height=row[3], weight=row[4], home_state=st)
         pl.save()
+
+def load_players(year):
+    file = open('csv/DivIA.csv').readlines()
+    file = file[1:]
+    players = open('players.csv','w')
+    for line in file:
+        players.write(line)
+    players.close()
+
+    reader = csv.reader(open('players.csv'))
+    for row in reader:
+        y, created = Year.objects.get_or_create(id=year)
+        t = College.objects.get(id=row[0])
+        pos, created = Position.objects.get_or_create(abbrev=row[5])
+        if row[4] == '':
+            if row[3] != 'Team':
+                first = raw_input("Enter a first name for %s on %s: " % (row[3], row[1]))
+                p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name='', first_name_fixed=force_unicode(first.upper()))
+            else:
+                pass
+        else:
+            # change to match on id and last_name only?
+            p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name=force_unicode(row[4].upper()), first_name_fixed=force_unicode(row[4].upper()))
+        py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], status=row[6])
 
 def load_coaches():
     import xlrd
@@ -91,3 +117,101 @@ def load_coaches():
         c.losses = sh2.cell_value(rowx=rx, colx=4)
         c.ties = sh2.cell_value(rowx=rx, colx=5)
         c.save()
+
+def load_player_stats(yr=2007):
+    y = Year.objects.get(year=int(yr))
+    file = open('csv/DIVISION1_1125.csv').readlines()
+    file = file[2:]
+    playergame = open('/csv/playergames.csv','w')
+    for line in file:
+        playergame.write(line.replace('""', '"0"'))    
+    playergame.close()
+        
+    reader = csv.reader(open('csv/playergames.csv'))
+    for row in reader:
+        date = datetime.datetime(*(strptime(row[2], "%m/%d/%y")[0:5]))
+        if date >= datetime.datetime(2007, 1, 10):
+            t = Team.objects.get(id=row[0])
+            g = Game.objects.get(team1=t, date=date)
+            if row[5] == 'ANDRÉ':
+                row[5] = 'ANDRE'
+            else:
+                pass
+            if row[5] == '0':
+                p, created = PlayerYear.objects.get_or_create(team=t, year=y, player__last_name=row[4], number=row[3])
+                print "created new playeryear"
+            else:
+                p, created = PlayerYear.objects.get_or_create(team=t, year=y, player__last_name=row[4], player__first_name_fixed=row[5], ncaa_number=row[3])
+                print "created new playeryear"                
+            if p:
+                pt, created = PlayerScore.objects.get_or_create(game=g, playeryear=p, total_td=row[36], total_points=row[48])
+                po, created = PlayerOffense.objects.get_or_create(game=g, playeryear=p, rushes=row[6], rush_gain=row[7], rush_loss=row[8], rush_net=row[9], rush_td=row[10], pass_attempts=row[11], pass_complete=row[12], pass_intercept=row[13], pass_yards=row[14], pass_td=row[15], conversions=row[16], offense_plays=row[17], offense_yards=row[18], receptions=row[19], reception_yards=row[20], reception_td=row[21])
+                pd, created = PlayerDefense.objects.get_or_create(game=g, playeryear=p, interceptions=row[22], interception_yards=row[23], interception_td=row[24], fumble_returns=row[25], fumble_return_yards=row[26], fumble_return_td=row[27], safeties=row[47])
+                ps, created = PlayerSpecial.objects.get_or_create(game=g, playeryear=p, punts=row[28], punt_yards=row[29], punt_returns=row[30], punt_return_yards=row[31], punt_return_td=row[32], kickoff_returns=row[33], kickoff_return_yards=row[34], kickoff_return_td=row[35], pat_attempts=row[37], pat_made=row[38], two_point_attempts=row[39], two_point_made=row[40], defense_pat_attempts=row[41], defense_pat_made=row[42], defense_return_attempts=row[43], defense_return_made=row[44], field_goal_attempts=row[45], field_goal_made=row[46])
+                print "Created player stats for %s on %s" % (row[4], t.name)
+            else:
+                print "Could not create stats for %s on %s" %s (row[4], t.name)
+#    cleanup()
+
+def update_offense(yr='2007'):
+    y = Year.objects.get(year=int(yr))
+    py = PlayerYear.objects.select_related().filter(year=yr)
+    cursor = connection.cursor()
+    for player in py:
+        ps = PlayerSummary.objects.get_or_create(playeryear=player)
+        cursor.execute("""
+            update football_playersummary 
+            set rushes = (
+                select sum(football_playeroffense.rushes)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            rush_gain = (
+                select sum(football_playeroffense.rush_gain)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            rush_net = (
+                select sum(football_playeroffense.rush_net)
+                from football_playeroffense
+                where football_playeroffense.playeryear_id = %s),
+            rush_td = (
+                select sum(football_playeroffense.rush_td)
+                from football_playeroffense
+                where football_playeroffense.playeryear_id = %s),
+            pass_attempts = (
+                select sum(football_playeroffense.pass_attempts)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            pass_complete = (
+                select sum(football_playeroffense.pass_complete)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            pass_yards = (
+                select sum(football_playeroffense.pass_yards)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            pass_td = (
+                select sum(football_playeroffense.pass_td)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            receptions = (
+                select sum(football_playeroffense.receptions)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            reception_yards = (
+                select sum(football_playeroffense.reception_yards)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            reception_td = (
+                select sum(football_playeroffense.reception_td)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            offense_plays = (
+                select sum(football_playeroffense.offense_plays)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s),
+            offense_yards = (
+                select sum(football_playeroffense.offense_yards)
+                from football_playeroffense 
+                where football_playeroffense.playeryear_id = %s)
+            where football_playersummary.playeryear_id = %s""", (player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id)
+            )
