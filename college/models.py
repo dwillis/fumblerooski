@@ -70,6 +70,20 @@ class College(models.Model):
         ordering = ('name',)
         search_fields = ('name',)
 
+class CollegeYear(models.Model):
+    college = models.ForeignKey(College)
+    year = models.IntegerField()
+    wins = models.IntegerField(default=0)
+    losses = models.IntegerField(default=0)
+    conference_wins = models.IntegerField(default=0)
+    conference_losses = models.IntegerField(default=0)
+    
+    def __unicode__(self):
+        return "%s - %s" % (self.college, str(self.year))
+    
+    class Admin:
+        pass
+
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     name = models.CharField(max_length=75)
@@ -175,6 +189,7 @@ class PlayerYear(models.Model):
     year = models.IntegerField()
     position = models.ForeignKey(Position)
     number = models.CharField(max_length=4)
+    ncaa_number = models.CharField(max_length=3)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
     
     class Admin:
@@ -182,3 +197,120 @@ class PlayerYear(models.Model):
         
     def __unicode__(self):
         return "%s - %s" % (self.player, self.year)
+
+class PlayerScore(models.Model):
+    playeryear = models.ForeignKey(PlayerYear)
+    game = models.ForeignKey(Game)
+    total_td = models.IntegerField()
+    total_points = models.IntegerField()
+
+    class Admin:
+        list_display = ('playeryear', 'game', 'total_td', 'total_points')
+    
+    def __unicode__(self):
+        return self.playeryear.player.full_name()
+
+class PlayerOffense(models.Model):
+    playeryear = models.ForeignKey(PlayerYear)
+    game = models.ForeignKey(Game)
+    rushes = models.IntegerField()
+    rush_gain = models.IntegerField()
+    rush_loss = models.IntegerField()
+    rush_net = models.IntegerField()
+    rush_td = models.IntegerField()
+    pass_attempts = models.IntegerField()
+    pass_complete = models.IntegerField()
+    pass_intercept = models.IntegerField()
+    pass_yards = models.IntegerField()
+    pass_td = models.IntegerField()
+    conversions = models.IntegerField()
+    offense_plays = models.IntegerField()
+    offense_yards = models.IntegerField()
+    receptions = models.IntegerField()
+    reception_yards = models.IntegerField()
+    reception_td = models.IntegerField()
+
+    def yards_per_rush(self):
+        return self.rush_net/self.rushes
+
+    def yards_per_attempt(self):
+        return self.pass_yards/self.pass_attempts
+
+    def yards_per_catch(self):
+        return self.reception_yards/self.receptions
+
+    class Admin:
+        pass
+        
+    def __unicode__(self):
+        return "%s - %s" % (self.playeryear.player, self.game)
+
+class PlayerDefense(models.Model):
+    playeryear = models.ForeignKey(PlayerYear)
+    game = models.ForeignKey(Game)
+    interceptions = models.IntegerField()
+    interception_yards = models.IntegerField()
+    interception_td = models.IntegerField()
+    fumble_returns = models.IntegerField()
+    fumble_return_yards = models.IntegerField()
+    fumble_return_td = models.IntegerField()
+    safeties = models.IntegerField()
+
+    class Admin:
+        pass
+        
+    def __unicode__(self):
+        return "%s - %s" % (self.playeryear.player, self.game)
+
+class PlayerSpecial(models.Model):
+    playeryear = models.ForeignKey(PlayerYear)
+    game = models.ForeignKey(Game)
+    punts = models.IntegerField()
+    punt_yards = models.IntegerField()
+    punt_returns = models.IntegerField()
+    punt_return_yards = models.IntegerField()
+    punt_return_td = models.IntegerField()
+    kickoff_returns = models.IntegerField()
+    kickoff_return_yards = models.IntegerField()
+    kickoff_return_td = models.IntegerField()
+    pat_attempts = models.IntegerField()
+    pat_made = models.IntegerField()
+    two_point_attempts = models.IntegerField()
+    two_point_made = models.IntegerField()
+    defense_pat_attempts = models.IntegerField()
+    defense_pat_made = models.IntegerField()
+    defense_return_attempts = models.IntegerField()
+    defense_return_made = models.IntegerField()
+    field_goal_attempts = models.IntegerField()
+    field_goal_made = models.IntegerField()
+    
+    class Admin:
+        pass
+        
+    def __unicode__(self):
+        return "%s - %s" % (self.playeryear.player, self.game)
+
+class PlayerSummary(models.Model):
+    playeryear = models.ForeignKey(PlayerYear)
+    rushes = models.IntegerField(null=True)
+    rush_gain = models.IntegerField(null=True)
+    rush_loss = models.IntegerField(null=True)
+    rush_net = models.IntegerField(null=True)
+    rush_td = models.IntegerField(null=True)
+    pass_attempts = models.IntegerField(null=True)
+    pass_complete = models.IntegerField(null=True)
+    pass_intercept = models.IntegerField(null=True)
+    pass_yards = models.IntegerField(null=True)
+    pass_td = models.IntegerField(null=True)
+    conversions = models.IntegerField(null=True)
+    offense_plays = models.IntegerField(null=True)
+    offense_yards = models.IntegerField(null=True)
+    receptions = models.IntegerField(null=True)
+    reception_yards = models.IntegerField(null=True)
+    reception_td = models.IntegerField(null=True)
+
+    class Admin:
+        list_display = ('playeryear', 'rush_net', 'pass_yards', 'offense_yards')
+    
+    def __unicode__(self):
+        return "%s - %s" % (self.playeryear.player, self.playeryear.year)

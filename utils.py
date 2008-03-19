@@ -6,7 +6,7 @@ from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime
 import time
 from fumblerooski.recruits.models import SchoolType, School, City, Position, Year
-from fumblerooski.college.models import State, College, Game, Coach, Player, PlayerYear
+from fumblerooski.college.models import State, College, Game, Coach, Player, PlayerYear, PlayerScore, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary
 
 #<td width="200">East Bay High School</td><td width="200">7710 Old Big Bend Road<br>Gibsonton, Florida 33534</td>
 
@@ -92,7 +92,7 @@ def load_players(year):
         else:
             # change to match on id and last_name only?
             p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name=force_unicode(row[4].upper()), first_name_fixed=force_unicode(row[4].upper()))
-        py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], status=row[6])
+        py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], ncaa_number=row[2], status=row[6])
 
 def load_coaches():
     import xlrd
@@ -119,10 +119,10 @@ def load_coaches():
         c.save()
 
 def load_player_stats(yr=2007):
-    y = Year.objects.get(year=int(yr))
+    y = Year.objects.get(id=int(yr))
     file = open('csv/DIVISION1_1125.csv').readlines()
     file = file[2:]
-    playergame = open('/csv/playergames.csv','w')
+    playergame = open('csv/playergames.csv','w')
     for line in file:
         playergame.write(line.replace('""', '"0"'))    
     playergame.close()
@@ -131,7 +131,7 @@ def load_player_stats(yr=2007):
     for row in reader:
         date = datetime.datetime(*(strptime(row[2], "%m/%d/%y")[0:5]))
         if date >= datetime.datetime(2007, 1, 10):
-            t = Team.objects.get(id=row[0])
+            t = College.objects.get(id=row[0])
             g = Game.objects.get(team1=t, date=date)
             if row[5] == 'ANDRÉ':
                 row[5] = 'ANDRE'

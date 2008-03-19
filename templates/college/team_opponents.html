@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ team.name }} Opponents</h3>
+<h5>{{ team.conference.name }}</h5>
+
+{% if opponent_list %}
+<table>
+  <th>Team</th><th>Games Since 1997</th>
+  {% for opponent in opponent_list %}
+  <tr><td><a href="{{ opponent.get_absolute_url }}">{{ opponent.name }}</a></td><td><a href="/college/teams/{{ team.slug }}/vs/{{ opponent.slug }}/">{{ opponent.number }}</a></td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}

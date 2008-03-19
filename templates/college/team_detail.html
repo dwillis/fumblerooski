@@ -5,7 +5,10 @@
 <h3>{{ team.name }}</h3>
 <h5>{{ team.conference.name }}</h5>
 
+{% if coach %}
 Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
+{% else %}
+{% endif %}
 
 <h3>Popular Opponents Since 1997</h3>
 <ul>
@@ -13,4 +16,6 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
    <li><a href="{{ team2.get_absolute_url }}">{{ team2.name }}</a> (<a href="/college/teams/{{ team.slug }}/vs/{{ team2.slug }}/">{{ team2.number }}</a>)</li>
 {% endfor %}
 </ul>
+ (<a href="opponents/">Browse all opponents since 1997</a>)
+
 {% endblock %}

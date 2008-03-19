@@ -21,7 +21,10 @@ def team_index(request):
 
 def team_detail(request, team):
     t = get_object_or_404(College, slug=team)
-    current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
+    try:
+        current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
+    except CollegeCoach.DoesNotExist:
+        current_coach = None
     game_list = Game.objects.filter(team1=t).order_by('-date')
     opponents = {}
     for game in game_list:
@@ -33,6 +36,20 @@ def team_detail(request, team):
         c.number = number
         p_o.append(c)
     return render_to_response('college/team_detail.html', {'team': t, 'coach': current_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o})
+
+def team_opponents(request, team):
+    t = get_object_or_404(College, slug=team)
+    game_list = Game.objects.select_related().filter(team1=t).order_by('college_college.name')
+    opponents = {}
+    for game in game_list:
+        opponents[game.team2.id] = opponents.get(game.team2.id, 0) +1
+    opponent_dict = sorted(opponents.iteritems(), key=itemgetter(1), reverse=True)
+    opp_list = []
+    for team, number in opponent_dict:
+        c = College.objects.get(id=team)
+        c.number = number
+        opp_list.append(c)
+    return render_to_response('college/team_opponents.html', {'team': t, 'opponent_list': opp_list})
 
 def team_vs(request, team1, team2):
     team_1 = get_object_or_404(College, slug=team1)
