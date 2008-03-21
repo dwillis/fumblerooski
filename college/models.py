@@ -157,6 +157,7 @@ class Game(models.Model):
     t1_result = models.CharField(max_length=1, choices=RESULT_CHOICES, blank=True)
     team1_score = models.IntegerField(null=True)
     team2_score = models.IntegerField(null=True)
+    site = models.CharField(max_length=90, blank=True)
     
     class Admin:
         list_display = ('team1', 'team2', 'date', 't1_result', 'team1_score', 'team2_score')

@@ -10,12 +10,12 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
 {% else %}
 {% endif %}
 
-<h3>Popular Opponents Since 1997</h3>
+<h3>Popular Opponents Since 1988</h3>
 <ul>
 {% for team2 in popular_opponents %}
    <li><a href="{{ team2.get_absolute_url }}">{{ team2.name }}</a> (<a href="/college/teams/{{ team.slug }}/vs/{{ team2.slug }}/">{{ team2.number }}</a>)</li>
 {% endfor %}
 </ul>
- (<a href="opponents/">Browse all opponents since 1997</a>)
+ (<a href="opponents/">Browse all opponents since 1988</a>)
 
 {% endblock %}
