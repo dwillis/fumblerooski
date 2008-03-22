@@ -13,8 +13,8 @@
 	
 	{% block css %}
 	{% block css.shared %}
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.0/build/reset-fonts-grids/reset-fonts-grids.css">
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.0/build/base/base-min.css">
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css">
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.1/build/base/base-min.css">
 	{% endblock css.shared %}
 	{% block css.custom %}{% endblock css.custom %}
 	{% endblock css%}
@@ -31,7 +31,7 @@
 		{% block header %}
 		<!-- BEGIN header -->
         <div id="hd">
-            {% block header_content %}{% include 'shared/header.html' %}{% endblock header_content %}
+            {% block header_content %}{% endblock header_content %}
         </div>
         <!-- END header -->
 		{% endblock header %}
@@ -47,7 +47,7 @@
 		{% block footer %}
 		<!-- BEGIN footer -->
         <div id="ft">
-            {% block footer_content %}{% include 'shared/footer.html' %}{% endblock footer_content %}
+            {% block footer_content %}{% endblock footer_content %}
         </div>
         <!-- END footer -->
 		{% endblock footer %}

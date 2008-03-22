@@ -17,6 +17,7 @@ POSITION_TYPE_CHOICES = (
 RESULT_CHOICES = (
     ('W', 'Win'),
     ('L', 'Loss'),
+    ('T', 'Tie'),
 )
 
 GAME_TYPE_CHOICES = (
