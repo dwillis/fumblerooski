@@ -6,13 +6,13 @@
 
 <h3>{{ team_1.name }} vs. {{ team_2.name }}</h3>
 
-{% if last_home_loss %}Last home loss: {{ last_home_loss.date }}<br />{% endif %}
-{% if last_road_win %}Last road win: {{ last_road_win.date }}{% endif %}
+{% if last_home_loss %}Last home loss: {{ last_home_loss.date|date:"F d, Y" }}<br />{% endif %}
+{% if last_road_win %}Last road win: {{ last_road_win.date|date:"F d, Y" }}{% endif %}
 
 <table>
   <th>Season</th><th>Location</th><th>Outcome</th>
   {% for game in games %}
-  <tr><td><a href="{{ game.season }}/">{{ game.season }}</a></td><td>{{ game.get_t1_game_type_display }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
+  <tr><td><a href="{{ game.season }}/">{{ game.season }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
   {% endfor %}
 </table>
 
