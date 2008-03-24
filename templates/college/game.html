@@ -12,6 +12,8 @@
   {% for game in games %}
   <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td><td>{{ game.get_t1_game_type_display }} {% if game.site %}({{ game.site }}){% endif %}</td></tr>
 
+</table>
+
 {% if game.drivechart %}
 <h4>NCAA Drive Chart</h4>
 
@@ -21,7 +23,7 @@
 {% endif %}
 
 {% endfor %}
-</table>
+
 {% else %}
 
 No game could be found.
