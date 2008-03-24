@@ -51,7 +51,7 @@ def team_opponents(request, team):
         opp_list.append(c)
     return render_to_response('college/team_opponents.html', {'team': t, 'opponent_list': opp_list})
 
-def team_vs(request, team1, team2):
+def team_vs(request, team1, team2, outcome=None):
     team_1 = get_object_or_404(College, slug=team1)
     try:
         team_2 = College.objects.get(slug=team2)
@@ -59,7 +59,13 @@ def team_vs(request, team1, team2):
             team_2 = None
     except:
         team_2 = None
-    games = Game.objects.filter(team1=team_1, team2=team_2).order_by('-date')
+    if outcome:
+        games = Game.objects.filter(team1=team_1, team2=team_2, t1_result=outcome[0].upper()).order_by('-date')
+    else:
+        games = Game.objects.filter(team1=team_1, team2=team_2).order_by('-date')
+    wins = games.filter(t1_result='W').count()
+    losses = games.filter(t1_result='L').count()
+    ties = games.filter(t1_result='T').count()        
     try:
         last_home_loss = games.filter(t1_game_type='H', t1_result='L')[0]
     except:
@@ -68,7 +74,7 @@ def team_vs(request, team1, team2):
         last_road_win = games.filter(t1_game_type='A', t1_result='W')[0]
     except:
         last_road_win = None
-    return render_to_response('college/team_vs.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'last_home_loss': last_home_loss, 'last_road_win': last_road_win })
+    return render_to_response('college/team_vs.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'last_home_loss': last_home_loss, 'last_road_win': last_road_win, 'wins': wins, 'losses': losses, 'ties': ties, 'outcome': outcome })
 
 def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
