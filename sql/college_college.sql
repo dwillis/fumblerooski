@@ -1,4 +1,4 @@
-SET NAMES latin1;
+SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE `college_college` (
@@ -12,7 +12,7 @@ CREATE TABLE `college_college` (
   PRIMARY KEY (`id`),
   KEY `college_college_slug` (`slug`),
   KEY `college_college_conference_id` (`conference_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=30104 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=30104 DEFAULT CHARSET=utf8;
 
 insert into `college_college` values('1083','Fort Lewis College','fort-lewis-college',null,'',null,null),
  ('8577','New Mexico Highlands ','new-mexico-highlands',null,'NM',null,null),
