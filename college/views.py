@@ -5,6 +5,12 @@ from operator import itemgetter
 from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
 from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear
 
+
+def homepage(request):
+    team_count = College.objects.all().count()
+    game_count = Game.objects.all().count()
+    return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count })
+
 def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
     return render_to_response('college/conferences.html', {'conference_list': conference_list})
