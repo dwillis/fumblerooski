@@ -106,7 +106,9 @@ def game_index(request):
     pass # do calendar-based view here
 
 def state_detail(request, state):
-    pass # do state detail here
+    s = get_object_or_404(State, id=state)
+    team_list = College.objects.filter(state=s).order_by('name')
+    return render_to_response('college/state.html', {'team_list': team_list, 'state': s})
 
 def team_players(request, team, year=2007):
     t = get_object_or_404(College, slug=team)
