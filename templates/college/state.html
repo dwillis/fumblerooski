@@ -9,10 +9,10 @@
 
 <ul>
     {% for team in team_list %}
-    <li>{{ team.name }}</li>
-</ul>
+    <li><a href="{{ team.get_absolute_url }}">{{ team.name }}</a></li>
+    {% endfor %}
 
-{% endfor %}
+</ul>
 
 {% else %}
 No teams from {{ state.name }} are available.
