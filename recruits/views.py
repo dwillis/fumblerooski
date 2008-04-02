@@ -72,10 +72,6 @@ def team_detail_year(request, team, year):
         return render_to_response('recruits/team_detail_year.html', {'team': nt})
     return render_to_response('recruits/team_detail_year.html', {'team': t, 'recruit_list': recruit_list, 'outcome_list': outcome_list or None, 'recruit_total': recruit_total or None, 'year_list': year_list or None, 'year': year or None})
 
-def state_index(request):
-    state_list = State.objects.all().order_by('name')
-    return render_to_response('recruits/state_index.html', {'state_list': state_list})
-
 def team_detail_position(request, team, pos):
     try:
         t = College.objects.get(slug=team)

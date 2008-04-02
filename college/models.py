@@ -1,4 +1,5 @@
 from django.db import models
+from django import newforms as forms
 #from fumblerooski.recruits.models import Year
 
 STATUS_CHOICES = (
@@ -27,7 +28,7 @@ GAME_TYPE_CHOICES = (
 )
 
 class State(models.Model):
-    id = models.CharField(max_length=2, primary_key=True)
+    id = models.CharField(max_length=2, primary_key=True, editable=False)
     name = models.CharField(max_length=50)
 
     def __unicode__(self):
@@ -38,6 +39,9 @@ class State(models.Model):
 
     class Admin:
         pass
+    
+class StateForm(forms.Form):
+    name = forms.CharField(max_length=50, widget=forms.Select())
 
 class Conference(models.Model):
     abbrev = models.CharField(max_length=10)
@@ -76,8 +80,10 @@ class CollegeYear(models.Model):
     year = models.IntegerField()
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
+    ties = models.IntegerField(default=0)
     conference_wins = models.IntegerField(default=0)
     conference_losses = models.IntegerField(default=0)
+    conference_ties = models.IntegerField(default=0)
     
     def __unicode__(self):
         return "%s - %s" % (self.college, str(self.year))

@@ -6,7 +6,7 @@ from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime
 import time
 from fumblerooski.recruits.models import SchoolType, School, City, Position, Year
-from fumblerooski.college.models import State, College, Game, Coach, Player, PlayerYear, PlayerScore, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary
+from fumblerooski.college.models import State, College, Game, Coach, Player, PlayerYear, PlayerScore, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference
 
 #<td width="200">East Bay High School</td><td width="200">7710 Old Big Bend Road<br>Gibsonton, Florida 33534</td>
 
@@ -36,11 +36,28 @@ def get_players(year):
             pass
 
 
-def load_older_games():
-    reader = csv.reader(open('csv/older_games.csv'))
-    for row in reader:
-        
-    
+def update_college_year(year):
+    teams = College.objects.all()
+    for team in teams:
+        games = Game.objects.filter(team1=team, season=year)
+        results = {'W':0, 'L':0, 'T':0}
+        for game in games:
+            results[game.t1_result] = results.get(game.t1_result, 0) +1            
+        if team.conference:
+            conf = Conference.objects.get(id = team.conference_id)
+            conf_games = Game.objects.select_related().filter(team1=team, season=year, team2__conference=conf)
+            conf_results = {'W':0, 'L':0, 'T':0}
+            for conf_game in conf_games:
+                conf_results[conf_game.t1_result] = conf_results.get(conf_game.t1_result, 0) +1
+            conf_wins = conf_results['W']
+            conf_losses = conf_results['L']
+            conf_ties = conf_results['T']
+        else:
+            conf_wins = 0
+            conf_losses = 0
+            conf_ties = 0
+        record, created = CollegeYear.objects.get_or_create(college=team, year=year, wins=results['W'], losses=results['L'], ties=results['T'], conference_wins=conf_wins, conference_losses=conf_losses, conference_ties=conf_ties)
+
 
 def get_ncaa_games(year):
     pattern = re.compile("""<td width=411 colspan=4><a href="http://web1.ncaa.org/ssLists/orgInfo.do.orgID=(.*)" target=_parent><font size=2 face="helvetica">(.*)</font></a></td>\s*<td></td>\s*<td width=163 colspan=2><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=146 colspan=2><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=63><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=41 colspan=4 align=right><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=7><font size=2 face="helvetica">-</font></td>\s*<td></td>\s*<td width=43 colspan=2><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>""")

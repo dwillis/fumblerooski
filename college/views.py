@@ -1,15 +1,19 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
+from django import newforms as forms
 from operator import itemgetter
 from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear
-
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear, StateForm
 
 def homepage(request):
     team_count = College.objects.all().count()
     game_count = Game.objects.all().count()
     return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count })
+
+def state_index(request):
+    form = StateForm()
+    return render_to_response('college/state_index.html', {'form': form})
 
 def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
@@ -31,6 +35,7 @@ def team_detail(request, team):
         current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
     except CollegeCoach.DoesNotExist:
         current_coach = None
+    college_years = CollegeYear.objects.filter(team=t).order_by('-year')
     game_list = Game.objects.filter(team1=t).order_by('-date')
     opponents = {}
     for game in game_list:
