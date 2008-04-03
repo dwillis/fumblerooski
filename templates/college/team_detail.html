@@ -10,6 +10,14 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
 {% else %}
 {% endif %}
 
+<h3>Season Records Since 1988</h3>
+<table>
+    <th>Season</th><th>Wins</th><th>Losses</th><th>Ties</th>
+    {% for season in college_years %}
+    <tr><td><a href="{{ season.year }}/">{{ season.year }}</a></td><td>{{ season.wins }}</td><td>{{ season.losses }}</td><td>{{ season.ties }}</td></tr>
+    {% endfor %}
+</table>
+
 <h3>Popular Opponents Since 1988</h3>
 <ul>
 {% for team2 in popular_opponents %}

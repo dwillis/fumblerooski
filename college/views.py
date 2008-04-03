@@ -4,7 +4,7 @@ from django.contrib.syndication.feeds import Feed
 from django import newforms as forms
 from operator import itemgetter
 from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear, StateForm
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear, StateForm, CollegeYear
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -35,7 +35,7 @@ def team_detail(request, team):
         current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
     except CollegeCoach.DoesNotExist:
         current_coach = None
-    college_years = CollegeYear.objects.filter(team=t).order_by('-year')
+    college_years = CollegeYear.objects.filter(college=t).order_by('-year')
     game_list = Game.objects.filter(team1=t).order_by('-date')
     opponents = {}
     for game in game_list:
@@ -46,7 +46,7 @@ def team_detail(request, team):
         c = College.objects.get(id=team)
         c.number = number
         p_o.append(c)
-    return render_to_response('college/team_detail.html', {'team': t, 'coach': current_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o})
+    return render_to_response('college/team_detail.html', {'team': t, 'coach': current_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
