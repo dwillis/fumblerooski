@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>{{ team.name }}</h3>
+<h5>{{ team.conference.name }}</h5>
+
+{% if coach %}
+Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
+{% else %}
+{% endif %}
+
+<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %}</h3>
+<table>
+    <th>Date</th><th>Opponent</th><th>Location</th><th>Result</th>
+    {% for game in game_list %}
+    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

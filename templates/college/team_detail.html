@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h3>{{ team.name }}</h3>
+<h1>{{ team.name }}</h1>
 <h5>{{ team.conference.name }}</h5>
 
 {% if coach %}
@@ -12,11 +12,12 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
 
 <h3>Season Records Since 1988</h3>
 <table>
-    <th>Season</th><th>Wins</th><th>Losses</th><th>Ties</th>
+    <th>Season</th><th>Wins</th><th>Losses</th><th>Ties*</th>
     {% for season in college_years %}
     <tr><td><a href="{{ season.year }}/">{{ season.year }}</a></td><td>{{ season.wins }}</td><td>{{ season.losses }}</td><td>{{ season.ties }}</td></tr>
     {% endfor %}
 </table>
+* Ties were eliminated beginning in 1996.
 
 <h3>Popular Opponents Since 1988</h3>
 <ul>

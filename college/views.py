@@ -48,6 +48,16 @@ def team_detail(request, team):
         p_o.append(c)
     return render_to_response('college/team_detail.html', {'team': t, 'coach': current_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
 
+def team_detail_season(request, team, season):
+    t = get_object_or_404(College, slug=team)
+    try:
+        current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
+    except CollegeCoach.DoesNotExist:
+        current_coach = None
+    season_record = get_object_or_404(CollegeYear, college=t, year=season)
+    game_list = Game.objects.filter(team1=t, season=season).order_by('-date')
+    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list })
+
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
     game_list = Game.objects.select_related().filter(team1=t).order_by('college_college.name')
