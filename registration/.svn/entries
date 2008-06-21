@@ -1,0 +1,94 @@
+8
+
+dir
+163
+http://django-registration.googlecode.com/svn/trunk/registration
+http://django-registration.googlecode.com/svn
+
+
+
+2008-06-21T07:35:32.498816Z
+163
+ubernostrum
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+b970a8a1-db28-0410-9b79-8b7e580363d3
+
+locale
+dir
+
+views.py
+file
+
+
+
+
+2008-06-21T19:22:20.000000Z
+b69254c4d2408cd5560f9dceb396810f
+2008-06-21T07:20:46.716722Z
+162
+ubernostrum
+
+__init__.py
+file
+
+
+
+
+2008-06-21T19:22:20.000000Z
+d41d8cd98f00b204e9800998ecf8427e
+2007-05-23T05:49:58.125329Z
+50
+ubernostrum
+
+bin
+dir
+
+models.py
+file
+
+
+
+
+2008-06-21T19:22:20.000000Z
+4f20c4bf61bb299a56564d229a5217b1
+2008-06-21T07:35:32.498816Z
+163
+ubernostrum
+
+urls.py
+file
+
+
+
+
+2008-06-21T19:22:20.000000Z
+83a60eb6fd6797ac2f2389f2a0eee639
+2008-06-21T07:18:56.416882Z
+159
+ubernostrum
+
+forms.py
+file
+
+
+
+
+2008-06-21T19:22:20.000000Z
+9bda4ae0f46807dd7786434847f17a32
+2008-06-21T07:20:16.860545Z
+161
+ubernostrum
+

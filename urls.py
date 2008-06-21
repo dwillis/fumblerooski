@@ -9,6 +9,7 @@ urlpatterns = patterns('',
 
     # Uncomment this for admin:
      (r'^admin/', include('django.contrib.admin.urls')),
+     (r'^accounts/', include('registration.urls')),
 
      (r'^$', college_views.homepage),
      (r'^recruits/positions/$', recruit_views.position_index),
