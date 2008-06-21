@@ -9,8 +9,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from registration.forms import RegistrationForm
-from registration.models import RegistrationProfile
+from fumblerooski.registration.forms import RegistrationForm
+from fumblerooski.registration.models import RegistrationProfile
 
 
 def activate(request, activation_key, template_name='registration/activate.html'):
