@@ -15,5 +15,5 @@ class in ``registration/models.py`` for further documentation.
 """
 
 if __name__ == '__main__':
-    from registration.models import RegistrationProfile
+    from fumblerooski.registration.models import RegistrationProfile
     RegistrationProfile.objects.delete_expired_users()
