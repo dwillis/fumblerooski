@@ -1,5 +1,6 @@
 from django.db import models
-from django import newforms as forms
+from django import forms
+from django.contrib import admin
 #from fumblerooski.recruits.models import Year
 
 STATUS_CHOICES = (
@@ -36,9 +37,6 @@ class State(models.Model):
 
     def get_absolute_url(self):
         return "/states/%s/" % self.id.lower()
-
-    class Admin:
-        pass
     
 class StateForm(forms.Form):
     name = forms.CharField(max_length=50, widget=forms.Select())
@@ -53,12 +51,9 @@ class Conference(models.Model):
     def get_absolute_url(self):
         return '/college/conferences/%s/' % self.abbrev.lower()
 
-    class Admin:
-        pass
-
 class College(models.Model):
     name = models.CharField(max_length=90)
-    slug = models.SlugField(prepopulate_from=("name",))
+    slug = models.SlugField(max_length=90)
     state = models.ForeignKey(State, blank=True)
     official_url = models.CharField(max_length=120, blank=True)
     official_rss = models.CharField(max_length=120, blank=True)
@@ -69,11 +64,6 @@ class College(models.Model):
 
     def get_absolute_url(self):
         return '/college/teams/%s/' % self.slug
-
-    class Admin:
-        list_display = ['name', 'state']
-        ordering = ('name',)
-        search_fields = ('name',)
 
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)
@@ -87,14 +77,11 @@ class CollegeYear(models.Model):
     
     def __unicode__(self):
         return "%s - %s" % (self.college, str(self.year))
-    
-    class Admin:
-        pass
 
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     name = models.CharField(max_length=75)
-    slug = models.SlugField(prepopulate_from=('name',))
+    slug = models.SlugField(max_length=75)
     alma_mater = models.CharField(max_length=75)
     birth_date = models.DateField(null=True, blank=True)
     years = models.IntegerField(default=0, blank=True)
@@ -108,21 +95,16 @@ class Coach(models.Model):
     def get_absolute_url(self):
         return '/college/coaches/%s/' % self.slug
 
-    class Admin:
-        pass
-
     class Meta:
         verbose_name_plural = 'Coaches'
 
 class CoachingJob(models.Model):
     name = models.CharField(max_length=75)
-    slug = models.SlugField(prepopulate_from=('name',))
+    slug = models.SlugField(max_length=75)
     
     def __unicode__(self):
         return self.name
-    
-    class Admin:
-        pass
+
 
 class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)
@@ -133,9 +115,6 @@ class CollegeCoach(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.coach, self.college)
-
-    class Admin:
-        list_display = ['coach', 'college', 'job', 'start_date', 'end_date']
 
     class Meta:
         verbose_name_plural = 'College coaches'
@@ -152,9 +131,6 @@ class Position(models.Model):
     def get_absolute_url(self):
         return '/recruits/positions/%s/' % self.abbrev.lower()
 
-    class Admin:
-        pass
-
 class Game(models.Model):
     season = models.IntegerField()
     team1 = models.ForeignKey(College, related_name='first_team')
@@ -165,10 +141,6 @@ class Game(models.Model):
     team1_score = models.IntegerField(null=True)
     team2_score = models.IntegerField(null=True)
     site = models.CharField(max_length=90, blank=True)
-    
-    class Admin:
-        list_display = ('team1', 'team2', 'date', 't1_result', 'team1_score', 'team2_score')
-        list_filter = ['t1_result', 'team1_score', 'team2_score']
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
@@ -185,9 +157,6 @@ class Player(models.Model):
     first_name = models.CharField(max_length=75, blank=True)
     first_name_fixed = models.CharField(max_length=75, blank=True)
     
-    class Admin:
-        pass
-        
     def __unicode__(self):
         return "%s %s" % (self.first_name_fixed, self.last_name)
 
@@ -199,10 +168,7 @@ class PlayerYear(models.Model):
     number = models.CharField(max_length=4)
     ncaa_number = models.CharField(max_length=3)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
-    
-    class Admin:
-        pass
-        
+
     def __unicode__(self):
         return "%s - %s" % (self.player, self.year)
 
@@ -211,9 +177,6 @@ class PlayerScore(models.Model):
     game = models.ForeignKey(Game)
     total_td = models.IntegerField()
     total_points = models.IntegerField()
-
-    class Admin:
-        list_display = ('playeryear', 'game', 'total_td', 'total_points')
     
     def __unicode__(self):
         return self.playeryear.player.full_name()
@@ -247,9 +210,6 @@ class PlayerOffense(models.Model):
     def yards_per_catch(self):
         return self.reception_yards/self.receptions
 
-    class Admin:
-        pass
-        
     def __unicode__(self):
         return "%s - %s" % (self.playeryear.player, self.game)
 
@@ -264,9 +224,6 @@ class PlayerDefense(models.Model):
     fumble_return_td = models.IntegerField()
     safeties = models.IntegerField()
 
-    class Admin:
-        pass
-        
     def __unicode__(self):
         return "%s - %s" % (self.playeryear.player, self.game)
 
@@ -291,10 +248,7 @@ class PlayerSpecial(models.Model):
     defense_return_made = models.IntegerField()
     field_goal_attempts = models.IntegerField()
     field_goal_made = models.IntegerField()
-    
-    class Admin:
-        pass
-        
+
     def __unicode__(self):
         return "%s - %s" % (self.playeryear.player, self.game)
 
@@ -317,8 +271,5 @@ class PlayerSummary(models.Model):
     reception_yards = models.IntegerField(null=True)
     reception_td = models.IntegerField(null=True)
 
-    class Admin:
-        list_display = ('playeryear', 'rush_net', 'pass_yards', 'offense_yards')
-    
     def __unicode__(self):
         return "%s - %s" % (self.playeryear.player, self.playeryear.year)

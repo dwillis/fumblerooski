@@ -1,16 +1,17 @@
 from django.conf.urls.defaults import *
+from django.contrib import admin
 from django.views.generic import list_detail, date_based, create_update
 from fumblerooski.recruits import views as recruit_views
 from fumblerooski.college import views as college_views
+
+#admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
     # (r'^football/', include('football.foo.urls')),
 
     # Uncomment this for admin:
-     (r'^admin/', include('django.contrib.admin.urls')),
-     (r'^accounts/', include('fumblerooski.registration.urls')),
-
+     (r'^admin/(.*)', admin.site.root),
      (r'^$', college_views.homepage),
      (r'^recruits/positions/$', recruit_views.position_index),
      (r'^recruits/positions/(?P<pos>[a-z][a-z]?[a-z]?)/$', recruit_views.position_detail),
