@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, CoachingJob, PlayerScore
+from fumblerooski2.college.models import Coach, College, CollegeCoach, Position, State, Game, CoachingJob, PlayerScore
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'state')
@@ -21,8 +21,10 @@ class GameAdmin(admin.ModelAdmin):
     list_filter = ('t1_result', 'team1_score', 'team2_score')
 
 class PlayerScoreAdmin(admin.ModelAdmin):
-    list_display = ('playeryear', 'game', 'total_td', 'total_points')
+    list_display = ('player', 'game', 'total_td', 'total_points')
 
+class PlayerAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
 
 admin.site.register(College, CollegeAdmin)
 admin.site.register(Coach, CoachAdmin)

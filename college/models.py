@@ -74,9 +74,14 @@ class CollegeYear(models.Model):
     conference_wins = models.IntegerField(default=0)
     conference_losses = models.IntegerField(default=0)
     conference_ties = models.IntegerField(default=0)
+    freshmen = models.IntegerField(default=0)
+    sophomores = models.IntegerField(default=0)
+    juniors = models.IntegerField(default=0)
+    seniors = models.IntegerField(default=0)
     
     def __unicode__(self):
         return "%s - %s" % (self.college, str(self.year))
+
 
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
@@ -152,37 +157,32 @@ class Game(models.Model):
         return '/college/teams/%s/vs/%s/' % (self.team1.slug, self.team2.slug)
 
 class Player(models.Model):
-    ncaa_id = models.IntegerField(primary_key=True)
-    last_name = models.CharField(max_length=90)
-    first_name = models.CharField(max_length=75, blank=True)
-    first_name_fixed = models.CharField(max_length=75, blank=True)
-    
-    def __unicode__(self):
-        return "%s %s" % (self.first_name_fixed, self.last_name)
-
-class PlayerYear(models.Model):
-    player = models.ForeignKey(Player)
+    name = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=120)
     team = models.ForeignKey(College)
     year = models.IntegerField()
     position = models.ForeignKey(Position)
     number = models.CharField(max_length=4)
-    ncaa_number = models.CharField(max_length=3)
+    games_played = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
 
     def __unicode__(self):
-        return "%s - %s" % (self.player, self.year)
+        return "%s - %s" % (self.name, self.year)
+    
+    def get_absolute_url(self):
+        return '/college/teams/%s/%s/players/%s/' % (self.team.slug, self.year, self.slug)
 
 class PlayerScore(models.Model):
-    playeryear = models.ForeignKey(PlayerYear)
+    player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
     total_td = models.IntegerField()
     total_points = models.IntegerField()
     
     def __unicode__(self):
-        return self.playeryear.player.full_name()
+        return self.player.name.full_name()
 
 class PlayerOffense(models.Model):
-    playeryear = models.ForeignKey(PlayerYear)
+    player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
     rushes = models.IntegerField()
     rush_gain = models.IntegerField()
@@ -211,10 +211,10 @@ class PlayerOffense(models.Model):
         return self.reception_yards/self.receptions
 
     def __unicode__(self):
-        return "%s - %s" % (self.playeryear.player, self.game)
+        return "%s - %s" % (self.player.name, self.game)
 
 class PlayerDefense(models.Model):
-    playeryear = models.ForeignKey(PlayerYear)
+    player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
     interceptions = models.IntegerField()
     interception_yards = models.IntegerField()
@@ -225,10 +225,10 @@ class PlayerDefense(models.Model):
     safeties = models.IntegerField()
 
     def __unicode__(self):
-        return "%s - %s" % (self.playeryear.player, self.game)
+        return "%s - %s" % (self.player.name, self.game)
 
 class PlayerSpecial(models.Model):
-    playeryear = models.ForeignKey(PlayerYear)
+    player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
     punts = models.IntegerField()
     punt_yards = models.IntegerField()
@@ -250,10 +250,10 @@ class PlayerSpecial(models.Model):
     field_goal_made = models.IntegerField()
 
     def __unicode__(self):
-        return "%s - %s" % (self.playeryear.player, self.game)
+        return "%s - %s" % (self.player.name, self.game)
 
 class PlayerSummary(models.Model):
-    playeryear = models.ForeignKey(PlayerYear)
+    player = models.ForeignKey(Player)
     rushes = models.IntegerField(null=True)
     rush_gain = models.IntegerField(null=True)
     rush_loss = models.IntegerField(null=True)
@@ -272,4 +272,4 @@ class PlayerSummary(models.Model):
     reception_td = models.IntegerField(null=True)
 
     def __unicode__(self):
-        return "%s - %s" % (self.playeryear.player, self.playeryear.year)
+        return "%s - %s" % (self.player.name, self.player.year)

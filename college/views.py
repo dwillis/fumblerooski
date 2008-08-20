@@ -1,10 +1,10 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
-from django import newforms as forms
+from django import forms
 from operator import itemgetter
-from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, PlayerYear, StateForm, CollegeYear
+#from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
+from fumblerooski2.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -56,7 +56,8 @@ def team_detail_season(request, team, season):
         current_coach = None
     season_record = get_object_or_404(CollegeYear, college=t, year=season)
     game_list = Game.objects.filter(team1=t, season=season).order_by('-date')
-    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list })
+    player_list = Player.objects.filter(team=t, year=season)
+    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list })
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
@@ -125,7 +126,19 @@ def state_detail(request, state):
     team_list = College.objects.filter(state=s).order_by('name')
     return render_to_response('college/state.html', {'team_list': team_list, 'state': s})
 
-def team_players(request, team, year=2007):
+def team_players(request, team, season):
     t = get_object_or_404(College, slug=team)
-    player_list = PlayerYear.objects.select_related().filter(team=t, year=year).order_by('college_player.last_name')
-    return render_to_response('college/team_players.html', {'team': t, 'year': year, 'player_list': player_list })
+    player_list = Player.objects.filter(team=t, year=season)
+    return render_to_response('college/team_players.html', {'team': t, 'year': season, 'player_list': player_list })
+
+def team_by_cls(request, team, year, cl):
+    t = get_object_or_404(College, slug=team)
+    cy = get_object_or_404(CollegeYear, team=t, year=season)
+    player_list = Player.objects.filter(team=t, year=season, status=cl)
+    return render_to_response('college/team_class.html', {'team':t, 'year': year, 'cls': cl, 'player_list':player_list })
+
+def player_detail(request, team, season, player):
+    t = get_object_or_404(College, slug=team)
+    cy = get_object_or_404(CollegeYear, team=t, year=season)
+    player = Player.objects.filter(team=t, year=season, slug=player)
+    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': player })

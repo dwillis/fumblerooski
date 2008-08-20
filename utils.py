@@ -5,8 +5,9 @@ import datetime
 from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime
 import time
-from fumblerooski.recruits.models import SchoolType, School, City, Position, Year
-from fumblerooski.college.models import State, College, Game, Coach, Player, PlayerYear, PlayerScore, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference
+from BeautifulSoup import BeautifulSoup
+#from fumblerooski.recruits.models import SchoolType, School, City, Position, Year
+from fumblerooski2.college.models import State, College, Game, Coach, Position, Player, PlayerScore, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference
 
 #<td width="200">East Bay High School</td><td width="200">7710 Old Big Bend Road<br>Gibsonton, Florida 33534</td>
 
@@ -117,6 +118,46 @@ def load_players(year):
             p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name=force_unicode(row[4].upper()), first_name_fixed=force_unicode(row[4].upper()))
         py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], ncaa_number=row[2], status=row[6])
 
+"""
+Loader for NCAA roster information. Loops through all teams in the database and finds rosters for the given year, then populates Player table with
+information for each player for that year. Also adds aggregate class totals for team in CollegeYear model.
+"""
+def load_rosters(year):
+    teams = College.objects.all()
+    for team in teams:
+        load_team(team.id, year)
+
+def load_team(team_id, year):
+    f = open('errors.txt','w')
+    team = College.objects.get(id=team_id)
+    url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team.id)
+    html = urllib.urlopen(url).read()
+    soup = BeautifulSoup(html)
+    try:
+        classes = soup.find("th").contents[0].split(":")[1].split(',') # retrieve class numbers for team
+        fr, so, jr, sr = [int(c.strip()[0:2]) for c in classes] # assign class numbers
+        t = CollegeYear.objects.get(college=team, year=year)
+        t.freshmen = fr
+        t.sophomores = so
+        t.juniors = jr
+        t.seniors = sr
+        t.save()
+        rows = soup.findAll("tr")[5:]
+        for row in rows:
+            cells = row.findAll("td")
+            if cells[2].contents[0].strip() == '-':
+                f.write("Incomplete record for %s in %s: %s\n" % (team.name, year, cells[1].a))
+            else:
+                unif = cells[0].contents[0].strip()
+                name = cells[1].a.contents[0].strip()
+                pos = Position.objects.get(abbrev=cells[2].contents[0].strip())
+                cl = cells[3].contents[0].strip()
+                gp = int(cells[4].contents[0].strip())
+                py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, year=year, position=pos, number=unif, games_played=gp, status=cl)
+    except:
+        pass
+    f.close()
+
 def load_coaches():
     import xlrd
     url1 = 'http://www.ncaa.org/wps/wcm/connect/resources/file/ebbd654a53ad23b/d1a_birthdates.xls?MOD=AJPERES'
@@ -156,10 +197,6 @@ def load_player_stats(yr=2007):
         if date >= datetime.datetime(2007, 1, 10):
             t = College.objects.get(id=row[0])
             g = Game.objects.get(team1=t, date=date)
-            if row[5] == 'ANDRÉ':
-                row[5] = 'ANDRE'
-            else:
-                pass
             if row[5] == '0':
                 p, created = PlayerYear.objects.get_or_create(team=t, year=y, player__last_name=row[4], number=row[3])
                 print "created new playeryear"
