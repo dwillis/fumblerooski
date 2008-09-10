@@ -17,7 +17,7 @@ class RecruitAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'position', 'height', 'weight', 'home_state')
     search_fields = ('last_name',)
     ordering = ('last_name', 'first_name')
-    prepopulated_fields = {'slug': ('id','full_name')}
+#    prepopulated_fields = {'slug': ('id','full_name')}
     raw_id_files = ('school',)
 
 class SigningAdmin(admin.ModelAdmin):
@@ -33,7 +33,7 @@ class SchoolTypeAdmin(admin.ModelAdmin):
 
 admin.site.register(City, CityAdmin)
 admin.site.register(School, SchoolAdmin)
-admin.site.register(Recruit, RecruitAdmin)
+#admin.site.register(Recruit, RecruitAdmin)
 admin.site.register(Signing, SigningAdmin)
 admin.site.register(Outcome, OutcomeAdmin)
 admin.site.register(SchoolType, SchoolTypeAdmin)
