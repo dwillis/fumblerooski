@@ -31,9 +31,9 @@ class OutcomeAdmin(admin.ModelAdmin):
 class SchoolTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
-admin.site.register(City, CityAdmin)
-admin.site.register(School, SchoolAdmin)
+#admin.site.register(City, CityAdmin)
+#admin.site.register(School, SchoolAdmin)
 #admin.site.register(Recruit, RecruitAdmin)
-admin.site.register(Signing, SigningAdmin)
-admin.site.register(Outcome, OutcomeAdmin)
-admin.site.register(SchoolType, SchoolTypeAdmin)
+#admin.site.register(Signing, SigningAdmin)
+#admin.site.register(Outcome, OutcomeAdmin)
+#admin.site.register(SchoolType, SchoolTypeAdmin)
