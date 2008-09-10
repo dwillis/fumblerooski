@@ -5,7 +5,6 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-#from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
 from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense
 
 def homepage(request):

@@ -1,7 +1,6 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.views.generic import list_detail, date_based, create_update
-#from fumblerooski.recruits import views as recruit_views
 from fumblerooski.college import views as college_views
 
 admin.autodiscover()

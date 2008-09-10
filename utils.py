@@ -7,7 +7,6 @@ from time import strptime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-#from fumblerooski.recruits.models import SchoolType, School, City, Position, Year
 from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense
 
 #<td width="200">East Bay High School</td><td width="200">7710 Old Big Bend Road<br>Gibsonton, Florida 33534</td>

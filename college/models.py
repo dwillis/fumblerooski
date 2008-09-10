@@ -2,7 +2,6 @@ from django.db import models
 from django import forms
 from django.contrib import admin
 import datetime
-#from fumblerooski.recruits.models import Year
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
