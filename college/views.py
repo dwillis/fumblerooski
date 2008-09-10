@@ -3,8 +3,10 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from django import forms
 from operator import itemgetter
+from time import strptime
+import datetime
 #from fumblerooski.recruits.models import SchoolType, City, School, Recruit, Outcome, Signing, Year
-from fumblerooski2.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -73,6 +75,33 @@ def team_opponents(request, team):
         opp_list.append(c)
     return render_to_response('college/team_opponents.html', {'team': t, 'opponent_list': opp_list})
 
+def team_first_downs(request, team):
+    t = get_object_or_404(College, slug=team)
+    offense_list = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('-college_game.date')
+    most = offense_list.order_by('-first_downs_total')[0]
+    least = offense_list.order_by('first_downs_total')[0]
+    return render_to_response('college/first_downs.html', {'team': t, 'offense_list': offense_list, 'most': most, 'least': least })
+
+def team_penalties(request, team):
+    t = get_object_or_404(College, slug=team)
+    least = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('penalties')[0]
+    most = least.reverse()[0]
+    return render_to_response('college/first_downs.html', {'team': t, 'most': most, 'least': least })
+
+def team_passing(request, team):
+    t = get_object_or_404(College, slug=team)
+    
+    return render_to_response('college/team_passing.html', {'team': t, })
+
+def team_first_downs_category(request, team, category):
+    t = get_object_or_404(College, slug=team)
+    cat = category.title()
+    cat_key = 'first_downs_'+category
+    offense_list = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('-college_game.date')
+    least = offense_list.order_by(cat_key)
+    most = least.reverse()
+    return render_to_response('college/first_downs_category.html', {'team': t, 'offense_list': offense_list, 'most': most.values(cat_key)[0][cat_key], 'm_game': most[0], 'least': least.values(cat_key)[0][cat_key], 'l_game': least[0], 'category': cat })
+
 def team_vs(request, team1, team2, outcome=None):
     team_1 = get_object_or_404(College, slug=team1)
     try:
@@ -104,7 +133,7 @@ def coach_detail(request, coach):
     college_list = CollegeCoach.objects.filter(coach=c).order_by('-start_date')[1:5]
     return render_to_response('college/coach_detail.html', {'coach': c, 'college_list': college_list, 'current_job': current_job })
 
-def game(request, team1, team2, year):
+def game(request, team1, team2, year, month, day):
     team_1 = get_object_or_404(College, slug=team1)
     try:
         team_2 = College.objects.get(slug=team2)
@@ -112,11 +141,16 @@ def game(request, team1, team2, year):
             team_2 = None
     except:
         team_2 = None
-    games = Game.objects.filter(team1=team_1, team2=team_2, season=year)
-    for game in games:
-        if game.season > 2002:
-            game.drivechart = True
-    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'season': year })
+    
+    date = datetime.date(int(year), int(month), int(day))
+    game = get_object_or_404(Game, team1=team_1, team2=team_2, date=date)
+    try:
+        game_offense = GameOffense.objects.get(game=game, team=team_1)
+        game_defense = GameDefense.objects.get(game=game, team=team_1)
+    except:
+        game_offense = None
+        game_defense = None
+    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense':game_defense })
 
 def game_index(request):
     pass # do calendar-based view here

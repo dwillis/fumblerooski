@@ -1,6 +1,7 @@
 from django.db import models
 from django import forms
 from django.contrib import admin
+import datetime
 #from fumblerooski.recruits.models import Year
 
 STATUS_CHOICES = (
@@ -146,15 +147,128 @@ class Game(models.Model):
     team1_score = models.IntegerField(null=True)
     team2_score = models.IntegerField(null=True)
     site = models.CharField(max_length=90, blank=True)
+    attendance = models.IntegerField(null=True)
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
     
     def get_absolute_url(self):
-        return '/college/teams/%s/vs/%s/%s/' % (self.team1.slug, self.team2.slug, str(self.season))
+        return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team1.slug, self.team2.slug, self.date.year, self.date.month, self.date.day)
 
     def get_matchup_url(self):
         return '/college/teams/%s/vs/%s/' % (self.team1.slug, self.team2.slug)
+    
+    def get_reverse_url(self):
+        return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.slug, self.team1.slug, self.date.year, self.date.month, self.date.day)
+
+    def margin(self):
+        return self.team1_score-self.team2_score
+
+class GameOffense(models.Model):
+    game = models.ForeignKey(Game)
+    team = models.ForeignKey(College)
+    third_down_attempts = models.IntegerField()
+    third_down_conversions = models.IntegerField()
+    fourth_down_attempts = models.IntegerField()
+    fourth_down_conversions = models.IntegerField()
+    time_of_possession = models.TimeField(null=True)
+    first_downs_rushing = models.IntegerField()
+    first_downs_passing = models.IntegerField()
+    first_downs_penalty = models.IntegerField()
+    first_downs_total = models.IntegerField()
+    penalties = models.IntegerField()
+    penalty_yards = models.IntegerField()
+    fumbles = models.IntegerField()
+    fumbles_lost = models.IntegerField()
+    rushes = models.IntegerField()
+    rush_gain = models.IntegerField()
+    rush_loss = models.IntegerField()
+    rush_net = models.IntegerField()
+    rush_touchdowns = models.IntegerField()
+    total_plays = models.IntegerField()
+    total_yards = models.IntegerField()
+    pass_attempts = models.IntegerField()
+    pass_completions = models.IntegerField()
+    pass_interceptions = models.IntegerField()
+    pass_yards = models.IntegerField()
+    pass_touchdowns = models.IntegerField()
+    receptions = models.IntegerField()
+    receiving_yards = models.IntegerField()
+    receiving_touchdowns = models.IntegerField()
+    punts = models.IntegerField()
+    punt_yards = models.IntegerField()
+    punt_returns = models.IntegerField()
+    punt_return_yards = models.IntegerField()
+    punt_return_touchdowns = models.IntegerField()
+    kickoff_returns = models.IntegerField()
+    kickoff_return_yards = models.IntegerField()
+    kickoff_return_touchdowns = models.IntegerField()
+    touchdowns = models.IntegerField()
+    pat_attempts = models.IntegerField()
+    pat_made = models.IntegerField()
+    two_point_conversion_attempts = models.IntegerField()
+    two_point_conversions = models.IntegerField()
+    field_goal_attempts = models.IntegerField()
+    field_goals_made = models.IntegerField()
+    points = models.IntegerField()
+
+    def __unicode__(self):
+        return '%s - %s' % (self.game, self.team)
+    
+    def third_down_rate(self):
+        return float(self.third_down_conversions/self.third_down_attempts)
+    
+    def field_goal_rate(self):
+        return float(self.field_goals_made/self.field_goal_attempts)
+    
+    def penalty_yard_ratio(self):
+        return float(self.penalty_yards/self.total_yards)
+    
+    def yards_per_reception(self):
+        return float(self.receiving_yards/self.receptions)
+    
+    def yards_per_pass_attempt(self):
+        return float(self.receiving_yards/self.pass_attempts)
+
+    """
+    Returns a floating-point number representing the number
+    of touchdowns per rushing attempt for a single game.
+    """
+    def touchdowns_per_rushes(self):
+        return float(self.rush_touchdowns/self.rushes)
+    
+    """
+    Returns the opponent for a team's given Game Offense record.
+    """
+    def opponent(self):
+        if self.team == self.game.team2:
+            return self.game.team1
+        else:
+            return self.game.team2
+
+class GameDefense(models.Model):
+    game = models.ForeignKey(Game)
+    team = models.ForeignKey(College)
+    safeties = models.IntegerField()
+    unassisted_tackles = models.IntegerField()
+    assisted_tackles = models.IntegerField()
+    unassisted_tackles_for_loss = models.IntegerField()
+    assisted_tackles_for_loss = models.IntegerField()
+    tackles_for_loss_yards = models.IntegerField()
+    unassisted_sacks = models.IntegerField()
+    assisted_sacks = models.IntegerField()
+    sack_yards = models.IntegerField()
+    defensive_interceptions = models.IntegerField()
+    defensive_interception_yards = models.IntegerField()
+    defensive_interception_touchdowns = models.IntegerField()
+    pass_breakups = models.IntegerField()
+    fumbles_forced = models.IntegerField()
+    fumbles_number = models.IntegerField()
+    fumbles_yards = models.IntegerField()
+    fumbles_touchdowns = models.IntegerField()
+    
+    def __unicode__(self):
+        return '%s - %s' % (self.game, self.team)
 
 class Player(models.Model):
     name = models.CharField(max_length=120)
@@ -172,11 +286,10 @@ class Player(models.Model):
     def get_absolute_url(self):
         return '/college/teams/%s/%s/players/%s/' % (self.team.slug, self.year, self.slug)
 
-class PlayerScore(models.Model):
+class PlayerGame(models.Model):
     player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
-    total_td = models.IntegerField()
-    total_points = models.IntegerField()
+    played = models.BooleanField()
     
     def __unicode__(self):
         return self.player.name.full_name()
