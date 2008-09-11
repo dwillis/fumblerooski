@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>{{ player.name }}</h3>
+<h4>{{ player.position.name }}/{{ player.get_status_display }}</h4>
+<h4><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> - {{ year }}</h4>
+<h4>Games Played: {{ player.games_played }}</h4>
+
+{% if other_seasons %}
+<h4>Other Seasons for this player at this school</h4>
+{% for season in other_seasons %}
+  <a href="{{ season.get_absolute_url }}">{{ season.year }}</a>
+
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}
