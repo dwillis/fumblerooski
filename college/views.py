@@ -173,5 +173,6 @@ def team_by_cls(request, team, year, cl):
 def player_detail(request, team, season, player):
     t = get_object_or_404(College, slug=team)
     cy = get_object_or_404(CollegeYear, college=t, year=season)
-    player = Player.objects.filter(team=t, year=season, slug=player)
-    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': player })
+    p = Player.objects.get(team=t, year=season, slug=player)
+    other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('year')
+    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons })

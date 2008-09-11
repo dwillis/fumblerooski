@@ -81,9 +81,28 @@ def get_ncaa_games(year):
             t1 = College.objects.get(id=team.id)
             t2, created = College.objects.get_or_create(id=t2, name=teamname)
             if t1_s == '&nbsp;':
-                t1_s = int(t1_s.replace('&nbsp;', '0'))
-                t2_s = int(t2_s.replace('&nbsp;', '0'))
+                t1_s = None
+                t2_s = None
             g = Game.objects.get_or_create(season=year, team1=t1, team2=t2, date = date, t1_game_type=type[0], t1_result=result[0], team1_score=t1_s, team2_score=t2_s)
+
+def game_loader(year):
+    teams = College.objects.all()
+    
+    for team in teams:
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s" % (team.id, year)
+        html = urllib.urlopen(url).read()
+        soup = BeautifulSoup(html)
+        t = soup.findAll('table')[2]
+        rows = t.findAll('tr')[2:]
+        try:
+            game_file = rows.findAll('td')[0].find('a')['href'].split('game=')[1]
+            stringdate = rows.findAll('td')[0].find('a').contents[0]
+        except:
+            game_file = None
+            stringdate = rows.findAll('td')[0].find('a').contents[0]
+        team2 = rows.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0]
+        t1_score = rows.findAll('td')[3].contents[0]
+        t2_score = rows.findAll('td')[4].contents[0]
 
 def load_recruits():
     import csv
@@ -163,7 +182,7 @@ def load_ncaa_game_xml(urls):
     """
     Loader for NCAA game xml files
     url format:                year                     year000000tidyearmmdd
-    http://web1.ncaa.org/d1mfb/2000/Internet/worksheets/200000000023420000826.xml
+    http://web1.ncaa.org/d1mfb/2008/Internet/worksheets/200800000014720080830.xml
     """
     for url in urls:
         doc = urllib.urlopen(url).read()
@@ -385,6 +404,8 @@ def load_team(team_id, year):
                 cl = cells[3].contents[0].strip()
                 gp = int(cells[4].contents[0].strip())
                 py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, year=year, position=pos, number=unif, games_played=gp, status=cl)
+                if created:
+                    print "created %" % py.name
     except:
         pass
     f.close()
