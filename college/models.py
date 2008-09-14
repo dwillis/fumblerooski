@@ -385,3 +385,23 @@ class PlayerSummary(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.player.year)
+
+class RankingType(models.Model):
+    name = models.CharField(max_length=75)
+    slug = models.SlugField(max_length=75)
+    
+    def __unicode__(self):
+        return self.name
+
+class Ranking(models.Model):
+    ranking_type = models.ForeignKey(RankingType)
+    college = models.ForeignKey(College)
+    year = models.IntegerField()
+    week = models.IntegerField()
+    rank = models.PositiveIntegerField()
+    actual = models.DecimalField(decimal_places=2, max_digits=5)
+    conference_rank = models.PositiveIntegerField(null=True)
+    
+    def __unicode__(self):
+        return "%s - %s, %s (Week %s)" % (self.ranking_type, self.college, self.year, self.week)
+    

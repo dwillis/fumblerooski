@@ -19,7 +19,7 @@
 <table>
   <th>Season</th><th>Outcome</th><th>Location</th>
   {% for game in games %}
-  <tr><td><a href="{{ team_1.get_absolute_url }}{{ game.season }}/">{{ game.season }}</a></td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }} (<a href="{{ game.get_absolute_url }}">see details</a>)</td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
+  <tr><td><a href="{{ team_1.get_absolute_url }}{{ game.season }}/">{{ game.season }}</a></td><td>{% if game.t1_result %}{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }} (<a href="{{ game.get_absolute_url }}">see details</a>){% else %}{{ game.date|date:"F d, Y" }}{% endif %}</td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
   {% endfor %}
 </table>
 

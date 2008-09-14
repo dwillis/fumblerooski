@@ -14,7 +14,7 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
 <table>
     <th>Date</th><th>Opponent</th><th>Location</th><th>Result</th>
     {% for game in game_list %}
-    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td></tr>
+    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td><td>{% if game.t1_result %}{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}{% else %}{% endif %}</td></tr>
     {% endfor %}
 </table>
 

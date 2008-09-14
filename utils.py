@@ -85,24 +85,74 @@ def get_ncaa_games(year):
                 t2_s = None
             g = Game.objects.get_or_create(season=year, team1=t1, team2=t2, date = date, t1_game_type=type[0], t1_result=result[0], team1_score=t1_s, team2_score=t2_s)
 
-def game_loader(year):
+def game_updater(year):
     teams = College.objects.all()
+    
+    games = []
     
     for team in teams:
         url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s" % (team.id, year)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
-        t = soup.findAll('table')[2]
-        rows = t.findAll('tr')[2:]
         try:
-            game_file = rows.findAll('td')[0].find('a')['href'].split('game=')[1]
-            stringdate = rows.findAll('td')[0].find('a').contents[0]
+            t = soup.findAll('table')[2]
+            rows = t.findAll('tr')[2:]
+            base_url = "http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/" % year
+            for row in rows:
+                try:
+                    game_file = row.findAll('td')[0].find('a')['href'].split('game=')[1]
+                    stringdate = row.findAll('td')[0].find('a').contents[0]
+                    team1_score = int(row.findAll('td')[3].contents[0])
+                    team2_score = int(row.findAll('td')[4].contents[0])
+                    try:
+                        t1_result, ot = row.findAll('td')[5].contents[0].strip().split(' ')
+                    except:
+                        t1_result = row.findAll('td')[5].contents[0].strip()
+                        ot = None
+                    games.append(base_url + game_file)
+                except:
+                    game_file = None
+                    stringdate = row.findAll('td')[0].contents[0]
+                    team1_score = None
+                    team2_score = None
+                    t1_result = None
+                date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
+                try:
+                    t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
+                    try:
+                        team2 = College.objects.get(id=t2)
+                    except:
+                        name = row.findAll('td')[2].find('a').contents[0].strip()
+                        slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                        team2, created = College.objects.get_or_create(name=name, slug=slug)
+                except:
+                    name = row.findAll('td')[2].contents[0].strip()
+                    slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                    team2, created = College.objects.get_or_create(name=name, slug=slug)
+                print team, team2, date, team1_score, team2_score, t1_result
+                g, created = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
+                g.team1_score = team1_score
+                g.team2_score=team2_score
+                g.t1_result=t1_result
+                if ot:
+                    g.ot = 't'
+                try:
+                    if row.findAll('td')[1].contents[0] == '+':
+                        g.t1_game_type = 'H'
+                    elif row.findAll('td')[1].contents[0] == '*+':
+                        g.t1_game_type = 'H'
+                    elif row.findAll('td')[1].contents[0] == '*':
+                        g.t1_game_type = 'A'
+                    elif row.findAll('td')[1].contents[0] == '^':
+                        g.t1_game_type = 'N'
+                    elif row.findAll('td')[1].contents[0] == '*^':
+                        g.t1_game_type = 'N'
+                except:
+                    g.t1_game_type = 'A'
+                g.save()
         except:
-            game_file = None
-            stringdate = rows.findAll('td')[0].find('a').contents[0]
-        team2 = rows.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0]
-        t1_score = rows.findAll('td')[3].contents[0]
-        t2_score = rows.findAll('td')[4].contents[0]
+            pass
+    update_college_year(year)
 
 def load_recruits():
     import csv

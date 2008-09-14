@@ -62,9 +62,10 @@ def team_detail_season(request, team, season):
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
-    game_list = Game.objects.select_related().filter(team1=t).order_by('college_college.name')
+    game_list = Game.objects.filter(team1=t).select_related().order_by('college_college.name')
     opponents = {}
     for game in game_list:
+        print game.team2.id
         opponents[game.team2.id] = opponents.get(game.team2.id, 0) +1
     opponent_dict = sorted(opponents.iteritems(), key=itemgetter(1), reverse=True)
     opp_list = []
