@@ -29,7 +29,7 @@ GAME_TYPE_CHOICES = (
 )
 
 class State(models.Model):
-    abbrev = models.CharField(max_length=2, editable=False)
+    id = models.CharField(max_length=2, editable=False, primary_key=True)
     name = models.CharField(max_length=50)
 
     def __unicode__(self):
