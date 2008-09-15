@@ -57,7 +57,14 @@ def update_college_year(year):
             conf_wins = 0
             conf_losses = 0
             conf_ties = 0
-        record, created = CollegeYear.objects.get_or_create(college=team, year=year, wins=results['W'], losses=results['L'], ties=results['T'], conference_wins=conf_wins, conference_losses=conf_losses, conference_ties=conf_ties)
+        record, created = CollegeYear.objects.get_or_create(college=team, year=year)
+        record.wins=results['W']
+        record.losses=results['L']
+        record.ties=results['T']
+        record.conference_wins=conf_wins
+        record.conference_losses=conf_losses
+        record.conference_ties=conf_ties
+        record.save()
 
 
 def get_ncaa_games(year):
@@ -86,12 +93,12 @@ def get_ncaa_games(year):
             g = Game.objects.get_or_create(season=year, team1=t1, team2=t2, date = date, t1_game_type=type[0], t1_result=result[0], team1_score=t1_s, team2_score=t2_s)
 
 def game_updater(year):
-    teams = College.objects.all()
+    teams = College.objects.filter(updated=True).order_by('id')
     
     games = []
     
     for team in teams:
-        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s" % (team.id, year)
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=15" % (team.id, year)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
         try:
@@ -423,16 +430,16 @@ def load_rosters(year):
     Loader for NCAA roster information. Loops through all teams in the database and finds rosters for the given year, then populates Player table with
     information for each player for that year. Also adds aggregate class totals for team in CollegeYear model.
     """
-    teams = College.objects.all()
+    teams = College.objects.filter(updated=True).order_by('id')
     for team in teams:
         load_team(team.id, year)
 
 def load_team(team_id, year):
-    f = open('errors.txt','w')
     team = College.objects.get(id=team_id)
     url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team.id)
     html = urllib.urlopen(url).read()
     soup = BeautifulSoup(html)
+    print team.id
     try:
         classes = soup.find("th").contents[0].split(":")[1].split(',') # retrieve class numbers for team
         fr, so, jr, sr = [int(c.strip()[0:2]) for c in classes] # assign class numbers
@@ -445,20 +452,19 @@ def load_team(team_id, year):
         rows = soup.findAll("tr")[5:]
         for row in rows:
             cells = row.findAll("td")
+            unif = cells[0].contents[0].strip()
+            name = cells[1].a.contents[0].strip()
             if cells[2].contents[0].strip() == '-':
-                f.write("Incomplete record for %s in %s: %s\n" % (team.name, year, cells[1].a))
+                pos = Position.objects.get(id=17)
             else:
-                unif = cells[0].contents[0].strip()
-                name = cells[1].a.contents[0].strip()
-                pos = Position.objects.get(abbrev=cells[2].contents[0].strip())
-                cl = cells[3].contents[0].strip()
-                gp = int(cells[4].contents[0].strip())
-                py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, year=year, position=pos, number=unif, games_played=gp, status=cl)
-                if created:
-                    print "created %" % py.name
+                pos, created = Position.objects.get_or_create(abbrev=cells[2].contents[0].strip())
+            cl = cells[3].contents[0].strip()
+            gp = int(cells[4].contents[0].strip())
+            py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, year=year, position=pos, number=unif, status=cl)
+            py.games_played=gp
+            py.save()
     except:
-        pass
-    f.close()
+        raise
 
 def load_coaches():
     import xlrd

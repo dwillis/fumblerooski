@@ -27,7 +27,7 @@ def conference_detail(request, conf):
     return render_to_response('college/conference_detail.html', {'conference': c, 'team_list': team_list, 'recent_games':recent_games })
 
 def team_index(request):
-    team_list = College.objects.all().order_by('name')
+    team_list = College.objects.filter(updated=True).order_by('name')
     return render_to_response('college/teams.html', {'team_list': team_list})
 
 def team_detail(request, team):

@@ -58,6 +58,7 @@ class College(models.Model):
     official_url = models.CharField(max_length=120, blank=True)
     official_rss = models.CharField(max_length=120, blank=True)
     conference = models.ForeignKey(Conference, null=True, blank=True)
+    updated = models.BooleanField()
 
     def __unicode__(self):
         return self.name
