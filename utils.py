@@ -134,7 +134,7 @@ def game_updater(year):
                         team2, created = College.objects.get_or_create(name=name, slug=slug)
                 except:
                     name = row.findAll('td')[2].contents[0].strip()
-                    slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                    slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
                 g, created = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
