@@ -260,8 +260,8 @@ def load_ncaa_game_xml(urls):
             game.attendance = soup.attendance.contents[0]
             game.save
             
-            home_time = strptime(soup.teams.home.top.contents[0]) or None
-            visitor_time = strptime(soup.teams.visitor.top.contents[0]) or None
+            home_time = strptime(soup.teams.home.top.contents[0], "%H:%M") or None
+            visitor_time = strptime(soup.teams.visitor.top.contents[0], "%H:%M") or None
             
             # home team offense
             home_offense = GameOffense.objects.create(
