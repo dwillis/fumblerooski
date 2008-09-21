@@ -8,10 +8,12 @@ Tracking {{ teams }} teams and {{ games|intcomma }} games.
 
 <h4>Recent Games</h4>
 
+<ul>
 {% for game in latest_games %}
 
-{{ game }}
+<li>{{ game.display }} - {{ game.date|date:"F d, Y" }}</li>
 
 {% endfor %}
+</ul>
 
 {% endblock %}
