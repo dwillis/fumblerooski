@@ -165,11 +165,11 @@ class Game(models.Model):
         return self.team1_score-self.team2_score
     
     def display(self):
-        if self.margin > 0:
+        if self.margin() > 0:
             return "%s %s, %s %s" % (self.team1, self.team1_score, self.team2, self.team2_score)
         else:
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
-
+    
 
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)

@@ -11,7 +11,7 @@ Tracking {{ teams }} teams and {{ games|intcomma }} games.
 <ul>
 {% for game in latest_games %}
 
-<li>{{ game.display }} - {{ game.date|date:"F d, Y" }}</li>
+<li><a href="{{ game.get_absolute_url }}">{{ game.display }}</a> - {{ game.date|date:"F d, Y" }}</li>
 
 {% endfor %}
 </ul>
