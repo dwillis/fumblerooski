@@ -271,7 +271,7 @@ def load_ncaa_game_xml(urls):
               third_down_conversions=int(soup.teams.home.thirddowns.conv.contents[0]),
               fourth_down_attempts=int(soup.teams.home.fourthdowns.att.contents[0]),
               fourth_down_conversions=int(soup.teams.home.fourthdowns.conv.contents[0]),
-              time_of_possession=datetime.time(0, int(home_time[0]), int(home_time[1]))
+              time_of_possession=datetime.time(0, int(home_time[0]), int(home_time[1])),
               first_downs_rushing=int(soup.teams.home.firstdowns.rush.contents[0]),
               first_downs_passing=int(soup.teams.home.firstdowns.contents[3].contents[0]), # can't use "pass"
               first_downs_penalty=int(soup.teams.home.firstdowns.penalty.contents[0]),
@@ -344,7 +344,7 @@ def load_ncaa_game_xml(urls):
                   third_down_conversions=int(soup.teams.visitor.thirddowns.conv.contents[0]),
                   fourth_down_attempts=int(soup.teams.visitor.fourthdowns.att.contents[0]),
                   fourth_down_conversions=int(soup.teams.visitor.fourthdowns.conv.contents[0]),
-                  time_of_possession=datetime.time(0, int(visitor_time[0]), int(visitor_time[1]))
+                  time_of_possession=datetime.time(0, int(visitor_time[0]), int(visitor_time[1])),
                   first_downs_rushing=int(soup.teams.visitor.firstdowns.rush.contents[0]),
                   first_downs_passing=int(soup.teams.visitor.firstdowns.contents[3].contents[0]), # can't use "pass"
                   first_downs_penalty=int(soup.teams.visitor.firstdowns.penalty.contents[0]),
