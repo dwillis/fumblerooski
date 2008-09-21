@@ -10,7 +10,7 @@ from fumblerooski.college.models import Coach, College, CollegeCoach, Position, 
 def homepage(request):
     team_count = College.objects.all().count()
     game_count = Game.objects.all().count()
-    latest_games = Game.objects.filter(team1__score__gt=0, team2__score__gt=0).order_by('-date')
+    latest_games = Game.objects.filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
     return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[10] })
 
 def state_index(request):
