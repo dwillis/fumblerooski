@@ -4,7 +4,7 @@
 
 {% if game %}
 
-<h3>{{ team_1.name }} vs. {{ team_2.name }}: {{ season }}</h3>
+<h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.name }}</a>: {{ game.season }}</h3>
 (<a href="{{ game.get_matchup_url }}">See all games between these teams</a>)
 
 <table>

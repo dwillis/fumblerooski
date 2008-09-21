@@ -410,7 +410,8 @@ def load_ncaa_game_xml(urls):
                 )
             
         except:
-            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
+            raise
+            #print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
     
 
 
