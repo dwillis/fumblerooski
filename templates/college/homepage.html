@@ -6,4 +6,12 @@
 
 Tracking {{ teams }} teams and {{ games|intcomma }} games.
 
+<h4>Recent Games</h4>
+
+{% for game in latest_games %}
+
+{{ game }}
+
+{% endfor %}
+
 {% endblock %}
