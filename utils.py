@@ -222,7 +222,7 @@ def load_ncaa_game_xml(urls):
         for each in f:
             each.replaceWith("0")
         
-        print "trying game: %s-%s" % (soup.score.home.name.contents[0], soup.score.visitor.name.contents[0])
+        print "trying game: %s-%s" % (soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
             t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
             t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
