@@ -59,7 +59,7 @@ def team_detail_season(request, team, season):
     season_record = get_object_or_404(CollegeYear, college=t, year=season)
     game_list = Game.objects.filter(team1=t, season=season).order_by('-date')
     player_list = Player.objects.filter(team=t, year=season)
-    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list })
+    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
@@ -147,14 +147,20 @@ def game(request, team1, team2, year, month, day):
     game = get_object_or_404(Game, team1=team_1, team2=team_2, date=date)
     try:
         game_offense = GameOffense.objects.get(game=game, team=team_1)
-        game_defense = GameDefense.objects.get(game=game, team=team_1)
     except:
         game_offense = None
+    try:
+        game_defense = GameDefense.objects.get(game=game, team=team_1)
+    except:
         game_defense = None
-    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense':game_defense })
+    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense })
 
 def game_index(request):
     pass # do calendar-based view here
+
+def undefeated_teams(season):
+    teams = CollegeYear.objects.filter(losses=0, wins__gt=0)
+    return render_to_response('college/undefeated.html', {'teams': teams, 'season':season})
 
 def state_detail(request, state):
     s = get_object_or_404(State, id=state)
