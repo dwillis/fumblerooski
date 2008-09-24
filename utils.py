@@ -202,14 +202,17 @@ def load_ncaa_game_xml(urls):
         print "trying game: %s-%s" % (soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
             t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
-            t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
+            if  int(soup.teams.visitor.orgid.contents[0]) == 506027:
+                t2 = College.objects.get(id=30504) # special case for ncaa error on southern oregon
+            else:
+                t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
             d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
             gd = datetime.date(d[0], d[1], d[2])
         except:
             print "Could not find one of the teams"
         try:
             game = Game.objects.get(team1=t1, team2=t2, date=gd)
-            game_v = Game.objects.get(team1=t2, team2=t1, date=gd)
+            game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd)
             try:
                 game.attendance = soup.attendance.contents[0]
                 game_v.attendance = soup.attendance.contents[0]
@@ -218,6 +221,7 @@ def load_ncaa_game_xml(urls):
             try:
                 duration = soup.duration.contents[0].split(":")
                 game.duration = datetime.time(int(duration[0]), int(duration[1]), 0)
+                game_v.duration = game.duration
             except:
                 pass
             game.save()
