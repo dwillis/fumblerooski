@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<h3>Undefeated Teams in {{ season }}</h3>
+
+<ul>
+{% for team in teams %}
+
+<li><a href="{{ team.college.get_absolute_url }}">{{ team.college.name }}</a> ({{ team.wins }} - {{ team.losses }})</li>
+
+{% endfor %}
+</ul>
+
+{% endblock %}
