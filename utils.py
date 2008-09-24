@@ -40,32 +40,6 @@ def update_college_year(year):
         
         record.save()
 
-
-def get_ncaa_games(year):
-    pattern = re.compile("""<td width=411 colspan=4><a href="http://web1.ncaa.org/ssLists/orgInfo.do.orgID=(.*)" target=_parent><font size=2 face="helvetica">(.*)</font></a></td>\s*<td></td>\s*<td width=163 colspan=2><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=146 colspan=2><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=63><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=41 colspan=4 align=right><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>\s*<td width=7><font size=2 face="helvetica">-</font></td>\s*<td></td>\s*<td width=43 colspan=2><font size=2 face="helvetica">(.*?)</font></td>\s*<td></td>""")
-
-    base_url = 'https://goomer.ncaa.org/reports/rwservlet?hidden_run_parameters=p_mfb_schrec&p_sport_code=MFB&v_year=%s&p_orgnum=' % year
-
-    teams = College.objects.all()
-
-    for team in teams:
-        html = urllib.urlopen(base_url+str(team.id)).read()
-        html = html.replace(' rowspan=2', '') # get rid of code that appears sporadically
-        for t2, teamname, type, string_date, result, t1_s, t2_s in pattern.findall(html):
-            if t2 == '':
-                continue
-            teamname = teamname.replace('&nbsp;',' ')
-            if type <> 'HOME' and type <> 'AWAY':
-                type = 'Neutral'
-            strdate = string_date.replace('&nbsp;',' ').replace('.','').upper()
-            date = datetime.datetime(*(time.strptime(strdate, '%b %d, %Y')[0:6]))
-            t1 = College.objects.get(id=team.id)
-            t2, created = College.objects.get_or_create(id=t2, name=teamname)
-            if t1_s == '&nbsp;':
-                t1_s = None
-                t2_s = None
-            g = Game.objects.get_or_create(season=year, team1=t1, team2=t2, date = date, t1_game_type=type[0], t1_result=result[0], team1_score=t1_s, team2_score=t2_s)
-
 def game_updater(year):
     teams = College.objects.filter(updated=True).order_by('id')
     
@@ -135,6 +109,7 @@ def game_updater(year):
         except:
             pass
     update_college_year(year)
+    return games
 
 def load_recruits():
     import csv
