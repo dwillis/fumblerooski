@@ -37,6 +37,7 @@ def update_college_year(year):
         record.conference_wins=conf_wins
         record.conference_losses=conf_losses
         record.conference_ties=conf_ties
+        
         record.save()
 
 

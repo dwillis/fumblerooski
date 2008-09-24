@@ -89,6 +89,19 @@ def team_penalties(request, team):
     most = least.reverse()[0]
     return render_to_response('college/first_downs.html', {'team': t, 'most': most, 'least': least })
 
+def team_offense(request, team):
+    t = get_object_or_404(College, slug=team)
+    return render_to_response('college/offense.html', {'team': t })
+
+def team_offense_rushing(request, team):
+    t = get_object_or_404(College, slug=team)
+    offense = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('-rush_net')
+    return render_to_response('college/offense_rushing.html', {'team': t, 'offense_list':offense[:10] })
+
+def team_defense(request, team):
+    t = get_object_or_404(College, slug=team)
+    return render_to_response('college/defense.html', {'team': t })
+
 def team_passing(request, team):
     t = get_object_or_404(College, slug=team)
     

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Top {{ team.name }} Rushing Performances (Net Yards)</h3>
+
+<ol>
+  {% for game in offense_list %}
+  <li>{{ game.game.team2 }} ({{ game.game.season }}): {{ game.rush_net }} yards</li>
+  {% endfor %}
+</ol>
+
+{% endblock %}

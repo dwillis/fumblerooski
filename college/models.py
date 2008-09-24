@@ -82,7 +82,58 @@ class CollegeYear(models.Model):
     
     def __unicode__(self):
         return "%s - %s" % (self.college, str(self.year))
+    
+    def game_count(self):
+        return self.wins+self.losses+self.ties
 
+
+
+class CollegeTotal(models.Model):
+    college = models.ForeignKey(College)
+    year = models.IntegerField()
+    third_down_attempts = models.IntegerField(default=0)
+    third_down_conversions = models.IntegerField(default=0)
+    fourth_down_attempts = models.IntegerField(default=0)
+    fourth_down_conversions = models.IntegerField(default=0)
+    first_downs_rushing = models.IntegerField(default=0)
+    first_downs_passing = models.IntegerField(default=0)
+    first_downs_penalty = models.IntegerField(default=0)
+    first_downs_total = models.IntegerField(default=0)
+    penalties = models.IntegerField(default=0)
+    penalty_yards = models.IntegerField(default=0)
+    fumbles = models.IntegerField(default=0)
+    fumbles_lost = models.IntegerField(default=0)
+    rushes = models.IntegerField(default=0)
+    rush_gain = models.IntegerField(default=0)
+    rush_loss = models.IntegerField(default=0)
+    rush_net = models.IntegerField(default=0)
+    rush_touchdowns = models.IntegerField(default=0)
+    total_plays = models.IntegerField(default=0)
+    total_yards = models.IntegerField(default=0)
+    pass_attempts = models.IntegerField(default=0)
+    pass_completions = models.IntegerField(default=0)
+    pass_interceptions = models.IntegerField(default=0)
+    pass_yards = models.IntegerField(default=0)
+    pass_touchdowns = models.IntegerField(default=0)
+    receptions = models.IntegerField(default=0)
+    receiving_yards = models.IntegerField(default=0)
+    receiving_touchdowns = models.IntegerField(default=0)
+    punts = models.IntegerField(default=0)
+    punt_yards = models.IntegerField(default=0)
+    punt_returns = models.IntegerField(default=0)
+    punt_return_yards = models.IntegerField(default=0)
+    punt_return_touchdowns = models.IntegerField(default=0)
+    kickoff_returns = models.IntegerField(default=0)
+    kickoff_return_yards = models.IntegerField(default=0)
+    kickoff_return_touchdowns = models.IntegerField(default=0)
+    touchdowns = models.IntegerField(default=0)
+    pat_attempts = models.IntegerField(default=0)
+    pat_made = models.IntegerField(default=0)
+    two_point_conversion_attempts = models.IntegerField(default=0)
+    two_point_conversions = models.IntegerField(default=0)
+    field_goal_attempts = models.IntegerField(default=0)
+    field_goals_made = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
 
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
@@ -148,6 +199,7 @@ class Game(models.Model):
     team2_score = models.IntegerField(null=True)
     site = models.CharField(max_length=90, blank=True)
     attendance = models.IntegerField(null=True)
+    ncaa_xml = models.CharField(max_length=120)
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
@@ -174,6 +226,7 @@ class Game(models.Model):
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)
     team = models.ForeignKey(College)
+    year = models.IntegerField()
     third_down_attempts = models.IntegerField(default=0)
     third_down_conversions = models.IntegerField(default=0)
     fourth_down_attempts = models.IntegerField(default=0)
