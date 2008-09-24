@@ -215,6 +215,11 @@ def load_ncaa_game_xml(urls):
                 game_v.attendance = soup.attendance.contents[0]
             except:
                 raise
+            try:
+                duration = soup.duration.contents[0].split(":")
+                game.duration = datetime.time(int(duration[0]), int(duration[1]), 0)
+            except:
+                pass
             game.save()
             game_v.save()
             

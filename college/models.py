@@ -200,6 +200,7 @@ class Game(models.Model):
     site = models.CharField(max_length=90, blank=True)
     attendance = models.IntegerField(null=True)
     ncaa_xml = models.CharField(max_length=120)
+    duration = models.TimeField(null=True)
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
