@@ -206,6 +206,8 @@ def load_ncaa_game_xml(urls):
                 t2 = College.objects.get(id=30504) # special case for ncaa error on southern oregon
             elif soup.teams.visitor.orgid.contents[0] == '505632':
                 t2 = College.objects.get(id=30505)
+            elif soup.teams.visitor.orgid.contents[0] == '506123':
+                t2 = College.objects.get(id=30506)
             else:
                 t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
             d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
