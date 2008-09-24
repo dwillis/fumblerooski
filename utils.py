@@ -40,8 +40,10 @@ def update_college_year(year):
         
         record.save()
 
-def game_updater(year):
-    teams = College.objects.filter(updated=True).order_by('id')
+def game_updater(year, teams):
+    
+    if not teams:
+        teams = College.objects.filter(updated=True).order_by('id')
     
     games = []
     
