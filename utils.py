@@ -212,7 +212,7 @@ def load_ncaa_game_xml(urls):
             print "Could not find one of the teams"
         try:
             game = Game.objects.get(team1=t1, team2=t2, date=gd)
-            game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd,season=date.year)
+            game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd,season=gd.year)
             try:
                 game.attendance = soup.attendance.contents[0]
                 game_v.attendance = soup.attendance.contents[0]
