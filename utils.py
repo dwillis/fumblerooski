@@ -202,7 +202,7 @@ def load_ncaa_game_xml(urls):
         print "trying game: %s-%s" % (soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
             t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
-            if  int(soup.teams.visitor.orgid.contents[0]) == 506027:
+            if soup.teams.visitor.orgid.contents[0] == '506027':
                 t2 = College.objects.get(id=30504) # special case for ncaa error on southern oregon
             else:
                 t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
@@ -391,8 +391,8 @@ def load_ncaa_game_xml(urls):
             print "Visiting Defense: %s" % visiting_defense
             
         except:
-#            raise
-            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
+            raise
+#            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
     
 
 
