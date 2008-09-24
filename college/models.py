@@ -86,8 +86,6 @@ class CollegeYear(models.Model):
     def game_count(self):
         return self.wins+self.losses+self.ties
 
-
-
 class CollegeTotal(models.Model):
     college = models.ForeignKey(College)
     year = models.IntegerField()
