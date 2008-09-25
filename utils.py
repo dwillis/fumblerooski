@@ -40,7 +40,7 @@ def update_college_year(year):
         
         record.save()
 
-def game_updater(year, teams):
+def game_updater(year, teams, date=None):
     
     if not teams:
         teams = College.objects.filter(updated=True).order_by('id')
@@ -66,7 +66,6 @@ def game_updater(year, teams):
                     except:
                         t1_result = row.findAll('td')[5].contents[0].strip()
                         ot = None
-                    games.append(base_url + game_file)
                 except:
                     game_file = None
                     stringdate = row.findAll('td')[0].contents[0]
@@ -87,7 +86,7 @@ def game_updater(year, teams):
                     slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
-                g, created = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
+                g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
                 g.team1_score = team1_score
                 g.team2_score=team2_score
                 g.t1_result=t1_result
@@ -108,6 +107,7 @@ def game_updater(year, teams):
                 except:
                     g.t1_game_type = 'A'
                 g.save()
+                games.append(base_url + game_file)
         except:
             pass
     update_college_year(year)
@@ -212,6 +212,8 @@ def load_ncaa_game_xml(urls):
                 t2 = College.objects.get(id=30506)
             elif soup.teams.visitor.orgid.contents[0] == '500405':
                 t2 = College.objects.get(id=30513)
+            elif soup.teams.visitor.orgid.contents[0] == '30077':
+                t2 = College.objects.get(id=1083)
             else:
                 t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
             d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
