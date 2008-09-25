@@ -417,6 +417,11 @@ def game_loader(year):
     g = get_game_xml_url(year,l)
     load_ncaa_game_xml(g)
 
+def partial_loader(year, id):
+    teams = College.objects.filter(updated=True, id__gt=id).order_by('id')
+    g = game_updater(2008, teams)
+    load_ncaa_game_xml(g)
+
 def load_rosters(year):
     """
     Loader for NCAA roster information. Loops through all teams in the database and finds rosters for the given year, then populates Player table with
