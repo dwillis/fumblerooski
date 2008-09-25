@@ -28,6 +28,15 @@ GAME_TYPE_CHOICES = (
     ('N', 'Neutral Site'),
 )
 
+RANKINGTYPE_CHOICES = (
+    ('T', 'Team'),
+    ('P', 'Player'),
+)
+
+DIVISION_CHOICES = (
+    ('B', 'Bowl Subdivision'),
+)
+
 class State(models.Model):
     id = models.CharField(max_length=2, editable=False, primary_key=True)
     name = models.CharField(max_length=50)
@@ -40,6 +49,14 @@ class State(models.Model):
     
 class StateForm(forms.Form):
     name = forms.CharField(max_length=50, widget=forms.Select())
+
+class Week(models.Model):
+    year = models.IntegerField()
+    week_num = models.IntegerField()
+    end_date = models.DateField()
+    
+    def __unicode__(self):
+        return "Week %s, %s" % (self.week_num, self.year)
 
 class Conference(models.Model):
     abbrev = models.CharField(max_length=10)
@@ -59,6 +76,7 @@ class College(models.Model):
     official_rss = models.CharField(max_length=120, blank=True)
     conference = models.ForeignKey(Conference, null=True, blank=True)
     updated = models.BooleanField()
+    division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
 
     def __unicode__(self):
         return self.name
@@ -191,6 +209,7 @@ class Game(models.Model):
     team1 = models.ForeignKey(College, related_name='first_team')
     team2 = models.ForeignKey(College, related_name='second_team')
     date = models.DateField()
+    week = models.ForeignKey(Week)
     t1_game_type = models.CharField(max_length=1, choices=GAME_TYPE_CHOICES)
     t1_result = models.CharField(max_length=1, choices=RESULT_CHOICES, blank=True)
     team1_score = models.IntegerField(null=True)
@@ -449,6 +468,8 @@ class PlayerSummary(models.Model):
 class RankingType(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
+    typename = models.CharField(max_length=1, choices=RANKINGTYPE_CHOICES)
+    ncaa_name = models.CharField(max_length=75)
     
     def __unicode__(self):
         return self.name
@@ -457,11 +478,10 @@ class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)
     college = models.ForeignKey(College)
     year = models.IntegerField()
-    week = models.IntegerField()
+    week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
     actual = models.DecimalField(decimal_places=2, max_digits=5)
     conference_rank = models.PositiveIntegerField(null=True)
     
     def __unicode__(self):
         return "%s - %s, %s (Week %s)" % (self.ranking_type, self.college, self.year, self.week)
-    

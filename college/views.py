@@ -24,7 +24,7 @@ def conference_index(request):
 def conference_detail(request, conf):
     c = get_object_or_404(Conference, abbrev=conf)
     team_list = College.objects.filter(conference=c).order_by('name')
-    recent_games = Game.objects.filter(team1__conference=c, team2__conference=c).order_by('-date')[:10]
+    recent_games = Game.objects.filter(team1__conference=c, team2__conference=c, t1_result__isnull=False).order_by('-date')[:10]
     return render_to_response('college/conference_detail.html', {'conference': c, 'team_list': team_list, 'recent_games':recent_games })
 
 def team_index(request):

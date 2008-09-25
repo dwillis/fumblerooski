@@ -14,7 +14,7 @@
 <h4>Recent Conference Games</h4>
 <ul>
     {% for game in recent_games %}
-    <li><a href={{ game.get_absolute_url }}>{{ game.team1 }} vs. {{ game.team2 }}</a>, {{ game.date|date:"N d, Y" }}
+    <li><a href={{ game.get_absolute_url }}>{{ game.team1 }} {{ game.team1_score }}, {{ game.team2 }} {{ game.team2_score }}</a>, {{ game.date|date:"N d, Y" }}
     {% endfor %}
 </ul>
 
