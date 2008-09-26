@@ -35,6 +35,9 @@ RANKINGTYPE_CHOICES = (
 
 DIVISION_CHOICES = (
     ('B', 'Bowl Subdivision'),
+    ('C', 'Championship Subdivision'),
+    ('D', 'Division II'),
+    ('T', 'Division III'),
 )
 
 class State(models.Model):
