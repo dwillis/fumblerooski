@@ -6,7 +6,7 @@
 
 <table>
     <th>Date</th><th>Opponent</th><th>Location</th>
-    {% for game in game_list %}
+    {% for game in games %}
     <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
     {% endfor %}
 </table>
