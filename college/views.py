@@ -59,7 +59,7 @@ def team_detail(request, team):
 def team_detail_season(request, team, season):
     t = get_object_or_404(College, slug=team)
     try:
-        coach = CollegeCoach.objects.filter(college=t, start_date__year__lte=season, end_date__year__gte=season)
+        coach = CollegeCoach.objects.filter(college=t)
     except CollegeCoach.DoesNotExist:
         current_coach = None
     season_record = get_object_or_404(CollegeYear, college=t, year=season)
