@@ -5,7 +5,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -16,6 +16,11 @@ def homepage(request):
 def state_index(request):
     form = StateForm()
     return render_to_response('college/state_index.html', {'form': form})
+
+def season_week(request, season, week):
+    week = get_object_or_404(Week, week_num=week, year=season)
+    games = Game.objects.select_related().filter(week=week, team1__division='B').order_by('date', 'team1')
+    return render_to_response('college/season_week.html', {'season': season, 'week': week, 'games': games})
 
 def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
@@ -53,13 +58,13 @@ def team_detail(request, team):
 def team_detail_season(request, team, season):
     t = get_object_or_404(College, slug=team)
     try:
-        current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
+        coach = CollegeCoach.objects.filter(college=t, start_date__year__lte=season, end_date__year__gte=season)
     except CollegeCoach.DoesNotExist:
         current_coach = None
     season_record = get_object_or_404(CollegeYear, college=t, year=season)
     game_list = Game.objects.filter(team1=t, season=season).order_by('-date')
     player_list = Player.objects.filter(team=t, year=season)
-    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
+    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': coaches, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)

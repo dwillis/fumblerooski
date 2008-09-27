@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<h3>Games for Week {{ week.week_num }}, {{ season }}</h3>
+
+<table>
+    <th>Date</th><th>Opponent</th><th>Location</th>
+    {% for game in game_list %}
+    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

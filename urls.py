@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     # Uncomment this for admin:
      (r'^admin/(.*)', admin.site.root),
      (r'^$', college_views.homepage),
+     (r'^college/seasons/(?P<season>\d+)/week/(?P<week>\d+)/$', college_views.season_week),
      (r'^college/conferences/$', college_views.conference_index),
      (r'^college/conferences/(?P<conf>[-a-z0-9]+)/$', college_views.conference_detail),
      (r'^college/games/$', college_views.game_index),
