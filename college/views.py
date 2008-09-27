@@ -19,7 +19,7 @@ def state_index(request):
 
 def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, year=season)
-    games = Game.objects.select_related().filter(week=week, team1__division='B').order_by('date', 'team1')
+    game_list = Game.objects.select_related().filter(week=week, team1__division='B').order_by('date', 'team1')
     return render_to_response('college/season_week.html', {'season': season, 'week': week, 'games': games})
 
 def conference_index(request):
