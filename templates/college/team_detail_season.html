@@ -6,7 +6,8 @@
 <h5>{{ team.conference.name }}</h5>
 
 {% if coach %}
-Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
+Coaches: 
+<a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a> {% if coach.end_date %} through {{ coach.end_date|date:"F d, Y" }}{% endif %}<br />
 {% else %}
 {% endif %}
 
