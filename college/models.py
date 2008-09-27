@@ -60,6 +60,9 @@ class Week(models.Model):
     
     def __unicode__(self):
         return "Week %s, %s" % (self.week_num, self.year)
+    
+    def week_games_url(self):
+        return "/college/seasons/%s/week/%s/" % (self.year, self.week_num)
 
 class Conference(models.Model):
     abbrev = models.CharField(max_length=10)
