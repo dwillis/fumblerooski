@@ -1,10 +1,13 @@
 from django.contrib import admin
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, CoachingJob, RankingType, Ranking, Week
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, CoachingJob, RankingType, Ranking, Week, City
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'state')
     ordering = ('name',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
+class CityAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class CoachAdmin(admin.ModelAdmin):
@@ -34,6 +37,7 @@ class WeekAdmin(admin.ModelAdmin):
     list_filter = ('year',)
 
 admin.site.register(College, CollegeAdmin)
+admin.site.register(City, CityAdmin)
 admin.site.register(Coach, CoachAdmin)
 admin.site.register(CoachingJob, CoachingJobAdmin)
 admin.site.register(CollegeCoach, CollegeCoachAdmin)

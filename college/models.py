@@ -1,4 +1,4 @@
-from django.db import models
+from django.contrib.gis.db import models
 from django import forms
 from django.contrib import admin
 import datetime
@@ -53,6 +53,19 @@ class State(models.Model):
 class StateForm(forms.Form):
     name = forms.CharField(max_length=50, widget=forms.Select())
 
+class City(models.Model):
+    name = models.CharField(max_length=75)
+    slug = models.SlugField(max_length=75)
+    state = models.ForeignKey(State)
+    point = models.PointField()
+    objects = models.GeoManager()
+    
+    def __unicode__(self):
+        return "%s, %s" % (self.name, self.state.id)
+    
+    def get_absolute_url(self):
+        return "/college/states/%s/%s" % (self.state.id.lower(), self.slug)
+
 class Week(models.Model):
     year = models.IntegerField()
     week_num = models.IntegerField()
@@ -83,6 +96,7 @@ class College(models.Model):
     conference = models.ForeignKey(Conference, null=True, blank=True)
     updated = models.BooleanField()
     division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
+    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name
