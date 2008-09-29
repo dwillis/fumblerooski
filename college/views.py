@@ -178,7 +178,7 @@ def game_index(request):
     pass # do calendar-based view here
 
 def undefeated_teams(request, season):
-    unbeaten = CollegeYear.objects.filter(year=int(season), losses=0, wins__gt=0).select_related().order_by('college_college.name', '-wins')
+    unbeaten = CollegeYear.objects.select_related().filter(college__updated=True, year=int(season), losses=0, wins__gt=0).order_by('college_college.name', '-wins')
     return render_to_response('college/undefeated.html', {'teams': unbeaten, 'season':season})
 
 def state_detail(request, state):
