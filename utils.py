@@ -367,7 +367,7 @@ def load_ncaa_game_xml(urls):
             print "Visiting Defense: %s" % visiting_defense
             
         except:
-            raise
+            pass
 #            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
     
 
