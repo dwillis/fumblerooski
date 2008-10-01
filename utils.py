@@ -7,7 +7,7 @@ from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense
+from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week
 
 
 def update_college_year(year):
@@ -113,40 +113,6 @@ def game_updater(year, teams, date=None):
     update_college_year(year)
     return games
 
-def load_recruits():
-    import csv
-    reader = csv.reader(open("players2007.csv"))
-    for row in reader:
-        st = State.objects.get(id=row[5])
-        p = Position.objects.get(abbrev=row[2])
-        pl, created = Player.objects.get_or_create(first_name=row[0], last_name=row[1], pos=p, height=row[3], weight=row[4], home_state=st)
-        pl.save()
-
-def load_players(year):
-    file = open('csv/DivIA.csv').readlines()
-    file = file[1:]
-    players = open('players.csv','w')
-    for line in file:
-        players.write(line)
-    players.close()
-
-    reader = csv.reader(open('players.csv'))
-    for row in reader:
-        y, created = Year.objects.get_or_create(id=year)
-        t = College.objects.get(id=row[0])
-        pos, created = Position.objects.get_or_create(abbrev=row[5])
-        if row[4] == '':
-            if row[3] != 'Team':
-                first = raw_input("Enter a first name for %s on %s: " % (row[3], row[1]))
-                p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name='', first_name_fixed=force_unicode(first.upper()))
-            else:
-                pass
-        else:
-            # change to match on id and last_name only?
-            p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name=force_unicode(row[4].upper()), first_name_fixed=force_unicode(row[4].upper()))
-        py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], ncaa_number=row[2], status=row[6])
-
-
 
 """
 Loader for NCAA game summaries pre-2008
@@ -194,7 +160,11 @@ def load_ncaa_game_xml(urls):
     http://web1.ncaa.org/d1mfb/2008/Internet/worksheets/200800000014720080830.xml
     """
     for url in urls:
-        doc = urllib.urlopen(url).read()
+        try:
+            doc = urllib.urlopen(url).read()
+        except:
+            print "game xml not available; skipping"
+            pass
         soup = BeautifulSoup(doc)
         # replace all interior spaces with 0
         f = soup.findAll(text="&#160;")
@@ -422,6 +392,15 @@ def partial_loader(year, id):
     g = game_updater(2008, teams)
     load_ncaa_game_xml(g)
 
+def last_week_updater():
+    week = Week.objects.filter(year=2008, end_date__lte=datetime.date.today()).order_by('end_date')[0]
+    games = Game.objects.filter(week=week)
+    teams = []
+    for game in games:
+        teams.append(game.team1)
+    g = game_updater(2008, teams)
+    load_ncaa_game_xml(g)
+
 def load_rosters(year):
     """
     Loader for NCAA roster information. Loops through all teams in the database and finds rosters for the given year, then populates Player table with
@@ -549,3 +528,36 @@ def update_offense(yr='2007'):
                 where football_playeroffense.playeryear_id = %s)
             where football_playersummary.playeryear_id = %s""", (player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id)
             )
+
+def load_recruits():
+    import csv
+    reader = csv.reader(open("players2007.csv"))
+    for row in reader:
+        st = State.objects.get(id=row[5])
+        p = Position.objects.get(abbrev=row[2])
+        pl, created = Player.objects.get_or_create(first_name=row[0], last_name=row[1], pos=p, height=row[3], weight=row[4], home_state=st)
+        pl.save()
+
+def load_players(year):
+    file = open('csv/DivIA.csv').readlines()
+    file = file[1:]
+    players = open('players.csv','w')
+    for line in file:
+        players.write(line)
+    players.close()
+
+    reader = csv.reader(open('players.csv'))
+    for row in reader:
+        y, created = Year.objects.get_or_create(id=year)
+        t = College.objects.get(id=row[0])
+        pos, created = Position.objects.get_or_create(abbrev=row[5])
+        if row[4] == '':
+            if row[3] != 'Team':
+                first = raw_input("Enter a first name for %s on %s: " % (row[3], row[1]))
+                p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name='', first_name_fixed=force_unicode(first.upper()))
+            else:
+                pass
+        else:
+            # change to match on id and last_name only?
+            p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name=force_unicode(row[4].upper()), first_name_fixed=force_unicode(row[4].upper()))
+        py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], ncaa_number=row[2], status=row[6])
