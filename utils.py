@@ -160,19 +160,15 @@ def load_ncaa_game_xml(urls):
     http://web1.ncaa.org/d1mfb/2008/Internet/worksheets/200800000014720080830.xml
     """
     for url in urls:
-        try:
-            doc = urllib.urlopen(url).read()
-        except:
-            print "game xml not available; skipping"
-            pass
+        doc = urllib.urlopen(url).read()
         soup = BeautifulSoup(doc)
         # replace all interior spaces with 0
         f = soup.findAll(text="&#160;")
         for each in f:
             each.replaceWith("0")
         
-        print "trying game: %s-%s" % (soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
+            print "trying game: %s-%s" % (soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
             t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
             if soup.teams.visitor.orgid.contents[0] == '506027':
                 t2 = College.objects.get(id=30504) # special case for ncaa error on southern oregon
