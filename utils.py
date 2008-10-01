@@ -90,7 +90,7 @@ def game_updater(year, teams, date=None):
                 g.team1_score = team1_score
                 g.team2_score=team2_score
                 g.t1_result=t1_result
-                g.game_file = game_file
+                g.ncaa_xml = game_file.split('.xml')[0]
                 if ot:
                     g.ot = 't'
                 try:
