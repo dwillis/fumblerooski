@@ -250,7 +250,10 @@ class Game(models.Model):
     
     def get_reverse_url(self):
         return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.slug, self.team1.slug, self.date.year, self.date.month, self.date.day)
-
+    
+    def get_ncaa_drive_url(self):
+        return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml)
+    
     def margin(self):
         return self.team1_score-self.team2_score
     
@@ -505,3 +508,20 @@ class Ranking(models.Model):
     
     def __unicode__(self):
         return "%s - %s, %s (Week %s)" % (self.ranking_type, self.college, self.year, self.week)
+
+class Poll(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50)
+    
+    def __unicode__(self):
+        return self.name
+        
+
+class PollResults(models.Model):
+    poll = models.ForeignKey(Poll)
+    week = models.ForeignKey(Week)
+    team = models.ForeignKey(College)
+    rank = models.IntegerField()
+    
+    def __unicode__(self):
+        return "%s: %s %s" % (self.poll, self.week, self.team)
