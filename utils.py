@@ -48,7 +48,7 @@ def game_updater(year, teams, date=None):
     games = []
     
     for team in teams:
-        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=15" % (team.id, year)
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=19" % (team.id, year)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
         try:
@@ -90,7 +90,7 @@ def game_updater(year, teams, date=None):
                 g.team1_score = team1_score
                 g.team2_score=team2_score
                 g.t1_result=t1_result
-                g.ncaa_xml = game_file.split('.xml')[0]
+                g.ncaa_xml = game_file.split('.xml')[0].strip()
                 if ot:
                     g.ot = 't'
                 try:
