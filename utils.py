@@ -371,6 +371,35 @@ def load_ncaa_game_xml(urls):
 #            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
     
 
+def game_drive_loader(game):
+    contents = urllib.urlopen(game.get_ncaa_drive_url().strip()).read()
+    soup = BeautifulSoup(contents)
+    rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
+    for row in rows:
+        cells = row.findAll('td')
+        drive = int(cells[0].find("a").contents[0])
+        team = College.objects.get(slug=cells[2].contents[0].lower())
+        quarter = int(cells[1].contents[0])
+        start_how = cells[3].contents[0]
+        start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1]))
+        try:
+            start_position = int(cells[5].contents[0])
+            start_side = "O"
+        except:
+            start_position = int(cells[5].contents[0].split(" ")[1])
+            start_side = 'P'
+        end_result = cells[6].contents[0]
+        end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
+        try:
+            end_position = int(cells[8].contents[0])
+            end_position = "O"
+        except:
+            end_position = int(cells[8].contents[0].split(" ")[1])
+            start_side = 'P'
+        plays = int(cells[9].contents[0])
+        yards = int(cells[10].contents[0])
+        time_of_possession = datetime.time(0, int(cells[11].contents[0].split(":")[0]), int(cells[11].contents[0].split(":")[1]))
+        d, created = GameDrive.objects.get_or_create(drive=drive, team=team, quarter=quarter,start_how=start_how, start_time=start_time, start_position=start_position, end_result=end_result, end_time=end_time, end_position=end_position, plays=plays, yards=yards,time_of_possession=time_of_possession)
 
 def game_fetcher(year):
     l = get_summary_links(year)

@@ -16,6 +16,11 @@ POSITION_TYPE_CHOICES = (
     ('S', 'Special Teams'),
 )
 
+SIDE_CHOICES = (
+    ('O', 'Own'),
+    ('P', 'Opponents'),
+)
+
 RESULT_CHOICES = (
     ('W', 'Win'),
     ('L', 'Loss'),
@@ -252,7 +257,7 @@ class Game(models.Model):
         return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.slug, self.team1.slug, self.date.year, self.date.month, self.date.day)
     
     def get_ncaa_drive_url(self):
-        return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml)
+        return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
     
     def margin(self):
         return self.team1_score-self.team2_score
@@ -263,6 +268,26 @@ class Game(models.Model):
         else:
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
     
+
+class GameDrive(models.Model):
+    game = models.ForeignKey(Game)
+    team = models.ForeignKey(College)
+    drive = models.IntegerField()
+    quarter = models.PositiveSmallIntegerField()
+    start_how = models.CharField(max_length=25)
+    start_time = models.TimeField()
+    start_position = models.IntegerField()
+    start_side = models.CharField(max_length=1, choices=SIDE_CHOICES)
+    end_result = models.CharField(max_length=25)
+    end_time = models.TimeField()
+    end_position = models.IntegerField(null=True)
+    end_side = models.CharField(max_length=1, choices=SIDE_CHOICES)
+    plays = models.IntegerField()
+    yards = models.IntegerField()
+    time_of_possession = models.TimeField()
+    
+    def __unicode_(self):
+        return "%s: %s drive %s" % (self.game, self.team, self.drive)
 
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)
