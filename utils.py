@@ -107,6 +107,7 @@ def game_updater(year, teams, date=None):
                 except:
                     g.t1_game_type = 'A'
                 g.save()
+                game_drive_loader(g)
                 games.append(base_url + game_file)
         except:
             pass
