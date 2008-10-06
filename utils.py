@@ -376,7 +376,6 @@ def game_drive_loader(game):
     soup = BeautifulSoup(contents)
     rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
     for row in rows:
-        print row
         cells = row.findAll('td')
         drive = int(cells[0].find("a").contents[0])
         team = College.objects.get(slug=cells[2].contents[0].lower())
@@ -393,10 +392,10 @@ def game_drive_loader(game):
         end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
         try:
             end_position = int(cells[8].contents[0])
-            end_position = "O"
+            end_side = "O"
         except:
             end_position = int(cells[8].contents[0].split(" ")[1])
-            start_side = 'P'
+            end_side = 'P'
         plays = int(cells[9].contents[0])
         yards = int(cells[10].contents[0])
         time_of_possession = datetime.time(0, int(cells[11].contents[0].split(":")[0]), int(cells[11].contents[0].split(":")[1]))
