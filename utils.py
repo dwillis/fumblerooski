@@ -376,6 +376,7 @@ def game_drive_loader(game):
     soup = BeautifulSoup(contents)
     rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
     for row in rows:
+        print row
         cells = row.findAll('td')
         drive = int(cells[0].find("a").contents[0])
         team = College.objects.get(slug=cells[2].contents[0].lower())
