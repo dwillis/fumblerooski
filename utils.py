@@ -399,7 +399,7 @@ def game_drive_loader(game):
         plays = int(cells[9].contents[0])
         yards = int(cells[10].contents[0])
         time_of_possession = datetime.time(0, int(cells[11].contents[0].split(":")[0]), int(cells[11].contents[0].split(":")[1]))
-        print drive, team, quarter, start_how, start_time, start_position, start_side, end_result, end_time, end_position, end_sire, plays, yards, time_of_possession
+        print drive, team, quarter, start_how, start_time, start_position, start_side, end_result, end_time, end_position, end_side, plays, yards, time_of_possession
         d, created = GameDrive.objects.get_or_create(drive=drive, team=team, quarter=quarter,start_how=start_how, start_time=start_time, start_position=start_position, end_result=end_result, end_time=end_time, end_position=end_position, plays=plays, yards=yards,time_of_possession=time_of_possession)
 
 def game_fetcher(year):
