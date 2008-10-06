@@ -390,17 +390,23 @@ def game_drive_loader(game):
             start_side = 'P'
         end_result = cells[6].contents[0]
         end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
-        try:
-            end_position = int(cells[8].contents[0])
-            end_side = "O"
-        except:
-            end_position = int(cells[8].contents[0].split(" ")[1])
+        if cells[8].contents:
+            try:
+                end_position = int(cells[8].contents[0])
+                end_side = "O"
+            except:
+                end_position = int(cells[8].contents[0].split(" ")[1])
+                end_side = 'P'
+        else:
+            end_position = None
             end_side = 'P'
         plays = int(cells[9].contents[0])
         yards = int(cells[10].contents[0])
         time_of_possession = datetime.time(0, int(cells[11].contents[0].split(":")[0]), int(cells[11].contents[0].split(":")[1]))
         print drive, team, quarter, start_how, start_time, start_position, start_side, end_result, end_time, end_position, end_side, plays, yards, time_of_possession
         d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, end_result=str(end_result), end_time=end_time, end_position=end_position, plays=plays, yards=yards,time_of_possession=time_of_possession)
+        if created:
+            print "saved drive %s" % d.drive
 
 def game_fetcher(year):
     l = get_summary_links(year)
