@@ -376,10 +376,13 @@ def game_drive_loader(game):
     contents = urllib.urlopen(game.get_ncaa_drive_url().strip()).read()
     soup = BeautifulSoup(contents)
     rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
+    not_found = []
     for row in rows:
         cells = row.findAll('td')
         drive = int(cells[0].find("a").contents[0])
         team = College.objects.get(slug=cells[2].contents[0].lower())
+        if not team:
+            not_found.append(cells[2].contents[0].lower())
         quarter = int(cells[1].contents[0])
         start_how = cells[3].contents[0]
         start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1]))
@@ -408,6 +411,8 @@ def game_drive_loader(game):
         d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, start_side=start_side, end_result=end_result, end_time=end_time, end_position=end_position, end_side=end_side, plays=plays, yards=yards,time_of_possession=time_of_possession)
         if created:
             print "saved drive %s" % d.drive
+    not_found = list(set(not_found))
+    return not_found
 
 def game_fetcher(year):
     l = get_summary_links(year)
