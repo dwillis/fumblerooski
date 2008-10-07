@@ -268,6 +268,13 @@ class Game(models.Model):
         else:
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
     
+class DriveOutcome(models.Model):
+    id = models.CharField(max_length=5, primary_key=True)
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50)
+    
+    def __unicode__(self):
+        return self.name
 
 class GameDrive(models.Model):
     game = models.ForeignKey(Game)
@@ -278,7 +285,7 @@ class GameDrive(models.Model):
     start_time = models.TimeField()
     start_position = models.IntegerField()
     start_side = models.CharField(max_length=1, choices=SIDE_CHOICES)
-    end_result = models.CharField(max_length=25)
+    end_result = models.ForeignKey(DriveOutcome)
     end_time = models.TimeField()
     end_position = models.IntegerField(null=True)
     end_side = models.CharField(max_length=1, choices=SIDE_CHOICES)
