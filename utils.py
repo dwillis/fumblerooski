@@ -391,11 +391,12 @@ def game_drive_loader(game):
             start_position = int(cells[5].contents[0])
             start_side = "O"
         except:
-            start_position = int(cells[5].contents[0].split(" ")[1])
-            start_side = 'P'
-        if start_position == '':
-            start_position = 0
-            start_side = 'O'
+            try:
+                start_position = int(cells[5].contents[0].split(" ")[1])
+                start_side = 'P'
+            except:
+                start_position = 0
+                start_side = 'O'
         end_result = DriveOutcome.objects.get(abbrev=str(cells[6].contents[0]))
         end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
         if cells[8].contents:
