@@ -1,5 +1,5 @@
 from django.db import models
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State
+#from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State
 
 class SchoolType(models.Model):
     name = models.CharField(max_length=15)
