@@ -38,6 +38,7 @@ class WeekAdmin(admin.ModelAdmin):
 
 class DriveOutcomeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    list_display = ('abbrev', 'name')
 
 class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('end_result','start_how')
