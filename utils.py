@@ -416,8 +416,6 @@ def game_drive_loader(game):
         d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, start_side=start_side, end_result=end_result, end_time=end_time, end_position=end_position, end_side=end_side, plays=plays, yards=yards,time_of_possession=time_of_possession)
         if created:
             print "saved drive %s" % d.drive
-    not_found = list(set(not_found))
-    return not_found
 
 def game_fetcher(year):
     l = get_summary_links(year)
