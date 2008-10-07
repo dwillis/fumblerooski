@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.views.generic import list_detail, date_based, create_update
 from fumblerooski.college import views as college_views
 
-#admin.autodiscover()
+admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
