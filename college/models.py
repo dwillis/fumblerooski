@@ -269,9 +269,9 @@ class Game(models.Model):
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
     
 class DriveOutcome(models.Model):
-    id = models.CharField(max_length=5, primary_key=True)
-    name = models.CharField(max_length=50)
-    slug = models.SlugField(max_length=50)
+    abbrev = models.CharField(max_length=5)
+    name = models.CharField(max_length=50, null=True)
+    slug = models.SlugField(max_length=50, null=True)
     
     def __unicode__(self):
         return self.name
