@@ -39,7 +39,7 @@ class WeekAdmin(admin.ModelAdmin):
 class DriveOutcomeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
-class GameDrive(admin.ModelAdmin):
+class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('end_result','start_how')
 
 admin.site.register(College, CollegeAdmin)
