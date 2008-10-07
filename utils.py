@@ -376,7 +376,6 @@ def game_drive_loader(game):
     contents = urllib.urlopen(game.get_ncaa_drive_url().strip()).read()
     soup = BeautifulSoup(contents)
     rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
-    not_found = []
     for row in rows:
         cells = row.findAll('td')
         drive = int(cells[0].find("a").contents[0])
@@ -394,6 +393,9 @@ def game_drive_loader(game):
         except:
             start_position = int(cells[5].contents[0].split(" ")[1])
             start_side = 'P'
+        if start_position == '':
+            start_position = 0
+            start_side = 'O'
         end_result = DriveOutcome.objects.get(abbrev=str(cells[6].contents[0]))
         end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
         if cells[8].contents:
