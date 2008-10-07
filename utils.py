@@ -7,7 +7,7 @@ from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive
+from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome
 
 
 def update_college_year(year):
@@ -389,7 +389,7 @@ def game_drive_loader(game):
         except:
             start_position = int(cells[5].contents[0].split(" ")[1])
             start_side = 'P'
-        end_result = cells[6].contents[0]
+        end_result, do_created = DriveOutcome.objects.get_or_create(name=cells[6].contents[0])
         end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
         if cells[8].contents:
             try:
