@@ -383,8 +383,7 @@ def game_drive_loader(game):
         try:
             team = College.objects.get(slug=cells[2].contents[0].lower())
         except:
-            not_found.append(cells[2].contents[0].lower())
-            pass
+            team = College.objects.get(slug=cells[2].contents[0].lower().replace('(','').replace(')','').replace('.','').replace(',','').replace("'",""))
         quarter = int(cells[1].contents[0])
         start_how = cells[3].contents[0]
         start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1]))
