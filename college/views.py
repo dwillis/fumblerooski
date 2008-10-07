@@ -5,7 +5,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -172,7 +172,11 @@ def game(request, team1, team2, year, month, day):
         game_defense = GameDefense.objects.get(game=game, team=team_1)
     except:
         game_defense = None
-    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense })
+    try:
+        drives = GameDrive.objects.get(game=game, team=team_1)
+    except:
+        drives = None
+    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives })
 
 def game_index(request):
     pass # do calendar-based view here

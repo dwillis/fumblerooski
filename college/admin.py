@@ -42,6 +42,7 @@ class DriveOutcomeAdmin(admin.ModelAdmin):
 
 class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('end_result','start_how')
+    list_display = ('game', 'team', 'drive', 'end_result')
 
 admin.site.register(College, CollegeAdmin)
 admin.site.register(City, CityAdmin)

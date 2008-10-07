@@ -292,7 +292,7 @@ class GameDrive(models.Model):
     yards = models.IntegerField()
     time_of_possession = models.TimeField()
     
-    def __unicode_(self):
+    def __unicode__(self):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
 
 class GameOffense(models.Model):
