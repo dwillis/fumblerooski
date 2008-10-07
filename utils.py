@@ -380,9 +380,11 @@ def game_drive_loader(game):
     for row in rows:
         cells = row.findAll('td')
         drive = int(cells[0].find("a").contents[0])
-        team = College.objects.get(slug=cells[2].contents[0].lower())
-        if not team:
+        try:
+            team = College.objects.get(slug=cells[2].contents[0].lower())
+        except:
             not_found.append(cells[2].contents[0].lower())
+            pass
         quarter = int(cells[1].contents[0])
         start_how = cells[3].contents[0]
         start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1]))
