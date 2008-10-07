@@ -193,7 +193,7 @@ def game_drive(request, team1, team2, year, month, day):
         drives = GameDrive.objects.filter(game=game, team=team_1).order_by('drive')
     except:
         drives = None
-    return render_to_response('college/game_drive.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'drives': drives })
+    return render_to_response('college/game_drives.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'drives': drives })
 
 
 def game_index(request):
