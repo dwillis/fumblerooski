@@ -94,6 +94,7 @@ class Conference(models.Model):
 class College(models.Model):
     name = models.CharField(max_length=90)
     slug = models.SlugField(max_length=90)
+    drive_slug = models.CharField(max_length=90)
     state = models.ForeignKey(State, blank=True)
     official_url = models.CharField(max_length=120, blank=True)
     official_rss = models.CharField(max_length=120, blank=True)
