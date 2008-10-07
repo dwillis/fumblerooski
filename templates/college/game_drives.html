@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if game %}
+
+<h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.name }}</a>: {{ game.season }}</h3>
+(<a href="{{ game.get_matchup_url }}">See all games between these teams</a>)
+
+<table>
+  <th>Season</th><th>Date</th><th>Outcome</th><th>Location</th>{% if game.attendance %}<th>Attendance</th>{% endif %}
+  <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td><td>{{ game.get_t1_game_type_display }} {% if game.site %}({{ game.site }}){% endif %}</td>{% if game.attendance %}<td>{{ game.attendance }}</td>{% endif %}</tr>
+
+</table>
+
+{% if game.drivechart %}
+<h4>NCAA Drive Chart</h4>
+
+<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:"d-b-y"|upper }}">
+
+{% else %}
+{% endif %}
+
+(<a href="{{ game.get_reverse_url }}">see {{ team_2.name }}'s stats</a> for this game)
+
+{% if drives %}
+<h4>{{ team_1.name }} Drive Details</h4>
+<table>
+  <th>Quarter</th><th>Start Time</th><th>Start Position</th><th>Plays</th><th>Outcome</th><th>End Position</th><th>Time of Possession</th>
+  {% for drive in drives %}
+  <tr><td>{{ drive.quarter }}</td>{{ drive.start_time }}</td><td>{{ drive.start_position }}</td><td>{{ drive.plays }}</td><td>{{ drive.end_result.name }}</td><td>{{ drive.end_position }}</td><td>{{ drive.time_of_possession }}</td></tr>
+  {% endfor %}
+</table>
+
+{% endif %}
+
+{% else %}
+
+No game could be found.
+
+{% endif %}
+
+{% endblock %}
