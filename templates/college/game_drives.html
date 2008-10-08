@@ -16,23 +16,25 @@
 {% if game.drivechart %}
 <h4>NCAA Drive Chart</h4>
 
-<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:"d-b-y"|upper }}">
+<img src="{{ game.get_ncaa_drive_chart_url }}">
 
 {% else %}
 {% endif %}
 
-(<a href="{{ game.get_reverse_url }}">see {{ team_2.name }}'s stats</a> for this game)
 
 {% if drives %}
 <h4>{{ team_1.name }} Drive Details</h4>
 <table>
   <th>Quarter</th><th>Start Time</th><th>Start Position</th><th>Plays</th><th>Outcome</th><th>End Position</th><th>Time of Possession</th>
   {% for drive in drives %}
-  <tr><td>{{ drive.quarter }}</td>{{ drive.start_time }}</td><td>{{ drive.start_position }}</td><td>{{ drive.plays }}</td><td>{{ drive.end_result.name }}</td><td>{{ drive.end_position }}</td><td>{{ drive.time_of_possession }}</td></tr>
+  <tr><td>{{ drive.quarter }}</td><td>{{ drive.start_time }}</td><td>{{ drive.start_position }}</td><td>{{ drive.plays }}</td><td>{{ drive.end_result.name }}</td><td>{{ drive.end_position }}</td><td>{{ drive.time_of_possession }}</td></tr>
   {% endfor %}
 </table>
 
 {% endif %}
+
+(<a href="{{ game.get_reverse_url }}/drives/">see {{ team_2.name }}'s drives</a> for this game)
+
 
 {% else %}
 
