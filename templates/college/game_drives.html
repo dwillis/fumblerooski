@@ -27,13 +27,13 @@
 <table>
   <th>Quarter</th><th>Start Time</th><th>Start Position</th><th>Plays</th><th>Outcome</th><th>End Position</th><th>Time of Possession</th>
   {% for drive in drives %}
-  <tr><td>{{ drive.quarter }}</td><td>{{ drive.start_time }}</td><td>{{ drive.start_position }}</td><td>{{ drive.plays }}</td><td>{{ drive.end_result.name }}</td><td>{{ drive.end_position }}</td><td>{{ drive.time_of_possession }}</td></tr>
+  <tr><td>{{ drive.quarter }}</td><td>{{ drive.start_time|time:"i:s" }}</td><td>{{ drive.get_start_side_display }} {{ drive.start_position }}</td><td>{{ drive.plays }}</td><td>{{ drive.end_result.name }}</td><td>{{ drive.get_end_side_display }} {{ drive.end_position }}</td><td>{{ drive.time_of_possession|time:"i:s" }}</td></tr>
   {% endfor %}
 </table>
 
 {% endif %}
 
-(<a href="{{ game.get_reverse_url }}/drives/">see {{ team_2.name }}'s drives</a> for this game)
+(<a href="{{ game.get_reverse_url }}drives/">see {{ team_2.name }}'s drives</a> for this game)
 
 
 {% else %}
