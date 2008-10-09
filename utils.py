@@ -418,7 +418,7 @@ def game_drive_loader(game):
             if created:
                 print "saved drive %s" % d.drive
         except:
-            pass
+            print "Could not save drive %s" % drive
 
 def game_fetcher(year):
     l = get_summary_links(year)
