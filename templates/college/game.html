@@ -6,7 +6,6 @@
 {% if game %}
 
 <h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.name }}</a>: {{ game.season }}</h3>
-(<a href="{{ game.get_matchup_url }}">See all games between these teams</a>)
 
 <table>
   <th>Season</th><th>Date</th><th>Outcome</th><th>Location</th>{% if game.attendance %}<th>Attendance</th>{% endif %}
@@ -29,13 +28,8 @@
 
 {% endif %}
 
-{% if game.drivechart %}
-<h4>NCAA Drive Chart</h4>
+<h4><a href="{{ game.get_absolute_url }}/drives/">Drives</a></h4>
 
-<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:"d-b-y"|upper }}">
-
-{% else %}
-{% endif %}
 
 {% if defense %}
 <h3>{{ team_1.name }} Defensive Stats</h3>
@@ -47,7 +41,7 @@
 
 {% endif %}
 
-(<a href="{{ game.get_reverse_url }}">see {{ team_2.name }}'s stats</a> for this game)
+(<a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a>.)
 
 {% else %}
 

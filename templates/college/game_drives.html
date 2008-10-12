@@ -14,15 +14,6 @@
 
 </table>
 
-{% if game.drivechart %}
-<h4>NCAA Drive Chart</h4>
-
-<img src="{{ game.get_ncaa_drive_chart_url }}">
-
-{% else %}
-{% endif %}
-
-
 {% if drives %}
 <h4>{{ team_1.name }} Drive Details</h4>
 <table>
@@ -31,6 +22,8 @@
   <tr><td>{{ drive.quarter }}</td><td>{{ drive.start_time|time:"i:s" }}</td><td>{{ drive.get_start_side_display }} {{ drive.start_position }}</td><td>{{ drive.plays }}</td><td>{{ drive.end_result.name }}</td><td>{% if drive.end_position %}{{ drive.get_end_side_display }} {{ drive.end_position }}{% endif %}</td><td>{{ drive.time_of_possession|time:"i:s" }}</td></tr>
   {% endfor %}
 </table>
+
+<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:'d-b-y'|upper }}">
 
 {% endif %}
 
