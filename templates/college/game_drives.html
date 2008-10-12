@@ -23,7 +23,7 @@
   {% endfor %}
 </table>
 
-<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:'d-b-y'|upper }}">
+<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:"d-b-y"|upper }}">
 
 {% endif %}
 
