@@ -349,29 +349,29 @@ class GameOffense(models.Model):
         return '%s - %s' % (self.game, self.team)
     
     def third_down_rate(self):
-        return float(self.third_down_conversions/self.third_down_attempts)
+        return float(self.third_down_conversions)/float(self.third_down_attempts)
     
     def field_goal_rate(self):
-        return float(self.field_goals_made/self.field_goal_attempts)
+        return float(self.field_goals_made)/float(self.field_goal_attempts)
     
     def penalty_yard_ratio(self):
-        return float(self.penalty_yards/self.total_yards)
+        return float(self.penalty_yards)/float(self.total_yards)
     
     def yards_per_reception(self):
-        return float(self.receiving_yards/self.receptions)
+        return float(self.receiving_yards)/float(self.receptions)
     
     def yards_per_pass_attempt(self):
-        return float(self.receiving_yards/self.pass_attempts)
+        return float(self.receiving_yards)/(self.pass_attempts)
     
     def rushing_first_downs_pct(self):
-        return float(self.first_downs_rushing/self.first_downs_total)
+        return float(self.first_downs_rushing)/float(self.first_downs_total)*100
 
     """
     Returns a floating-point number representing the number
     of touchdowns per rushing attempt for a single game.
     """
     def touchdowns_per_rushes(self):
-        return float(self.rush_touchdowns/self.rushes)*100
+        return float(self.rush_touchdowns)/float(self.rushes)*100
     
     """
     Returns the opponent for a team's given Game Offense record.
