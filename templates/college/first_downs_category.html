@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ team.name }} First Down Statistics - {{ category }}</h2>
+
+<strong>Most {{ category|lower }} first downs in a game:</strong> {{ most }} (vs. {{ m_game.opponent }}, {{ m_game.game.date|date:"N d, Y" }})<br />
+<strong>Least {{ category|lower }} first downs in a game:</strong> {{ least }} (vs. {{ l_game.opponent }}, {{ l_game.game.date|date:"N d, Y" }})
+
+
+{% endblock %}

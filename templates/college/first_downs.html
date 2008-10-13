@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ team.name }} First Down Statistics</h2>
+
+<strong>Most first downs in a game:</strong> {{ most.first_downs_total }} (vs. {{ most.opponent }}, {{ most.game.date|date:"N d, Y" }})<br />
+<strong>Least first downs in a game:</strong> {{ least.first_downs_total }} (vs. {{ least.opponent }}, {{ least.game.date|date:"N d, Y" }})
+
+<h4><a href="rushing/">Rushing</a> | <a href="passing/">Passing</a> | <a href="penalty/">Penalty</a></h4>
+
+<ul>
+  {% for game in offense_list %}
+  <li>{{ game.game }}: {{ game.first_downs_total }}</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
