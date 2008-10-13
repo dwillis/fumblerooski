@@ -371,7 +371,7 @@ class GameOffense(models.Model):
     of touchdowns per rushing attempt for a single game.
     """
     def touchdowns_per_rushes(self):
-        return float(self.rush_touchdowns/self.rushes)
+        return float(self.rush_touchdowns/self.rushes)*100
     
     """
     Returns the opponent for a team's given Game Offense record.

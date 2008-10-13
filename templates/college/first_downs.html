@@ -11,7 +11,7 @@
 
 <ul>
   {% for game in offense_list %}
-  <li>{{ game.game }}: {{ game.first_downs_total }}</li>
+  <li>{{ game.game }}: {{ game.first_downs_total }} total first downs ({{ game.rushing_first_downs_pct }} percent rushing)</li>
   {% endfor %}
 </ul>
 
