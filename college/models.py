@@ -362,6 +362,9 @@ class GameOffense(models.Model):
     
     def yards_per_pass_attempt(self):
         return float(self.receiving_yards/self.pass_attempts)
+    
+    def rushing_first_downs_pct(self):
+        return float(self.first_downs_rushing/self.first_downs_total)
 
     """
     Returns a floating-point number representing the number
