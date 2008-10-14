@@ -61,9 +61,9 @@ def game_updater(year, teams, date=None):
                     stringdate = row.findAll('td')[0].find('a').contents[0]
                     team1_score = int(row.findAll('td')[3].contents[0])
                     team2_score = int(row.findAll('td')[4].contents[0])
-                    try:
+                    if row.findAll('td')[5].contents[0].strip().split(' '):
                         t1_result, ot = row.findAll('td')[5].contents[0].strip().split(' ')
-                    except:
+                    else:
                         t1_result = row.findAll('td')[5].contents[0].strip()
                         ot = None
                 except:
