@@ -87,32 +87,31 @@ def game_updater(year, teams, date=None):
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
                 g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
-                if new_game == True:
-                    g.team1_score = team1_score
-                    g.team2_score=team2_score
-                    g.t1_result=t1_result
-                    g.ncaa_xml = game_file.split('.xml')[0].strip()
-                    if ot:
-                        g.ot = 't'
-                    try:
-                        if row.findAll('td')[1].contents[0] == '+':
-                            g.t1_game_type = 'H'
-                        elif row.findAll('td')[1].contents[0] == '*+':
-                            g.t1_game_type = 'H'
-                        elif row.findAll('td')[1].contents[0] == '*':
-                            g.t1_game_type = 'A'
-                        elif row.findAll('td')[1].contents[0] == '^':
-                            g.t1_game_type = 'N'
-                        elif row.findAll('td')[1].contents[0] == '*^':
-                            g.t1_game_type = 'N'
-                    except:
+                g.team1_score = team1_score
+                g.team2_score=team2_score
+                g.t1_result=t1_result
+                g.ncaa_xml = game_file.split('.xml')[0].strip()
+                if ot:
+                    g.ot = 't'
+                try:
+                    if row.findAll('td')[1].contents[0] == '+':
+                        g.t1_game_type = 'H'
+                    elif row.findAll('td')[1].contents[0] == '*+':
+                        g.t1_game_type = 'H'
+                    elif row.findAll('td')[1].contents[0] == '*':
                         g.t1_game_type = 'A'
-                    g.save()
-                    if not g.drives:
-                        game_drive_loader(g)
-                    else:
-                        pass
-                    games.append(base_url + game_file)
+                    elif row.findAll('td')[1].contents[0] == '^':
+                        g.t1_game_type = 'N'
+                    elif row.findAll('td')[1].contents[0] == '*^':
+                        g.t1_game_type = 'N'
+                except:
+                    g.t1_game_type = 'A'
+                g.save()
+                if not g.drives:
+                    game_drive_loader(g)
+                else:
+                    pass
+                games.append(base_url + game_file)
         except:
             pass
     update_college_year(year)
