@@ -94,6 +94,8 @@ def game_updater(year, teams, date=None):
                     g.ncaa_xml = game_file.split('.xml')[0].strip()
                     games.append(base_url + game_file)
                     if not g.has_drives:
+                        g.has_drives = True
+                        g.save()
                         game_drive_loader(g)
                 else:
                     pass
@@ -373,6 +375,11 @@ def load_ncaa_game_xml(urls):
 
                 visiting_defense.save()
                 print "Visiting Defense: %s" % visiting_defense
+                
+                game.has_stats = True
+                game.save()
+                game_v.has_stats = True
+                game_v.save()
             
         except:
             pass
