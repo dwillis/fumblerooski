@@ -271,7 +271,7 @@ class Game(models.Model):
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
     
 class DriveOutcome(models.Model):
-    abbrev = models.CharField(max_length=5)
+    abbrev = models.CharField(max_length=10)
     name = models.CharField(max_length=50, null=True)
     slug = models.SlugField(max_length=50, null=True)
     
