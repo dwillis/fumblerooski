@@ -90,7 +90,8 @@ def game_updater(year, teams, date=None):
                 g.team1_score = team1_score
                 g.team2_score=team2_score
                 g.t1_result=t1_result
-                g.ncaa_xml = game_file.split('.xml')[0].strip()
+                if game_file:
+                    g.ncaa_xml = game_file.split('.xml')[0].strip()
                 if ot:
                     g.ot = 't'
                 if len(row.findAll('td')[1].contents) > 0:
@@ -110,7 +111,7 @@ def game_updater(year, teams, date=None):
                 if not g.has_drives:
                     game_drive_loader(g)
                 else:
-                    raise
+                    pass
                 games.append(base_url + game_file)
         except:
             raise
