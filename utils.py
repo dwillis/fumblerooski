@@ -87,7 +87,7 @@ def game_updater(year, teams, date=None):
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
                 g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
-                if new_game:
+                if new_game == True:
                     g.team1_score = team1_score
                     g.team2_score=team2_score
                     g.t1_result=t1_result
