@@ -92,6 +92,7 @@ def game_updater(year, teams, date=None):
                 g.t1_result=t1_result
                 if game_file:
                     g.ncaa_xml = game_file.split('.xml')[0].strip()
+                    games.append(base_url + game_file)
                     if not g.has_drives:
                         game_drive_loader(g)
                 else:
@@ -112,7 +113,6 @@ def game_updater(year, teams, date=None):
                 else:
                     g.t1_game_type = 'A'
                 g.save()
-                games.append(base_url + game_file)
         except:
             raise
     update_college_year(year)
