@@ -107,7 +107,10 @@ def game_updater(year, teams, date=None):
                 except:
                     g.t1_game_type = 'A'
                 g.save()
-                game_drive_loader(g)
+                if g.drives = False:
+                    game_drive_loader(g)
+                else:
+                    pass
                 games.append(base_url + game_file)
         except:
             pass
@@ -206,170 +209,174 @@ def load_ncaa_game_xml(urls):
             
             print "Saved %s" % game
             
-            home_time = soup.teams.home.top.contents[0].split(":") or None
-            visitor_time = soup.teams.visitor.top.contents[0].split(":") or None
+            while game.has_stats == False:
             
-            # home team offense
-            home_offense, created = GameOffense.objects.get_or_create(game=game, team=t1)
             
-            if game.date.year > 2006:
-                home_offense.time_of_possession=datetime.time(0, int(home_time[0]), int(home_time[1]))
-            else:
-                home_offense.time_of_possession = None
+                home_time = soup.teams.home.top.contents[0].split(":") or None
+                visitor_time = soup.teams.visitor.top.contents[0].split(":") or None
             
-            home_offense.third_down_attempts=int(soup.teams.home.thirddowns.att.contents[0])
-            home_offense.third_down_conversions=int(soup.teams.home.thirddowns.conv.contents[0])
-            home_offense.fourth_down_attempts=int(soup.teams.home.fourthdowns.att.contents[0])
-            home_offense.fourth_down_conversions=int(soup.teams.home.fourthdowns.conv.contents[0])
-            home_offense.first_downs_rushing=int(soup.teams.home.firstdowns.rush.contents[0])
-            home_offense.first_downs_passing=int(soup.teams.home.firstdowns.contents[3].contents[0]) # can't use "pass"
-            home_offense.first_downs_penalty=int(soup.teams.home.firstdowns.penalty.contents[0])
-            home_offense.first_downs_total=int(soup.teams.home.firstdowns.total.contents[0])
-            home_offense.penalties=int(soup.teams.home.penalties.number.contents[0])
-            home_offense.penalty_yards=int(soup.teams.home.penalties.yards.contents[0])
-            home_offense.fumbles=int(soup.teams.home.fumbles.number.contents[0])
-            home_offense.fumbles_lost=int(soup.teams.home.fumbles.lost.contents[0])
-            home_offense.rushes=int(soup.teams.home.totals.rushing.number.contents[0])
-            home_offense.rush_gain=int(soup.teams.home.totals.rushing.gain.contents[0])
-            home_offense.rush_loss=int(soup.teams.home.totals.rushing.loss.contents[0])
-            home_offense.rush_net=int(soup.teams.home.totals.rushing.net.contents[0])
-            home_offense.rush_touchdowns=int(soup.teams.home.totals.rushing.td.contents[0])
-            home_offense.total_plays=int(soup.teams.home.totals.rushing.totplays.contents[0])
-            home_offense.total_yards=int(soup.teams.home.totals.rushing.totyards.contents[0])
-            home_offense.pass_attempts=int(soup.teams.home.totals.passing.att.contents[0])
-            home_offense.pass_completions=int(soup.teams.home.totals.passing.comp.contents[0])
-            home_offense.pass_interceptions=int(soup.teams.home.totals.passing.int.contents[0])
-            home_offense.pass_yards=int(soup.teams.home.totals.passing.yards.contents[0])
-            home_offense.pass_touchdowns=int(soup.teams.home.totals.passing.td.contents[0])
-            home_offense.receptions=int(soup.teams.home.totals.receiving.number.contents[0])
-            home_offense.receiving_yards=int(soup.teams.home.totals.receiving.yards.contents[0])
-            home_offense.receiving_touchdowns=int(soup.teams.home.totals.receiving.td.contents[0])
-            home_offense.punts=int(soup.teams.home.totals.punt.number.contents[0])
-            home_offense.punt_yards=int(soup.teams.home.totals.punt.yards.contents[0])
-            home_offense.punt_returns=int(soup.teams.home.totals.returns.puntnumber.contents[0])
-            home_offense.punt_return_yards=int(soup.teams.home.totals.returns.puntyards.contents[0])
-            home_offense.punt_return_touchdowns=int(soup.teams.home.totals.returns.punttd.contents[0])
-            home_offense.kickoff_returns=int(soup.teams.home.totals.returns.konumber.contents[0])
-            home_offense.kickoff_return_yards=int(soup.teams.home.totals.returns.koyards.contents[0])
-            home_offense.kickoff_return_touchdowns=int(soup.teams.home.totals.returns.kotd.contents[0])
-            home_offense.touchdowns=int(soup.teams.home.totals.scoring.td.contents[0])
-            home_offense.pat_attempts=int(soup.teams.home.totals.scoring.offkickatt.contents[0])
-            home_offense.pat_made=int(soup.teams.home.totals.scoring.offkickmade.contents[0])
-            home_offense.two_point_conversion_attempts=int(soup.teams.home.totals.scoring.offrpatt.contents[0])
-            home_offense.two_point_conversions=int(soup.teams.home.totals.scoring.offrpmade.contents[0])
-            home_offense.field_goal_attempts=int(soup.teams.home.totals.scoring.fgatt.contents[0])
-            home_offense.field_goals_made=int(soup.teams.home.totals.scoring.fgmade.contents[0])
-            home_offense.points=int(soup.teams.home.totals.scoring.pts.contents[0])
+                # home team offense
+                home_offense, created = GameOffense.objects.get_or_create(game=game, team=t1)
             
-            home_offense.save()
-            print "Home Offense: %s" % home_offense
+                if game.date.year > 2006:
+                    home_offense.time_of_possession=datetime.time(0, int(home_time[0]), int(home_time[1]))
+                else:
+                    home_offense.time_of_possession = None
+            
+                home_offense.third_down_attempts=int(soup.teams.home.thirddowns.att.contents[0])
+                home_offense.third_down_conversions=int(soup.teams.home.thirddowns.conv.contents[0])
+                home_offense.fourth_down_attempts=int(soup.teams.home.fourthdowns.att.contents[0])
+                home_offense.fourth_down_conversions=int(soup.teams.home.fourthdowns.conv.contents[0])
+                home_offense.first_downs_rushing=int(soup.teams.home.firstdowns.rush.contents[0])
+                home_offense.first_downs_passing=int(soup.teams.home.firstdowns.contents[3].contents[0]) # can't use "pass"
+                home_offense.first_downs_penalty=int(soup.teams.home.firstdowns.penalty.contents[0])
+                home_offense.first_downs_total=int(soup.teams.home.firstdowns.total.contents[0])
+                home_offense.penalties=int(soup.teams.home.penalties.number.contents[0])
+                home_offense.penalty_yards=int(soup.teams.home.penalties.yards.contents[0])
+                home_offense.fumbles=int(soup.teams.home.fumbles.number.contents[0])
+                home_offense.fumbles_lost=int(soup.teams.home.fumbles.lost.contents[0])
+                home_offense.rushes=int(soup.teams.home.totals.rushing.number.contents[0])
+                home_offense.rush_gain=int(soup.teams.home.totals.rushing.gain.contents[0])
+                home_offense.rush_loss=int(soup.teams.home.totals.rushing.loss.contents[0])
+                home_offense.rush_net=int(soup.teams.home.totals.rushing.net.contents[0])
+                home_offense.rush_touchdowns=int(soup.teams.home.totals.rushing.td.contents[0])
+                home_offense.total_plays=int(soup.teams.home.totals.rushing.totplays.contents[0])
+                home_offense.total_yards=int(soup.teams.home.totals.rushing.totyards.contents[0])
+                home_offense.pass_attempts=int(soup.teams.home.totals.passing.att.contents[0])
+                home_offense.pass_completions=int(soup.teams.home.totals.passing.comp.contents[0])
+                home_offense.pass_interceptions=int(soup.teams.home.totals.passing.int.contents[0])
+                home_offense.pass_yards=int(soup.teams.home.totals.passing.yards.contents[0])
+                home_offense.pass_touchdowns=int(soup.teams.home.totals.passing.td.contents[0])
+                home_offense.receptions=int(soup.teams.home.totals.receiving.number.contents[0])
+                home_offense.receiving_yards=int(soup.teams.home.totals.receiving.yards.contents[0])
+                home_offense.receiving_touchdowns=int(soup.teams.home.totals.receiving.td.contents[0])
+                home_offense.punts=int(soup.teams.home.totals.punt.number.contents[0])
+                home_offense.punt_yards=int(soup.teams.home.totals.punt.yards.contents[0])
+                home_offense.punt_returns=int(soup.teams.home.totals.returns.puntnumber.contents[0])
+                home_offense.punt_return_yards=int(soup.teams.home.totals.returns.puntyards.contents[0])
+                home_offense.punt_return_touchdowns=int(soup.teams.home.totals.returns.punttd.contents[0])
+                home_offense.kickoff_returns=int(soup.teams.home.totals.returns.konumber.contents[0])
+                home_offense.kickoff_return_yards=int(soup.teams.home.totals.returns.koyards.contents[0])
+                home_offense.kickoff_return_touchdowns=int(soup.teams.home.totals.returns.kotd.contents[0])
+                home_offense.touchdowns=int(soup.teams.home.totals.scoring.td.contents[0])
+                home_offense.pat_attempts=int(soup.teams.home.totals.scoring.offkickatt.contents[0])
+                home_offense.pat_made=int(soup.teams.home.totals.scoring.offkickmade.contents[0])
+                home_offense.two_point_conversion_attempts=int(soup.teams.home.totals.scoring.offrpatt.contents[0])
+                home_offense.two_point_conversions=int(soup.teams.home.totals.scoring.offrpmade.contents[0])
+                home_offense.field_goal_attempts=int(soup.teams.home.totals.scoring.fgatt.contents[0])
+                home_offense.field_goals_made=int(soup.teams.home.totals.scoring.fgmade.contents[0])
+                home_offense.points=int(soup.teams.home.totals.scoring.pts.contents[0])
+            
+                home_offense.save()
+                print "Home Offense: %s" % home_offense
         
-            # home team defense
-            home_defense, created = GameDefense.objects.get_or_create(game = game, team = t1)
+                # home team defense
+                home_defense, created = GameDefense.objects.get_or_create(game = game, team = t1)
             
-            home_defense.safeties = int(soup.teams.home.totals.scoring.saf.contents[0])
-            home_defense.unassisted_tackles = int(soup.teams.home.totals.tackles.uatackles.contents[0])
-            home_defense.assisted_tackles = int(soup.teams.home.totals.tackles.atackles.contents[0])
-            home_defense.unassisted_tackles_for_loss = int(soup.teams.home.totals.tfl.uatfl.contents[0])
-            home_defense.assisted_tackles_for_loss = int(soup.teams.home.totals.tfl.atfl.contents[0])
-            home_defense.tackles_for_loss_yards = int(soup.teams.home.totals.tfl.tflyards.contents[0])
-            home_defense.unassisted_sacks = int(soup.teams.home.totals.tfl.uasacks.contents[0])
-            home_defense.assisted_sacks = int(soup.teams.home.totals.tfl.asacks.contents[0])
-            home_defense.sack_yards = int(soup.teams.home.totals.tfl.sackyards.contents[0])
-            home_defense.defensive_interceptions = int(soup.teams.home.totals.passdefense.intnumber.contents[0])
-            home_defense.defensive_interception_yards = int(soup.teams.home.totals.passdefense.intyards.contents[0])
-            home_defense.defensive_interception_touchdowns = int(soup.teams.home.totals.passdefense.inttd.contents[0])
-            home_defense.pass_breakups = int(soup.teams.home.totals.passdefense.passbreakups.contents[0])
-            home_defense.fumbles_forced = int(soup.teams.home.totals.fumbles.fumblesforced.contents[0])
-            home_defense.fumbles_number = int(soup.teams.home.totals.fumbles.fumblesnumber.contents[0])
-            home_defense.fumbles_yards = int(soup.teams.home.totals.fumbles.fumblesyards.contents[0])
-            home_defense.fumbles_touchdowns = int(soup.teams.home.totals.fumbles.fumblestd.contents[0])
+                home_defense.safeties = int(soup.teams.home.totals.scoring.saf.contents[0])
+                home_defense.unassisted_tackles = int(soup.teams.home.totals.tackles.uatackles.contents[0])
+                home_defense.assisted_tackles = int(soup.teams.home.totals.tackles.atackles.contents[0])
+                home_defense.unassisted_tackles_for_loss = int(soup.teams.home.totals.tfl.uatfl.contents[0])
+                home_defense.assisted_tackles_for_loss = int(soup.teams.home.totals.tfl.atfl.contents[0])
+                home_defense.tackles_for_loss_yards = int(soup.teams.home.totals.tfl.tflyards.contents[0])
+                home_defense.unassisted_sacks = int(soup.teams.home.totals.tfl.uasacks.contents[0])
+                home_defense.assisted_sacks = int(soup.teams.home.totals.tfl.asacks.contents[0])
+                home_defense.sack_yards = int(soup.teams.home.totals.tfl.sackyards.contents[0])
+                home_defense.defensive_interceptions = int(soup.teams.home.totals.passdefense.intnumber.contents[0])
+                home_defense.defensive_interception_yards = int(soup.teams.home.totals.passdefense.intyards.contents[0])
+                home_defense.defensive_interception_touchdowns = int(soup.teams.home.totals.passdefense.inttd.contents[0])
+                home_defense.pass_breakups = int(soup.teams.home.totals.passdefense.passbreakups.contents[0])
+                home_defense.fumbles_forced = int(soup.teams.home.totals.fumbles.fumblesforced.contents[0])
+                home_defense.fumbles_number = int(soup.teams.home.totals.fumbles.fumblesnumber.contents[0])
+                home_defense.fumbles_yards = int(soup.teams.home.totals.fumbles.fumblesyards.contents[0])
+                home_defense.fumbles_touchdowns = int(soup.teams.home.totals.fumbles.fumblestd.contents[0])
             
-            home_defense.save()
-            print "Home Defense: %s" % home_defense
+                home_defense.save()
+                print "Home Defense: %s" % home_defense
         
-            # visiting team offense
-            visiting_offense, created = GameOffense.objects.get_or_create(game=game_v, team=t2)
+                # visiting team offense
+                visiting_offense, created = GameOffense.objects.get_or_create(game=game_v, team=t2)
             
-            if game.date.year > 2006:
-                visiting_offense.time_of_possession=datetime.time(0, int(visitor_time[0]), int(visitor_time[1]))
-            else:
-                visiting_offense.time_of_possession=None
+                if game.date.year > 2006:
+                    visiting_offense.time_of_possession=datetime.time(0, int(visitor_time[0]), int(visitor_time[1]))
+                else:
+                    visiting_offense.time_of_possession=None
             
-            visiting_offense.third_down_attempts=int(soup.teams.visitor.thirddowns.att.contents[0])
-            visiting_offense.third_down_conversions=int(soup.teams.visitor.thirddowns.conv.contents[0])
-            visiting_offense.fourth_down_attempts=int(soup.teams.visitor.fourthdowns.att.contents[0])
-            visiting_offense.fourth_down_conversions=int(soup.teams.visitor.fourthdowns.conv.contents[0])
-            visiting_offense.first_downs_rushing=int(soup.teams.visitor.firstdowns.rush.contents[0])
-            visiting_offense.first_downs_passing=int(soup.teams.visitor.firstdowns.contents[3].contents[0]) # can't use "pass"
-            visiting_offense.first_downs_penalty=int(soup.teams.visitor.firstdowns.penalty.contents[0])
-            visiting_offense.first_downs_total=int(soup.teams.visitor.firstdowns.total.contents[0])
-            visiting_offense.penalties=int(soup.teams.visitor.penalties.number.contents[0])
-            visiting_offense.penalty_yards=int(soup.teams.visitor.penalties.yards.contents[0])
-            visiting_offense.fumbles=int(soup.teams.visitor.fumbles.number.contents[0])
-            visiting_offense.fumbles_lost=int(soup.teams.visitor.fumbles.lost.contents[0])
-            visiting_offense.rushes=int(soup.teams.visitor.totals.rushing.number.contents[0])
-            visiting_offense.rush_gain=int(soup.teams.visitor.totals.rushing.gain.contents[0])
-            visiting_offense.rush_loss=int(soup.teams.visitor.totals.rushing.loss.contents[0])
-            visiting_offense.rush_net=int(soup.teams.visitor.totals.rushing.net.contents[0])
-            visiting_offense.rush_touchdowns=int(soup.teams.visitor.totals.rushing.td.contents[0])
-            visiting_offense.total_plays=int(soup.teams.visitor.totals.rushing.totplays.contents[0])
-            visiting_offense.total_yards=int(soup.teams.visitor.totals.rushing.totyards.contents[0])
-            visiting_offense.pass_attempts=int(soup.teams.visitor.totals.passing.att.contents[0])
-            visiting_offense.pass_completions=int(soup.teams.visitor.totals.passing.comp.contents[0])
-            visiting_offense.pass_interceptions=int(soup.teams.visitor.totals.passing.int.contents[0])
-            visiting_offense.pass_yards=int(soup.teams.visitor.totals.passing.yards.contents[0])
-            visiting_offense.pass_touchdowns=int(soup.teams.visitor.totals.passing.td.contents[0])
-            visiting_offense.receptions=int(soup.teams.visitor.totals.receiving.number.contents[0])
-            visiting_offense.receiving_yards=int(soup.teams.visitor.totals.receiving.yards.contents[0])
-            visiting_offense.receiving_touchdowns=int(soup.teams.visitor.totals.receiving.td.contents[0])
-            visiting_offense.punts=int(soup.teams.visitor.totals.punt.number.contents[0])
-            visiting_offense.punt_yards=int(soup.teams.visitor.totals.punt.yards.contents[0])
-            visiting_offense.punt_returns=int(soup.teams.visitor.totals.returns.puntnumber.contents[0])
-            visiting_offense.punt_return_yards=int(soup.teams.visitor.totals.returns.puntyards.contents[0])
-            visiting_offense.punt_return_touchdowns=int(soup.teams.visitor.totals.returns.punttd.contents[0])
-            visiting_offense.kickoff_returns=int(soup.teams.visitor.totals.returns.konumber.contents[0])
-            visiting_offense.kickoff_return_yards=int(soup.teams.visitor.totals.returns.koyards.contents[0])
-            visiting_offense.kickoff_return_touchdowns=int(soup.teams.visitor.totals.returns.kotd.contents[0])
-            visiting_offense.touchdowns=int(soup.teams.visitor.totals.scoring.td.contents[0])
-            visiting_offense.pat_attempts=int(soup.teams.visitor.totals.scoring.offkickatt.contents[0])
-            visiting_offense.pat_made=int(soup.teams.visitor.totals.scoring.offkickmade.contents[0])
-            visiting_offense.two_point_conversion_attempts=int(soup.teams.visitor.totals.scoring.offrpatt.contents[0])
-            visiting_offense.two_point_conversions=int(soup.teams.visitor.totals.scoring.offrpmade.contents[0])
-            visiting_offense.field_goal_attempts=int(soup.teams.visitor.totals.scoring.fgatt.contents[0])
-            visiting_offense.field_goals_made=int(soup.teams.visitor.totals.scoring.fgmade.contents[0])
-            visiting_offense.points=int(soup.teams.visitor.totals.scoring.pts.contents[0])
+                visiting_offense.third_down_attempts=int(soup.teams.visitor.thirddowns.att.contents[0])
+                visiting_offense.third_down_conversions=int(soup.teams.visitor.thirddowns.conv.contents[0])
+                visiting_offense.fourth_down_attempts=int(soup.teams.visitor.fourthdowns.att.contents[0])
+                visiting_offense.fourth_down_conversions=int(soup.teams.visitor.fourthdowns.conv.contents[0])
+                visiting_offense.first_downs_rushing=int(soup.teams.visitor.firstdowns.rush.contents[0])
+                visiting_offense.first_downs_passing=int(soup.teams.visitor.firstdowns.contents[3].contents[0]) # can't use "pass"
+                visiting_offense.first_downs_penalty=int(soup.teams.visitor.firstdowns.penalty.contents[0])
+                visiting_offense.first_downs_total=int(soup.teams.visitor.firstdowns.total.contents[0])
+                visiting_offense.penalties=int(soup.teams.visitor.penalties.number.contents[0])
+                visiting_offense.penalty_yards=int(soup.teams.visitor.penalties.yards.contents[0])
+                visiting_offense.fumbles=int(soup.teams.visitor.fumbles.number.contents[0])
+                visiting_offense.fumbles_lost=int(soup.teams.visitor.fumbles.lost.contents[0])
+                visiting_offense.rushes=int(soup.teams.visitor.totals.rushing.number.contents[0])
+                visiting_offense.rush_gain=int(soup.teams.visitor.totals.rushing.gain.contents[0])
+                visiting_offense.rush_loss=int(soup.teams.visitor.totals.rushing.loss.contents[0])
+                visiting_offense.rush_net=int(soup.teams.visitor.totals.rushing.net.contents[0])
+                visiting_offense.rush_touchdowns=int(soup.teams.visitor.totals.rushing.td.contents[0])
+                visiting_offense.total_plays=int(soup.teams.visitor.totals.rushing.totplays.contents[0])
+                visiting_offense.total_yards=int(soup.teams.visitor.totals.rushing.totyards.contents[0])
+                visiting_offense.pass_attempts=int(soup.teams.visitor.totals.passing.att.contents[0])
+                visiting_offense.pass_completions=int(soup.teams.visitor.totals.passing.comp.contents[0])
+                visiting_offense.pass_interceptions=int(soup.teams.visitor.totals.passing.int.contents[0])
+                visiting_offense.pass_yards=int(soup.teams.visitor.totals.passing.yards.contents[0])
+                visiting_offense.pass_touchdowns=int(soup.teams.visitor.totals.passing.td.contents[0])
+                visiting_offense.receptions=int(soup.teams.visitor.totals.receiving.number.contents[0])
+                visiting_offense.receiving_yards=int(soup.teams.visitor.totals.receiving.yards.contents[0])
+                visiting_offense.receiving_touchdowns=int(soup.teams.visitor.totals.receiving.td.contents[0])
+                visiting_offense.punts=int(soup.teams.visitor.totals.punt.number.contents[0])
+                visiting_offense.punt_yards=int(soup.teams.visitor.totals.punt.yards.contents[0])
+                visiting_offense.punt_returns=int(soup.teams.visitor.totals.returns.puntnumber.contents[0])
+                visiting_offense.punt_return_yards=int(soup.teams.visitor.totals.returns.puntyards.contents[0])
+                visiting_offense.punt_return_touchdowns=int(soup.teams.visitor.totals.returns.punttd.contents[0])
+                visiting_offense.kickoff_returns=int(soup.teams.visitor.totals.returns.konumber.contents[0])
+                visiting_offense.kickoff_return_yards=int(soup.teams.visitor.totals.returns.koyards.contents[0])
+                visiting_offense.kickoff_return_touchdowns=int(soup.teams.visitor.totals.returns.kotd.contents[0])
+                visiting_offense.touchdowns=int(soup.teams.visitor.totals.scoring.td.contents[0])
+                visiting_offense.pat_attempts=int(soup.teams.visitor.totals.scoring.offkickatt.contents[0])
+                visiting_offense.pat_made=int(soup.teams.visitor.totals.scoring.offkickmade.contents[0])
+                visiting_offense.two_point_conversion_attempts=int(soup.teams.visitor.totals.scoring.offrpatt.contents[0])
+                visiting_offense.two_point_conversions=int(soup.teams.visitor.totals.scoring.offrpmade.contents[0])
+                visiting_offense.field_goal_attempts=int(soup.teams.visitor.totals.scoring.fgatt.contents[0])
+                visiting_offense.field_goals_made=int(soup.teams.visitor.totals.scoring.fgmade.contents[0])
+                visiting_offense.points=int(soup.teams.visitor.totals.scoring.pts.contents[0])
             
-            visiting_offense.save()
-            print "Visiting Offense: %s" % visiting_offense
+                visiting_offense.save()
+                print "Visiting Offense: %s" % visiting_offense
 
-            # visiting team defense
-            visiting_defense, created = GameDefense.objects.get_or_create(game = game_v, team = t2)
+                # visiting team defense
+                visiting_defense, created = GameDefense.objects.get_or_create(game = game_v, team = t2)
 
-            visiting_defense.safeties = int(soup.teams.visitor.totals.scoring.saf.contents[0])
-            visiting_defense.unassisted_tackles = int(soup.teams.visitor.totals.tackles.uatackles.contents[0])
-            visiting_defense.assisted_tackles = int(soup.teams.visitor.totals.tackles.atackles.contents[0])
-            visiting_defense.unassisted_tackles_for_loss = int(soup.teams.visitor.totals.tfl.uatfl.contents[0])
-            visiting_defense.assisted_tackles_for_loss = int(soup.teams.visitor.totals.tfl.atfl.contents[0])
-            visiting_defense.tackles_for_loss_yards = int(soup.teams.visitor.totals.tfl.tflyards.contents[0])
-            visiting_defense.unassisted_sacks = int(soup.teams.visitor.totals.tfl.uasacks.contents[0])
-            visiting_defense.assisted_sacks = int(soup.teams.visitor.totals.tfl.asacks.contents[0])
-            visiting_defense.sack_yards = int(soup.teams.visitor.totals.tfl.sackyards.contents[0])
-            visiting_defense.defensive_interceptions = int(soup.teams.visitor.totals.passdefense.intnumber.contents[0])
-            visiting_defense.defensive_interception_yards = int(soup.teams.visitor.totals.passdefense.intyards.contents[0])
-            visiting_defense.defensive_interception_touchdowns = int(soup.teams.visitor.totals.passdefense.inttd.contents[0])
-            visiting_defense.pass_breakups = int(soup.teams.visitor.totals.passdefense.passbreakups.contents[0])
-            visiting_defense.fumbles_forced = int(soup.teams.visitor.totals.fumbles.fumblesforced.contents[0])
-            visiting_defense.fumbles_number = int(soup.teams.visitor.totals.fumbles.fumblesnumber.contents[0])
-            visiting_defense.fumbles_yards = int(soup.teams.visitor.totals.fumbles.fumblesyards.contents[0])
-            visiting_defense.fumbles_touchdowns = int(soup.teams.visitor.totals.fumbles.fumblestd.contents[0])
+                visiting_defense.safeties = int(soup.teams.visitor.totals.scoring.saf.contents[0])
+                visiting_defense.unassisted_tackles = int(soup.teams.visitor.totals.tackles.uatackles.contents[0])
+                visiting_defense.assisted_tackles = int(soup.teams.visitor.totals.tackles.atackles.contents[0])
+                visiting_defense.unassisted_tackles_for_loss = int(soup.teams.visitor.totals.tfl.uatfl.contents[0])
+                visiting_defense.assisted_tackles_for_loss = int(soup.teams.visitor.totals.tfl.atfl.contents[0])
+                visiting_defense.tackles_for_loss_yards = int(soup.teams.visitor.totals.tfl.tflyards.contents[0])
+                visiting_defense.unassisted_sacks = int(soup.teams.visitor.totals.tfl.uasacks.contents[0])
+                visiting_defense.assisted_sacks = int(soup.teams.visitor.totals.tfl.asacks.contents[0])
+                visiting_defense.sack_yards = int(soup.teams.visitor.totals.tfl.sackyards.contents[0])
+                visiting_defense.defensive_interceptions = int(soup.teams.visitor.totals.passdefense.intnumber.contents[0])
+                visiting_defense.defensive_interception_yards = int(soup.teams.visitor.totals.passdefense.intyards.contents[0])
+                visiting_defense.defensive_interception_touchdowns = int(soup.teams.visitor.totals.passdefense.inttd.contents[0])
+                visiting_defense.pass_breakups = int(soup.teams.visitor.totals.passdefense.passbreakups.contents[0])
+                visiting_defense.fumbles_forced = int(soup.teams.visitor.totals.fumbles.fumblesforced.contents[0])
+                visiting_defense.fumbles_number = int(soup.teams.visitor.totals.fumbles.fumblesnumber.contents[0])
+                visiting_defense.fumbles_yards = int(soup.teams.visitor.totals.fumbles.fumblesyards.contents[0])
+                visiting_defense.fumbles_touchdowns = int(soup.teams.visitor.totals.fumbles.fumblestd.contents[0])
 
-            visiting_defense.save()
-            print "Visiting Defense: %s" % visiting_defense
+                visiting_defense.save()
+                print "Visiting Defense: %s" % visiting_defense
             
         except:
             pass
 #            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
+            
     
 
 def game_drive_loader(game):
@@ -412,7 +419,6 @@ def game_drive_loader(game):
         plays = int(cells[9].contents[0])
         yards = int(cells[10].contents[0])
         time_of_possession = datetime.time(0, int(cells[11].contents[0].split(":")[0]), int(cells[11].contents[0].split(":")[1]))
-        print drive, team, quarter, start_how, start_time, start_position, start_side, end_result.abbrev, end_time, end_position, end_side, plays, yards, time_of_possession
         try:
             d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, start_side=start_side, end_result=end_result, end_time=end_time, end_position=end_position, end_side=end_side, plays=plays, yards=yards,time_of_possession=time_of_possession)
         except:
