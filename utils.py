@@ -110,10 +110,10 @@ def game_updater(year, teams, date=None):
                 if not g.drives:
                     game_drive_loader(g)
                 else:
-                    pass
+                    raise
                 games.append(base_url + game_file)
         except:
-            pass
+            raise
     update_college_year(year)
     return games
 
