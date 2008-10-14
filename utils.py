@@ -72,7 +72,6 @@ def game_updater(year, teams, date=None):
                     team1_score = None
                     team2_score = None
                     t1_result = None
-                print stringdate
                 date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
                 try:
                     t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
@@ -94,7 +93,7 @@ def game_updater(year, teams, date=None):
                 g.ncaa_xml = game_file.split('.xml')[0].strip()
                 if ot:
                     g.ot = 't'
-                if row.findAll('td')[1].contents:
+                if len(row.findAll('td')[1].contents) > 0:
                     if row.findAll('td')[1].contents[0] == '+':
                         g.t1_game_type = 'H'
                     elif row.findAll('td')[1].contents[0] == '*+':
