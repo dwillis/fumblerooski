@@ -48,6 +48,7 @@ def game_updater(year, teams, date=None):
     games = []
     
     for team in teams:
+        print team.id
         url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=15" % (team.id, year)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
