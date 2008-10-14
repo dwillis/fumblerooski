@@ -107,7 +107,7 @@ def game_updater(year, teams, date=None):
                 except:
                     g.t1_game_type = 'A'
                 g.save()
-                if g.drives = False:
+                if not g.drives:
                     game_drive_loader(g)
                 else:
                     pass
