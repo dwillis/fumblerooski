@@ -93,7 +93,7 @@ def game_updater(year, teams, date=None):
                 g.ncaa_xml = game_file.split('.xml')[0].strip()
                 if ot:
                     g.ot = 't'
-                try:
+                if row.findAll('td')[1].contents:
                     if row.findAll('td')[1].contents[0] == '+':
                         g.t1_game_type = 'H'
                     elif row.findAll('td')[1].contents[0] == '*+':
@@ -104,7 +104,7 @@ def game_updater(year, teams, date=None):
                         g.t1_game_type = 'N'
                     elif row.findAll('td')[1].contents[0] == '*^':
                         g.t1_game_type = 'N'
-                except:
+                else:
                     g.t1_game_type = 'A'
                 g.save()
                 if not g.has_drives:
