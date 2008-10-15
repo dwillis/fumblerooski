@@ -13,8 +13,8 @@
 <table>
   <th>Season</th><th>Date</th><th>Opponent</th><th>Outcome</th><th>First Downs</th><th>Pct. Rushing</th>
   
-  {% for game in offense_list %}
-  <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.team2 }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td><td>{{ game.first_downs_total }}</td><td>{{ game.rushing_first_downs_pct|floatformat }}</td></tr>
+  {% for offense in offense_list %}
+  <tr><td>{{ offense.game.season }}</td><td>{{ offense.game.date|date:"N d, Y" }}</td><td>{{ offense.game.team2 }}</td><td>{{ offense.game.get_t1_result_display }}, {{ offense.game.team1_score }}-{{ offense.game.team2_score }}</td><td>{{ offense.first_downs_total }}</td><td>{{ offense.rushing_first_downs_pct|floatformat }}</td></tr>
   {% endfor %}
 
 </table>
