@@ -9,10 +9,15 @@
 
 <h4><a href="rushing/">Rushing</a> | <a href="passing/">Passing</a> | <a href="penalty/">Penalty</a></h4>
 
-<ul>
+
+<table>
+  <th>Season</th><th>Date</th><th>Opponent</th><th>Outcome</th><th>First Downs</th><th>Pct. Rushing</th>
+  
   {% for game in offense_list %}
-  <li>{{ game.game }}: {{ game.first_downs_total }} total first downs ({{ game.rushing_first_downs_pct|floatformat }} percent rushing)</li>
+  <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.team2 }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td><td>{{ game.first_downs_total }}</td><td>{{ game.rushing_first_downs_pct|floatformat }}</td></tr>
   {% endfor %}
-</ul>
+
+</table>
+
 
 {% endblock %}
