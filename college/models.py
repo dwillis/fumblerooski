@@ -37,6 +37,17 @@ RANKINGTYPE_CHOICES = (
     ('P', 'Player'),
 )
 
+PLAY_CHOICES = (
+    ('R', 'Run'),
+    ('P', 'Pass'),
+    ('F', 'Field Goal'),
+    ('X', 'Extra Point'),
+    ('N', 'Penalty'),
+    ('K', 'Kickoff'),
+    ('U', 'Punt'),
+    ('T', 'Turnover'),
+)
+
 DIVISION_CHOICES = (
     ('B', 'Bowl Subdivision'),
     ('C', 'Championship Subdivision'),
@@ -261,6 +272,9 @@ class Game(models.Model):
     def get_ncaa_drive_url(self):
         return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
     
+    def get_play_by_play_url(self):
+        return "http://web1.ncaa.org/mfb/driveSummary.jsp?expand=A&acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
+    
     def margin(self):
         return self.team1_score-self.team2_score
     
@@ -297,6 +311,27 @@ class GameDrive(models.Model):
     
     def __unicode__(self):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
+
+class PlayType(models.Model):
+    name = models.CharField(max_length=75)
+    slug = models.SlugField(max_length=75)
+    
+    def __unicode__(self):
+        return self.name
+    
+
+class Play(models.Model):
+    game = models.ForeignKey(Game)
+    team = models.ForeignKey(College)
+    year = models.IntegerField()
+    drive = models.ForeignKey(GameDrive)
+    down = models.PositiveSmallIntegerField()
+    distance = models.IntegerField()
+    play_type = models.ForeignKey(PlayType)
+    description = models.TextField()
+    
+    def __unicode__(self):
+        return self.description
 
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)

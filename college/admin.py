@@ -44,6 +44,9 @@ class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('end_result','start_how')
     list_display = ('game', 'team', 'drive', 'end_result')
 
+class PlayTypeAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
+
 admin.site.register(College, CollegeAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(Coach, CoachAdmin)
@@ -55,3 +58,4 @@ admin.site.register(Ranking, RankingAdmin)
 admin.site.register(Week, WeekAdmin)
 admin.site.register(DriveOutcome, DriveOutcomeAdmin)
 admin.site.register(GameDrive, GameDriveAdmin)
+admin.site.register(PlayType, PlayTypeAdmin)
