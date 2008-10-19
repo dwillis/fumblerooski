@@ -579,8 +579,10 @@ class Ranking(models.Model):
     year = models.IntegerField()
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
+    is_tied = models.BooleanField()
     actual = models.FloatField()
     conference_rank = models.PositiveIntegerField(null=True)
+    is_conf_tied = models.BooleanField()
     
     def __unicode__(self):
         return "%s - %s, %s (Week %s)" % (self.ranking_type, self.college, self.year, self.week)
