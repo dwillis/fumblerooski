@@ -119,7 +119,7 @@ class College(models.Model):
 
     def get_absolute_url(self):
         return '/college/teams/%s/' % self.slug
-
+    
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)
     year = models.IntegerField()
@@ -139,6 +139,10 @@ class CollegeYear(models.Model):
     
     def game_count(self):
         return self.wins+self.losses+self.ties
+    
+    def get_ncaa_week_url(self):
+        return 'http://web1.ncaa.org/football/exec/rankingSummary?year=%d&org=%d&week=' % (self.year, self.college.id)
+
 
 class CollegeTotal(models.Model):
     college = models.ForeignKey(College)

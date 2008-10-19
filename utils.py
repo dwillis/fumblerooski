@@ -7,7 +7,7 @@ from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome
+from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerOffense, PlayerDefense, PlayerSpecial, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
 
 
 def update_college_year(year):
@@ -432,6 +432,21 @@ def game_drive_loader(game):
             d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, start_side=start_side, end_result=end_result, end_time=end_time, end_position=end_position, end_side=end_side, plays=plays, yards=yards,time_of_possession=time_of_possession)
         except:
             print "Could not save drive %s, %s, %s" % (drive, game, team)
+
+
+def ranking_loader(team, year, week):
+    t = College.objects.get(id=team)
+    cy = CollegeYear.objects.get(college=t, year=year)
+    w = Week.objects.get(year=year, week_num=week)
+    html = urllib.urlopen(cy.get_ncaa_week_url()+int(week)).read()
+    soup = BeautifulSoup(html)
+    rankings = soup.findAll('table')[4]
+    rows = rankings.findAll('tr')[5:]
+    for row in rows:
+        cells = row.findAll('td')
+        rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
+        r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0]), actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0]))
+        
 
 def game_fetcher(year):
     l = get_summary_links(year)
