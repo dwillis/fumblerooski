@@ -579,7 +579,7 @@ class Ranking(models.Model):
     year = models.IntegerField()
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
-    actual = models.DecimalField(decimal_places=2, max_digits=5)
+    actual = models.FloatField(decimal_places=2, max_digits=5)
     conference_rank = models.PositiveIntegerField(null=True)
     
     def __unicode__(self):
