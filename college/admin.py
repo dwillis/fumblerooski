@@ -41,7 +41,7 @@ class DriveOutcomeAdmin(admin.ModelAdmin):
     list_display = ('abbrev', 'name')
 
 class GameDriveAdmin(admin.ModelAdmin):
-    list_filter = ('end_result','start_how')
+    list_filter = ('start_how', 'plays')
     list_display = ('game', 'team', 'drive', 'end_result')
 
 class PlayTypeAdmin(admin.ModelAdmin):
