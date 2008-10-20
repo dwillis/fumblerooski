@@ -213,7 +213,7 @@ def load_ncaa_game_xml(urls):
             
             print "Saved %s" % game
             
-            while game.has_stats == False:
+            while not game.has_stats:
             
             
                 home_time = soup.teams.home.top.contents[0].split(":") or None
@@ -445,6 +445,7 @@ def ranking_loader(team, year, week):
     for row in rows:
         cells = row.findAll('td')
         rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
+        if cells[1].contents[0]
         r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0]), actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0]))
         
 
