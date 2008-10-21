@@ -119,6 +119,9 @@ class College(models.Model):
 
     def get_absolute_url(self):
         return '/college/teams/%s/' % self.slug
+        
+    def current_record(self):
+        return "(%d-%d)" % (self.collegeyear_set.all()[0].wins, self.collegeyear_set.all()[0].losses)
     
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)

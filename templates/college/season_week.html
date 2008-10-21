@@ -7,7 +7,7 @@
 <table>
     <th>Date</th><th>Team</th><th>Opponent</th><th>Location</th><th>Result</th>
     {% for game in games %}
-    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team1.get_absolute_url }}">{{ game.team1.name }}</a></td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a></td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a>{% else %}{% endif %}</td></tr>
+    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td><a href="{{ game.team1.get_absolute_url }}">{{ game.team1.name }}</a> {{ game.team1.current_record }}</td><td><a href="{{ game.team2.get_absolute_url }}">{{ game.team2.name }}</a> {{ game.team2.current_record }}</td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a>{% else %}{% endif %}</td></tr>
     {% endfor %}
 </table>
 
