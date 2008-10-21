@@ -449,14 +449,9 @@ def ranking_loader(team, year, week):
             r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0]), actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0]))
         
 
-def player_game_stats():
+def player_game_stats(game):
     while not game.has_player_stats:
         html = urllib.urlopen(game.get_ncaa_xml_url()).read()
-    #    t1 = College.objects.get(id=8)
-    #    t2 = College.objects.get(id=433)
-    #    game = Game.objects.get(team1=t1, team2=t2, date='2008-10-18')
-    #    year= 2008
-    #    html = open('/Users/dwillis/code/fumblerooski/xml/200800000000820081018.xml').read()
         soup = BeautifulSoup(html)
         f = soup.findAll(text="&#160;")
         for each in f:
