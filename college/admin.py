@@ -31,7 +31,7 @@ class RankingTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class RankingAdmin(admin.ModelAdmin):
-    list_filter = ('year', 'ranking_type')
+    list_filter = ('year',)
 
 class WeekAdmin(admin.ModelAdmin):
     list_filter = ('year',)
@@ -47,6 +47,10 @@ class GameDriveAdmin(admin.ModelAdmin):
 class PlayTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
+admin.site.register(PlayerPass)
+admin.site.register(PlayerRush)
+admin.site.register(PlayerGame)
+admin.site.register(PlayerReceiving)
 admin.site.register(Position)
 admin.site.register(College, CollegeAdmin)
 admin.site.register(City, CityAdmin)
