@@ -456,7 +456,7 @@ def player_game_stats(game):
         f = soup.findAll(text="&#160;")
         for each in f:
             each.replaceWith("0")
-        if game.t1_game_type == 'H' || game.t1_game_type == 'N':  # check this!
+        if game.t1_game_type != 'A':
             team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
             players = soup.teams.home.players.findAll('player')
         else:
