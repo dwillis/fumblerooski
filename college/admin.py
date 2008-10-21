@@ -47,10 +47,6 @@ class GameDriveAdmin(admin.ModelAdmin):
 class PlayTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
-admin.site.register(PlayerPass)
-admin.site.register(PlayerRush)
-admin.site.register(PlayerGame)
-admin.site.register(PlayerReceiving)
 admin.site.register(Position)
 admin.site.register(College, CollegeAdmin)
 admin.site.register(City, CityAdmin)
