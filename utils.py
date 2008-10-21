@@ -520,7 +520,7 @@ def player_game_stats(game):
                     p_conv = int(p.find("passing").find("conv").contents[0])
                     p_tp = int(p.find("passing").find("totplays").contents[0])
                     p_ty = int(p.find("passing").find("totyards").contents[0])
-                    p_eff = int(p.find("passing").find("passeff").contents[0])
+                    p_eff = float(p.find("passing").find("passeff").contents[0])
                     pp, created = PlayerPass.objects.get_or_create(player=player, game=game, attempts=p_att, completions=p_comp, interceptions=p_int, yards=p_yards, td=p_td, conversions=p_conv, total_plays=p_tp, total_yards=p_ty, pass_efficiency=p_eff)
                 if p.find("receiving"):
                     r_number = int(p.find("receiving").find("number").contents[0])
