@@ -275,7 +275,7 @@ class Game(models.Model):
         return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.slug, self.team1.slug, self.date.year, self.date.month, self.date.day)
         
     def get_ncaa_xml_url(self):
-        return 'http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/%s.xml' % (self.date.year, self.ncaa_xml)
+        return 'http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/%s.xml' % (self.date.year, self.ncaa_xml.strip())
     
     def get_ncaa_drive_url(self):
         return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
