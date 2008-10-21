@@ -260,6 +260,7 @@ class Game(models.Model):
     duration = models.TimeField(null=True)
     has_drives = models.BooleanField()
     has_stats = models.BooleanField()
+    has_player_stats = models.BooleanField()
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
@@ -272,6 +273,9 @@ class Game(models.Model):
     
     def get_reverse_url(self):
         return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.slug, self.team1.slug, self.date.year, self.date.month, self.date.day)
+        
+    def get_ncaa_xml_url(self):
+        return 'http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/%s.xml' % (self.date.year, self.ncaa_xml)
     
     def get_ncaa_drive_url(self):
         return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
@@ -471,74 +475,136 @@ class PlayerGame(models.Model):
     def __unicode__(self):
         return self.player.name.full_name()
 
-class PlayerOffense(models.Model):
+class PlayerRush(models.Model):
     player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
-    rushes = models.IntegerField()
-    rush_gain = models.IntegerField()
-    rush_loss = models.IntegerField()
-    rush_net = models.IntegerField()
-    rush_td = models.IntegerField()
-    pass_attempts = models.IntegerField()
-    pass_complete = models.IntegerField()
-    pass_intercept = models.IntegerField()
-    pass_yards = models.IntegerField()
-    pass_td = models.IntegerField()
-    conversions = models.IntegerField()
-    offense_plays = models.IntegerField()
-    offense_yards = models.IntegerField()
-    receptions = models.IntegerField()
-    reception_yards = models.IntegerField()
-    reception_td = models.IntegerField()
-
-    def yards_per_rush(self):
-        return self.rush_net/self.rushes
-
-    def yards_per_attempt(self):
-        return self.pass_yards/self.pass_attempts
-
-    def yards_per_catch(self):
-        return self.reception_yards/self.receptions
+    rushes = models.IntegerField(default=0)
+    gain = models.IntegerField(default=0)
+    loss = models.IntegerField(default=0)
+    net = models.IntegerField(default=0)
+    td = models.IntegerField(default=0)
+    long_yards = models.IntegerField(default=0)
+    average = models.FloatField(default=0)
+    total_plays = models.IntegerField(default=0)
+    total_yards = models.IntegerField(default=0)
 
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
 
-class PlayerDefense(models.Model):
+class PlayerPass(models.Model):
     player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
-    interceptions = models.IntegerField()
-    interception_yards = models.IntegerField()
-    interception_td = models.IntegerField()
-    fumble_returns = models.IntegerField()
-    fumble_return_yards = models.IntegerField()
-    fumble_return_td = models.IntegerField()
-    safeties = models.IntegerField()
+    attempts = models.IntegerField(default=0)
+    completions = models.IntegerField(default=0)
+    interceptions = models.IntegerField(default=0)
+    yards = models.IntegerField(default=0)
+    td = models.IntegerField(default=0)
+    conversions = models.IntegerField(default=0)
+    total_plays = models.IntegerField(default=0)
+    total_yards = models.IntegerField(default=0)
+    pass_efficiency = models.IntegerField(default=0)
 
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
 
-class PlayerSpecial(models.Model):
+class PlayerReceiving(models.Model):
     player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
-    punts = models.IntegerField()
-    punt_yards = models.IntegerField()
-    punt_returns = models.IntegerField()
-    punt_return_yards = models.IntegerField()
-    punt_return_td = models.IntegerField()
-    kickoff_returns = models.IntegerField()
-    kickoff_return_yards = models.IntegerField()
-    kickoff_return_td = models.IntegerField()
-    pat_attempts = models.IntegerField()
-    pat_made = models.IntegerField()
-    two_point_attempts = models.IntegerField()
-    two_point_made = models.IntegerField()
-    defense_pat_attempts = models.IntegerField()
-    defense_pat_made = models.IntegerField()
-    defense_return_attempts = models.IntegerField()
-    defense_return_made = models.IntegerField()
-    field_goal_attempts = models.IntegerField()
-    field_goal_made = models.IntegerField()
+    receptions = models.IntegerField(default=0)
+    yards = models.IntegerField(default=0)
+    td = models.IntegerField(default=0)
+    long_yards = models.IntegerField(default=0)
+    average = models.FloatField(default=0)
 
+    def __unicode__(self):
+        return "%s - %s" % (self.player.name, self.game)
+
+class PlayerScoring(models.Model):
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    td = models.IntegerField(default=0)
+    fg_att = models.IntegerField(default=0)
+    fg_made = models.IntegerField(default=0)
+    pat_att = models.IntegerField(default=0)
+    pat_made = models.IntegerField(default=0)
+    two_pt_att = models.IntegerField(default=0)
+    two_pt_made = models.IntegerField(default=0)
+    def_pat_att = models.IntegerField(default=0)
+    def_pat_made = models.IntegerField(default=0)
+    def_two_pt_att = models.IntegerField(default=0)
+    def_two_pt_made = models.IntegerField(default=0)
+    safeties = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.player.name, self.game)
+
+
+class PlayerTackle(models.Model):
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    unassisted_tackles = models.IntegerField(default=0)
+    assisted_tackles = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.player.name, self.game)
+
+    def total_tackles(self):
+        return self.unassisted_tackles+self.assisted_tackles
+
+
+class PlayerTacklesLoss(models.Model):
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    unassisted_tackles_for_loss = models.IntegerField(default=0)
+    assisted_tackles_for_loss = models.IntegerField(default=0)
+    tackles_for_loss_yards = models.IntegerField(default=0)
+    unassisted_sacks = models.IntegerField(default=0)
+    assisted_sacks = models.IntegerField(default=0)
+    sack_yards = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.player.name, self.game)
+    
+    def total_sacks(self):
+        return self.unassisted_sacks+self.assisted_sacks
+    
+    def total_tackles_for_loss(self):
+        return self.unassisted_tackles_for_loss+self.assisted_tackles_for_loss
+
+class PlayerPassDefense(models.Model):
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    interceptions = models.IntegerField(default=0)
+    interception_yards = models.IntegerField(default=0)
+    interception_td = models.IntegerField(default=0)
+    pass_breakups = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.player.name, self.game)
+
+
+class PlayerFumble(models.Model):
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    fumbles_forced = models.IntegerField(default=0)
+    fumbles_number = models.IntegerField(default=0)
+    fumbles_yards = models.IntegerField(default=0)
+    fumbles_td = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.player.name, self.game)
+
+class PlayerReturn(models.Model):
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    punt_returns = models.IntegerField(default=0)
+    punt_return_yards = models.IntegerField(default=0)
+    punt_return_td = models.IntegerField(default=0)
+    kickoff_returns = models.IntegerField(default=0)
+    kickoff_return_yards = models.IntegerField(default=0)
+    kickoff_return_td = models.IntegerField(default=0)
+    
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
 
