@@ -14,8 +14,8 @@
 </table>
 
 
-{% if offense %}
 <div class="story first">
+{% if offense %}
 
 <h3>{{ team_1.name }} Offensive Stats</h3>
 
@@ -27,24 +27,27 @@
   <li>Passing: {{ offense.pass_completions }} of {{ offense.pass_attempts }} for {{ offense.pass_yards }} yards and {{ offense.pass_touchdowns }} touchdowns.</li>
 
 </ul>
+
+<h4>See <a href="{{ game.get_absolute_url }}drives/">drive details</a>.</h4>
+
 </div>
 {% endif %}
 
+<div class="story">
 
 {% if defense %}
-<div class="story">
 <h3>{{ team_1.name }} Defensive Stats</h3>
 
 <ul>
   <li>Interceptions: {{ defense.defensive_interceptions }} for {{ defense.defensive_interception_yards }} yards and {{ defense.defensive_interception_touchdowns }} touchdowns.</li>
   <li>Fumbles: {{ defense.fumbles_number }} for {{ defense.fumbles_yards }} yards and {{ defense.fumbles_touchdowns }} touchdowns.</li>
 </ul>
-</div>
-{% endif %}
 
+{% endif %}
 (<a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a>.)
 
-<h4>See <a href="{{ game.get_absolute_url }}drives/">drive details</a>.</h4>
+</div>
+
 
 {% else %}
 
