@@ -502,7 +502,7 @@ class PlayerPass(models.Model):
     conversions = models.IntegerField(default=0)
     total_plays = models.IntegerField(default=0)
     total_yards = models.IntegerField(default=0)
-    pass_efficiency = models.IntegerField(default=0)
+    pass_efficiency = models.FloatField(default=0)
 
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
