@@ -470,7 +470,7 @@ def player_game_stats(game):
             except:
                 print "Could not find player: %s (%s)" % (name, uniform)
                 pass
-            if player:
+            while player:
                 pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True)
             if p.find("tackles"):
                 un_t = int(p.find("tackles").find("uatackles").contents[0])
