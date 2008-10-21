@@ -30,8 +30,6 @@
 </div>
 {% endif %}
 
-<h4><a href="{{ game.get_absolute_url }}drives/">Drives</a></h4>
-
 
 {% if defense %}
 <div class="story">
@@ -45,6 +43,8 @@
 {% endif %}
 
 (<a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a>.)
+
+<h4>See <a href="{{ game.get_absolute_url }}drives/">drive details</a>.</h4>
 
 {% else %}
 
