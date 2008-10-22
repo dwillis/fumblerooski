@@ -74,7 +74,8 @@
 </ul>
 
 {% endif %}
-(<a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a>.)
+
+<h4><a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a></h4>
 
 {% if player_tackles %}
 <h3>{{ team_1.name }} Tackles</h3>
