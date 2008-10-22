@@ -457,11 +457,17 @@ def player_game_stats(game):
         for each in f:
             each.replaceWith("0")
         if game.t1_game_type != 'A':
-            team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
-            players = soup.teams.home.players.findAll('player')
+            try:
+                team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
+                players = soup.teams.home.players.findAll('player')
+            except:
+                pass
         else:
-            team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
-            players = soup.teams.visitor.players.findAll('player')
+            try:
+                team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
+                players = soup.teams.visitor.players.findAll('player')
+            except:
+                pass
         for p in players:
             uniform = str(p.find("uniform").contents[0])
             name = str(p.find("name").contents[0])
