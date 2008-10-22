@@ -39,7 +39,7 @@
 <table>
   <th>Player</th><th>Rushes</th><th>Net Yards</th><th>Long</th><th>Average</th><th>TD</th>
   {% for player in player_rushing %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.rushes }}</td><td>{{ player.net }}</td><td>{{ player.long_yards }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
+  <tr><td>{{ player.player.name }}, {{ player.player.position.abbrev }}</td><td>{{ player.rushes }}</td><td>{{ player.net }}</td><td>{{ player.long_yards }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
@@ -49,7 +49,7 @@
 <table>
   <th>Player</th><th>Comp.-Att.</th><th>Yards</th><th>Int.</th><th>TD</th><th>Pass Eff.</th>
   {% for player in player_passing %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.completions }}-{{ player.attempts }}</td><td>{{ player.yards }}</td><td>{{ player.interceptions }}</td><td>{{ player.td }}</td><td>{{ player.pass_efficiency }}</td></tr>
+  <tr><td>{{ player.player.name }}, {{ player.player.position.abbrev }}</td><td>{{ player.completions }}-{{ player.attempts }}</td><td>{{ player.yards }}</td><td>{{ player.interceptions }}</td><td>{{ player.td }}</td><td>{{ player.pass_efficiency }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
@@ -59,7 +59,7 @@
 <table>
   <th>Player</th><th>Catches</th><th>Yards</th><th>Long</th><th>Average</th><th>TD</th>
   {% for player in player_receiving %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.receptions }}</td><td>{{ player.yards }}</td><td>{{ player.long_yards }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
+  <tr><td>{{ player.player.name }}, {{ player.player.position.abbrev }}</td><td>{{ player.receptions }}</td><td>{{ player.yards }}</td><td>{{ player.long_yards }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
@@ -82,7 +82,7 @@
 <table>
   <th>Player</th><th>Unassisted</th><th>Assisted</th><th>Total</th>
   {% for player in player_tackles %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.unassisted_tackles }}</td><td>{{ player.assisted_tackles }}</td><td>{{ player.total_tackles }}</td></tr>
+  <tr><td>{{ player.player.name }}, {{ player.player.position.abbrev }}</td><td>{{ player.unassisted_tackles }}</td><td>{{ player.assisted_tackles }}</td><td>{{ player.total_tackles }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
@@ -92,7 +92,7 @@
 <table>
   <th>Player</th><th>Tackles for Loss</th><th>Yards</th><th>Sacks</th><th>Sack Yards</th>
   {% for player in player_tacklesloss %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.total_tackles_for_loss }}</td><td>{{ player.tackles_for_loss_yards }}</td><td>{{ player.total_sacks }}</td><td>{{ player.sack_yards }}</td></tr>
+  <tr><td>{{ player.player.name }}, {{ player.player.position.abbrev }}</td><td>{{ player.total_tackles_for_loss }}</td><td>{{ player.tackles_for_loss_yards }}</td><td>{{ player.total_sacks }}</td><td>{{ player.sack_yards }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
@@ -102,7 +102,7 @@
 <table>
   <th>Player</th><th>Interceptions</th><th>Int. Yards</th><th>TD</th><th>Pass Breakups</th>
   {% for player in player_passdefense %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.interceptions }}</td><td>{{ player.interception_yards }}</td><td>{{ player.interception_td }}</td><td>{{ player.pass_breakups }}</td></tr>
+  <tr><td>{{ player.player.name }}, {{ player.player.position.abbrev }}</td><td>{{ player.interceptions }}</td><td>{{ player.interception_yards }}</td><td>{{ player.interception_td }}</td><td>{{ player.pass_breakups }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
