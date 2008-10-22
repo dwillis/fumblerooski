@@ -7,6 +7,8 @@
 
 <h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.name }}</a>: {{ game.season }}</h3>
 
+<h4><a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a></h4>
+
 <table>
   <th>Season</th><th>Date</th><th>Outcome</th><th>Location</th>{% if game.attendance %}<th>Attendance</th>{% endif %}
   <tr><td>{{ game.season }}</td><td>{{ game.date|date:"N d, Y" }}</td><td>{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</td><td>{{ game.get_t1_game_type_display }} {% if game.site %}({{ game.site }}){% endif %}</td>{% if game.attendance %}<td>{{ game.attendance|intcomma }}</td>{% endif %}</tr>
@@ -74,8 +76,6 @@
 </ul>
 
 {% endif %}
-
-<h4><a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a></h4>
 
 {% if player_tackles %}
 <h3>{{ team_1.name }} Tackles</h3>
