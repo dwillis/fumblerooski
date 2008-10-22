@@ -76,6 +76,37 @@
 {% endif %}
 (<a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a>.)
 
+{% if player_tackles %}
+<h3>{{ team_1.name }} Tackles</h3>
+<table>
+  <th>Player</th><th>Unassisted</th><th>Assisted</th><th>Total</th>
+  {% for player in player_tackles %}
+  <tr><td>{{ player.player.name }}</td><td>{{ player.unassisted_tackles }}</td><td>{{ player.assisted_tackles }}</td><td>{{ player.total_tackles }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if player_tacklesloss %}
+<h3>{{ team_1.name }} Tackles for Loss</h3>
+<table>
+  <th>Player</th><th>Tackles for Loss</th><th>Yards</th><th>Sacks</th><th>Sack Yards</th>
+  {% for player in player_tacklesloss %}
+  <tr><td>{{ player.player.name }}</td><td>{{ player.total_tackles_for_loss }}</td><td>{{ player.tackles_for_loss_yards }}</td><td>{{ player.total_sacks }}</td><td>{{ player.sack_yards }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if player_passdefense %}
+<h3>{{ team_1.name }} Pass Defense</h3>
+<table>
+  <th>Player</th><th>Interceptions</th><th>Int. Yards</th><th>TD</th><th>Pass Breakups</th>
+  {% for player in player_passdefense %}
+  <tr><td>{{ player.player.name }}</td><td>{{ player.interceptions }}</td><td>{{ player.interception_yards }}</td><td>{{ player.interception_td }}</td><td>{{ player.pass_breakups }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+</div>
+
 </div>
 
 

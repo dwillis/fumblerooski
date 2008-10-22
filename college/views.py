@@ -5,7 +5,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -187,7 +187,19 @@ def game(request, team1, team2, year, month, day):
         player_receiving = PlayerReceiving.objects.filter(game=game, player__team=team_1).order_by('-yards')
     except:
         player_receiving = None
-    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving })
+    try:
+        player_tackles = PlayerTackle.objects.filter(game=game, player__team=team_1).order_by('-unassisted_tackles')[:5]
+    except:
+        player_tackles = None
+    try:
+        player_tacklesloss = PlayerTacklesLoss.objects.filter(game=game, player__team=team_1).order_by('-unassisted_tackles_for_loss')
+    except:
+        player_tacklesloss = None
+    try:
+        player_passdefense = PlayerPassDefense.objects.filter(game=game, player__team=team_1).order_by('-interceptions')
+    except:
+        player_passdefense = None
+    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving, 'player_tackles':player_tackles, 'player_tacklesloss':player_tacklesloss, 'player_passdefense':player_passdefense })
 
 def game_drive(request, team1, team2, year, month, day):
     team_1 = get_object_or_404(College, slug=team1)
