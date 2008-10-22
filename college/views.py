@@ -179,7 +179,11 @@ def game(request, team1, team2, year, month, day):
         player_rushing = PlayerRush.objects.filter(game=game, player__team=team_1).order_by('-net')
     except:
         player_rushing = None
-    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing })
+    try:
+        player_passing = PlayerPass.objects.filter(game=game, player__team=team_1).order_by('-yards')
+    except:
+        player_passing = None
+    return render_to_response('college/game.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing })
 
 def game_drive(request, team1, team2, year, month, day):
     team_1 = get_object_or_404(College, slug=team1)
