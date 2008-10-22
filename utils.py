@@ -461,14 +461,14 @@ def player_game_stats(game):
                 team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
                 players = soup.teams.home.players.findAll('player')
             except:
-                pass
+                players = None
         else:
             try:
                 team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
                 players = soup.teams.visitor.players.findAll('player')
             except:
-                pass
-        if players:
+                players = None
+        while players:
             for p in players:
                 uniform = str(p.find("uniform").contents[0])
                 name = str(p.find("name").contents[0])
