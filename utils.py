@@ -457,104 +457,107 @@ def player_game_stats(game):
         for each in f:
             each.replaceWith("0")
         if game.t1_game_type != 'A':
-            print game.id
-            team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
-            players = soup.teams.home.players.findAll('player')
-            update_pg(players)
+            try:
+                team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
+                players = soup.teams.home.players.findAll('player')
+            except:
+                players = None
+                pass
         else:
-            print game.id
-            team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
-            players = soup.teams.visitor.players.findAll('player')
-            update_pg(players)
-
-def update_pg(players):
-    for p in players:
-        uniform = str(p.find("uniform").contents[0])
-        name = str(p.find("name").contents[0])
-        try:
-            player = Player.objects.get(team=team, year=game.date.year, name=name, number=uniform)
-            pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True)
-            if p.find("tackles"):
-                un_t = int(p.find("tackles").find("uatackles").contents[0])
-                a_t = int(p.find("tackles").find("atackles").contents[0])
-                pt, created = PlayerTackle.objects.get_or_create(player=player, game=game, unassisted_tackles=un_t, assisted_tackles=a_t)
-            if p.find("tfl"):
-                un_tfl = int(p.find("tfl").find("uatfl").contents[0])
-                a_tfl = int(p.find("tfl").find("atfl").contents[0])
-                tfl_yards = int(p.find("tfl").find("tflyards").contents[0])
-                un_sacks = int(p.find("tfl").find("uasacks").contents[0])
-                a_sacks = int(p.find("tfl").find("asacks").contents[0])
-                sack_yards = int(p.find("tfl").find("sackyards").contents[0])
-                ptfl, created = PlayerTacklesLoss.objects.get_or_create(player=player, game=game, unassisted_tackles_for_loss=un_tfl, assisted_tackles_for_loss=a_tfl, tackles_for_loss_yards=tfl_yards, unassisted_sacks=un_sacks, assisted_sacks=a_sacks,sack_yards=sack_yards)
-            if p.find("passdefense"):
-                int_no = int(p.find("passdefense").find("intnumber").contents[0])
-                int_yards = int(p.find("passdefense").find("intyards").contents[0])
-                int_td = int(p.find("passdefense").find("inttd").contents[0])
-                p_b = int(p.find("passdefense").find("passbreakups").contents[0])
-                pd, created = PlayerPassDefense.objects.get_or_create(player=player, game=game, interceptions=int_no, interception_yards=int_yards, interception_td=int_td, pass_breakups=p_b)
-            if p.find("fumbles"):
-                f_f = int(p.find("fumbles").find("fumblesforced").contents[0])
-                f_n = int(p.find("fumbles").find("fumblesnumber").contents[0])
-                f_y = int(p.find("fumbles").find("fumblesyards").contents[0])
-                f_t = int(p.find("fumbles").find("fumblestd").contents[0])
-                pf, created = PlayerFumble.objects.get_or_create(player=player, game=game, fumbles_forced=f_f, fumbles_number=f_n, fumbles_yards=f_y, fumbles_td=f_t)
-            if p.find("returns"):
-                p_r = int(p.find("returns").find("puntnumber").contents[0])
-                p_y = int(p.find("returns").find("puntyards").contents[0])
-                p_t = int(p.find("returns").find("punttd").contents[0])
-                ko_n = int(p.find("returns").find("konumber").contents[0])
-                ko_y = int(p.find("returns").find("koyards").contents[0])
-                ko_t = int(p.find("returns").find("kotd").contents[0])
-                pr, created = PlayerReturn.objects.get_or_create(player=player, game=game, punt_returns=p_r, punt_return_yards=p_y, punt_return_td=p_t, kickoff_returns=ko_n, kickoff_return_yards=ko_y, kickoff_return_td=ko_t)
-            if p.find("rushing"):
-                r_n = int(p.find("rushing").find("number").contents[0])
-                r_g = int(p.find("rushing").find("gain").contents[0])
-                r_l = int(p.find("rushing").find("loss").contents[0])
-                r_net = int(p.find("rushing").find("net").contents[0])
-                r_t = int(p.find("rushing").find("td").contents[0])
-                r_long = int(p.find("rushing").find("long").contents[0])
-                r_avg = float(p.find("rushing").find("avg").contents[0])
-                r_tp = int(p.find("rushing").find("totplays").contents[0])
-                r_ty = int(p.find("rushing").find("totyards").contents[0])
-                pr, created = PlayerRush.objects.get_or_create(player=player, game=game, rushes=r_n, gain=r_g, loss=r_l, net=r_net, td=r_t, long_yards=r_long, average=r_avg, total_plays=r_tp, total_yards=r_ty)
-            if p.find("passing"):
-                p_att = int(p.find("passing").find("att").contents[0])
-                p_comp = int(p.find("passing").find("comp").contents[0])
-                p_int = int(p.find("passing").find("int").contents[0])
-                p_yards = int(p.find("passing").find("yards").contents[0])
-                p_td = int(p.find("passing").find("td").contents[0])
-                p_conv = int(p.find("passing").find("conv").contents[0])
-                p_tp = int(p.find("passing").find("totplays").contents[0])
-                p_ty = int(p.find("passing").find("totyards").contents[0])
-                p_eff = float(p.find("passing").find("passeff").contents[0])
-                pp, created = PlayerPass.objects.get_or_create(player=player, game=game, attempts=p_att, completions=p_comp, interceptions=p_int, yards=p_yards, td=p_td, conversions=p_conv, total_plays=p_tp, total_yards=p_ty, pass_efficiency=p_eff)
-            if p.find("receiving"):
-                r_number = int(p.find("receiving").find("number").contents[0])
-                r_yards = int(p.find("receiving").find("yards").contents[0])
-                r_td = int(p.find("receiving").find("td").contents[0])
-                r_lg = int(p.find("receiving").find("long").contents[0])
-                r_ag = float(p.find("receiving").find("avg").contents[0])
-                prr, created = PlayerReceiving.objects.get_or_create(player=player, game=game, receptions=r_number, yards=r_yards, td=r_td, long_yards=r_lg, average=r_ag)
-            if p.find("scoring"):
-                s_td = int(p.find("scoring").find("td").contents[0])
-                fg_att = int(p.find("scoring").find("fgatt").contents[0])
-                fg_made = int(p.find("scoring").find("fgmade").contents[0])
-                pat_att = int(p.find("scoring").find("offkickatt").contents[0])
-                pat_made = int(p.find("scoring").find("offkickmade").contents[0])
-                tpt_att = int(p.find("scoring").find("offrpatt").contents[0])
-                tpt_made = int(p.find("scoring").find("offrpmade").contents[0])
-                d_pat_att = int(p.find("scoring").find("defkickatt").contents[0])
-                d_pat_made = int(p.find("scoring").find("defkickmade").contents[0])
-                d_tpt_att = int(p.find("scoring").find("defrpatt").contents[0])
-                d_tpt_made = int(p.find("scoring").find("defrpmade").contents[0])
-                saf = int(p.find("scoring").find("saf").contents[0])
-                pts = int(p.find("scoring").find("pts").contents[0])
-                ps, created = PlayerScoring.objects.get_or_create(player=player, game=game, td=s_td, fg_att=fg_att, fg_made=fg_made, pat_att=pat_att, pat_made=pat_made, two_pt_att=tpt_att, two_pt_made=tpt_made,def_pat_att=d_pat_att, def_pat_made=d_pat_made, def_two_pt_att=d_tpt_att, def_two_pt_made=d_tpt_made, safeties=saf, points=pts)
-        except:
-            print "Could not find player: %s (%s)" % (name, uniform)
-            pass
-        game.has_player_stats = True
-        game.save()
+            try:
+                team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
+                players = soup.teams.visitor.players.findAll('player')
+            except:
+                players = None
+                pass
+        while players:
+            for p in players:
+                uniform = str(p.find("uniform").contents[0])
+                name = str(p.find("name").contents[0])
+                try:
+                    player = Player.objects.get(team=team, year=game.date.year, name=name, number=uniform)
+                    pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True)
+                    if p.find("tackles"):
+                        un_t = int(p.find("tackles").find("uatackles").contents[0])
+                        a_t = int(p.find("tackles").find("atackles").contents[0])
+                        pt, created = PlayerTackle.objects.get_or_create(player=player, game=game, unassisted_tackles=un_t, assisted_tackles=a_t)
+                    if p.find("tfl"):
+                        un_tfl = int(p.find("tfl").find("uatfl").contents[0])
+                        a_tfl = int(p.find("tfl").find("atfl").contents[0])
+                        tfl_yards = int(p.find("tfl").find("tflyards").contents[0])
+                        un_sacks = int(p.find("tfl").find("uasacks").contents[0])
+                        a_sacks = int(p.find("tfl").find("asacks").contents[0])
+                        sack_yards = int(p.find("tfl").find("sackyards").contents[0])
+                        ptfl, created = PlayerTacklesLoss.objects.get_or_create(player=player, game=game, unassisted_tackles_for_loss=un_tfl, assisted_tackles_for_loss=a_tfl, tackles_for_loss_yards=tfl_yards, unassisted_sacks=un_sacks, assisted_sacks=a_sacks,sack_yards=sack_yards)
+                    if p.find("passdefense"):
+                        int_no = int(p.find("passdefense").find("intnumber").contents[0])
+                        int_yards = int(p.find("passdefense").find("intyards").contents[0])
+                        int_td = int(p.find("passdefense").find("inttd").contents[0])
+                        p_b = int(p.find("passdefense").find("passbreakups").contents[0])
+                        pd, created = PlayerPassDefense.objects.get_or_create(player=player, game=game, interceptions=int_no, interception_yards=int_yards, interception_td=int_td, pass_breakups=p_b)
+                    if p.find("fumbles"):
+                        f_f = int(p.find("fumbles").find("fumblesforced").contents[0])
+                        f_n = int(p.find("fumbles").find("fumblesnumber").contents[0])
+                        f_y = int(p.find("fumbles").find("fumblesyards").contents[0])
+                        f_t = int(p.find("fumbles").find("fumblestd").contents[0])
+                        pf, created = PlayerFumble.objects.get_or_create(player=player, game=game, fumbles_forced=f_f, fumbles_number=f_n, fumbles_yards=f_y, fumbles_td=f_t)
+                    if p.find("returns"):
+                        p_r = int(p.find("returns").find("puntnumber").contents[0])
+                        p_y = int(p.find("returns").find("puntyards").contents[0])
+                        p_t = int(p.find("returns").find("punttd").contents[0])
+                        ko_n = int(p.find("returns").find("konumber").contents[0])
+                        ko_y = int(p.find("returns").find("koyards").contents[0])
+                        ko_t = int(p.find("returns").find("kotd").contents[0])
+                        pr, created = PlayerReturn.objects.get_or_create(player=player, game=game, punt_returns=p_r, punt_return_yards=p_y, punt_return_td=p_t, kickoff_returns=ko_n, kickoff_return_yards=ko_y, kickoff_return_td=ko_t)
+                    if p.find("rushing"):
+                        r_n = int(p.find("rushing").find("number").contents[0])
+                        r_g = int(p.find("rushing").find("gain").contents[0])
+                        r_l = int(p.find("rushing").find("loss").contents[0])
+                        r_net = int(p.find("rushing").find("net").contents[0])
+                        r_t = int(p.find("rushing").find("td").contents[0])
+                        r_long = int(p.find("rushing").find("long").contents[0])
+                        r_avg = float(p.find("rushing").find("avg").contents[0])
+                        r_tp = int(p.find("rushing").find("totplays").contents[0])
+                        r_ty = int(p.find("rushing").find("totyards").contents[0])
+                        pr, created = PlayerRush.objects.get_or_create(player=player, game=game, rushes=r_n, gain=r_g, loss=r_l, net=r_net, td=r_t, long_yards=r_long, average=r_avg, total_plays=r_tp, total_yards=r_ty)
+                    if p.find("passing"):
+                        p_att = int(p.find("passing").find("att").contents[0])
+                        p_comp = int(p.find("passing").find("comp").contents[0])
+                        p_int = int(p.find("passing").find("int").contents[0])
+                        p_yards = int(p.find("passing").find("yards").contents[0])
+                        p_td = int(p.find("passing").find("td").contents[0])
+                        p_conv = int(p.find("passing").find("conv").contents[0])
+                        p_tp = int(p.find("passing").find("totplays").contents[0])
+                        p_ty = int(p.find("passing").find("totyards").contents[0])
+                        p_eff = float(p.find("passing").find("passeff").contents[0])
+                        pp, created = PlayerPass.objects.get_or_create(player=player, game=game, attempts=p_att, completions=p_comp, interceptions=p_int, yards=p_yards, td=p_td, conversions=p_conv, total_plays=p_tp, total_yards=p_ty, pass_efficiency=p_eff)
+                    if p.find("receiving"):
+                        r_number = int(p.find("receiving").find("number").contents[0])
+                        r_yards = int(p.find("receiving").find("yards").contents[0])
+                        r_td = int(p.find("receiving").find("td").contents[0])
+                        r_lg = int(p.find("receiving").find("long").contents[0])
+                        r_ag = float(p.find("receiving").find("avg").contents[0])
+                        prr, created = PlayerReceiving.objects.get_or_create(player=player, game=game, receptions=r_number, yards=r_yards, td=r_td, long_yards=r_lg, average=r_ag)
+                    if p.find("scoring"):
+                        s_td = int(p.find("scoring").find("td").contents[0])
+                        fg_att = int(p.find("scoring").find("fgatt").contents[0])
+                        fg_made = int(p.find("scoring").find("fgmade").contents[0])
+                        pat_att = int(p.find("scoring").find("offkickatt").contents[0])
+                        pat_made = int(p.find("scoring").find("offkickmade").contents[0])
+                        tpt_att = int(p.find("scoring").find("offrpatt").contents[0])
+                        tpt_made = int(p.find("scoring").find("offrpmade").contents[0])
+                        d_pat_att = int(p.find("scoring").find("defkickatt").contents[0])
+                        d_pat_made = int(p.find("scoring").find("defkickmade").contents[0])
+                        d_tpt_att = int(p.find("scoring").find("defrpatt").contents[0])
+                        d_tpt_made = int(p.find("scoring").find("defrpmade").contents[0])
+                        saf = int(p.find("scoring").find("saf").contents[0])
+                        pts = int(p.find("scoring").find("pts").contents[0])
+                        ps, created = PlayerScoring.objects.get_or_create(player=player, game=game, td=s_td, fg_att=fg_att, fg_made=fg_made, pat_att=pat_att, pat_made=pat_made, two_pt_att=tpt_att, two_pt_made=tpt_made,def_pat_att=d_pat_att, def_pat_made=d_pat_made, def_two_pt_att=d_tpt_att, def_two_pt_made=d_tpt_made, safeties=saf, points=pts)
+                except:
+                    print "Could not find player: %s (%s)" % (name, uniform)
+                    pass
+                game.has_player_stats = True
+                game.save()
 
 def game_fetcher(year):
     l = get_summary_links(year)
