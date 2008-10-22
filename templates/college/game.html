@@ -37,7 +37,7 @@
 <table>
   <th>Player</th><th>Rushes</th><th>Net Yards</th><th>Long</th><th>Average</th><th>TD</th>
   {% for player in player_rushing %}
-  <tr><td>{{ player.player.name }}</td><td>{{ player.rushes }}</td><td>{{ player.net }}</td><td>{{ player.long }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
+  <tr><td>{{ player.player.name }}</td><td>{{ player.rushes }}</td><td>{{ player.net }}</td><td>{{ player.long_yards }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
@@ -45,7 +45,7 @@
 {% if player_passing %}
 <h3>Player Passing</h3>
 <table>
-  <th>Player</th><th>Completions-Attempts</th><th>Yards</th><th>Interceptions</th><th>TD</th><th>Pass Efficiency Rating</th>
+  <th>Player</th><th>Comp.-Att.</th><th>Yards</th><th>Int.</th><th>TD</th><th>Pass Eff.</th>
   {% for player in player_passing %}
   <tr><td>{{ player.player.name }}</td><td>{{ player.completions }}-{{ player.attempts }}</td><td>{{ player.yards }}</td><td>{{ player.interceptions }}</td><td>{{ player.td }}</td><td>{{ player.pass_efficiency }}</td></tr>
   {% endfor %}
