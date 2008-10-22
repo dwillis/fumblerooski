@@ -246,5 +246,16 @@ def player_detail(request, team, season, player):
     t = get_object_or_404(College, slug=team)
     cy = get_object_or_404(CollegeYear, college=t, year=season)
     p = Player.objects.get(team=t, year=season, slug=player)
+    ps = PlayerScoring.objects.filter(player=p).select_related().order_by('-college_game.date')
+    pret = PlayerReturn.objects.filter(player=p).select_related().order_by('-college_game.date')
+    pf = PlayerFumble.objects.filter(player=p).select_related().order_by('-college_game.date')
+    if p.position.position_type == 'O':
+        pr = PlayerRush.objects.filter(player=p).select_related().order_by('-college_game.date')
+        pp = PlayerPass.objects.filter(player=p).select_related().order_by('-college_game.date')
+        prec = PlayerReceiving.objects.filter(player=p).select_related().order_by('-college_game.date')
+    elif p.position.position_type == 'D':
+        pt = PlayerTackle.objects.filter(player=p).select_related().order_by('-college_game.date')
+        ptfl = PlayerTacklesLoss.objects.filter(player=p).select_related().order_by('-college_game.date')
+        ppd = PlayerPassDefense.objects.filter(player=p).select_related().order_by('-college_game.date')
     other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('year')
-    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons })
+    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 'rushing': pr or None, 'passing':pp or None, 'receiving': prec or None, 'tackles':pt or None, 'tacklesloss': ptfl or None, 'passdefense':ppd or None })
