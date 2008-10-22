@@ -33,7 +33,7 @@
 {% endif %}
 
 {% if player_rushing %}
-<h3>Player Rushing</h3>
+<h3>{{ team_1.name }} Rushing</h3>
 <table>
   <th>Player</th><th>Rushes</th><th>Net Yards</th><th>Long</th><th>Average</th><th>TD</th>
   {% for player in player_rushing %}
@@ -43,7 +43,7 @@
 {% endif %}
 
 {% if player_passing %}
-<h3>Player Passing</h3>
+<h3>{{ team_1.name }} Passing</h3>
 <table>
   <th>Player</th><th>Comp.-Att.</th><th>Yards</th><th>Int.</th><th>TD</th><th>Pass Eff.</th>
   {% for player in player_passing %}
