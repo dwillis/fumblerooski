@@ -109,9 +109,7 @@ class College(models.Model):
     state = models.ForeignKey(State, blank=True)
     official_url = models.CharField(max_length=120, blank=True)
     official_rss = models.CharField(max_length=120, blank=True)
-    conference = models.ForeignKey(Conference, null=True, blank=True)
     updated = models.BooleanField()
-    division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
     objects = models.GeoManager()
 
     def __unicode__(self):
@@ -136,6 +134,8 @@ class CollegeYear(models.Model):
     sophomores = models.IntegerField(default=0)
     juniors = models.IntegerField(default=0)
     seniors = models.IntegerField(default=0)
+    conference = models.ForeignKey(Conference, null=True, blank=True)
+    division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
     
     def __unicode__(self):
         return "%s - %s" % (self.college, str(self.year))
