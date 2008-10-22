@@ -323,27 +323,6 @@ class GameDrive(models.Model):
     def __unicode__(self):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
 
-class PlayType(models.Model):
-    name = models.CharField(max_length=75)
-    slug = models.SlugField(max_length=75)
-    
-    def __unicode__(self):
-        return self.name
-    
-
-class Play(models.Model):
-    game = models.ForeignKey(Game)
-    team = models.ForeignKey(College)
-    year = models.IntegerField()
-    drive = models.ForeignKey(GameDrive)
-    down = models.PositiveSmallIntegerField()
-    distance = models.IntegerField()
-    play_type = models.ForeignKey(PlayType)
-    description = models.TextField()
-    
-    def __unicode__(self):
-        return self.description
-
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)
     team = models.ForeignKey(College)
