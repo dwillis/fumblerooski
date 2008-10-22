@@ -48,11 +48,22 @@
 
 </div>
 
+<h3>Player Rushing</h3>
+<table>
+  <th>Player</th><th>Rushes</th><th>Net Yards</th><th>Long</th><th>Average</th><th>TD</th>
+  {% for player in player_rushing %}
+  <tr><td>{{ player.player.name }}</td><td>{{ player.rushes }}</td><td>{{ player.net }}</td><td>{{ player.long }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
+  {% endfor %}
+</table>
+
 
 {% else %}
 
 No game could be found.
 
 {% endif %}
+
+
+
 
 {% endblock %}
