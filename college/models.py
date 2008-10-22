@@ -80,6 +80,10 @@ class City(models.Model):
     
     def get_absolute_url(self):
         return "/college/states/%s/%s" % (self.state.id.lower(), self.slug)
+    
+    class Meta:
+        verbose_name_plural = 'cities'
+    
 
 class Week(models.Model):
     year = models.IntegerField()
@@ -472,6 +476,9 @@ class PlayerRush(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
+    
+    class Meta:
+        verbose_name_plural = "player rushing"
 
 class PlayerPass(models.Model):
     player = models.ForeignKey(Player)
@@ -488,6 +495,9 @@ class PlayerPass(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
+    
+    class Meta:
+        verbose_name_plural = 'player passing'
 
 class PlayerReceiving(models.Model):
     player = models.ForeignKey(Player)
@@ -553,6 +563,9 @@ class PlayerTacklesLoss(models.Model):
     
     def total_tackles_for_loss(self):
         return self.unassisted_tackles_for_loss+self.assisted_tackles_for_loss
+    
+    class Meta:
+        verbose_name_plural = 'player tackles for loss'
 
 class PlayerPassDefense(models.Model):
     player = models.ForeignKey(Player)
