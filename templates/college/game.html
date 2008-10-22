@@ -51,18 +51,16 @@
   {% endfor %}
 </table>
 {% endif %}
-</div>
 
 {% if player_receiving %}
 <h3>{{ team_1.name }} Receiving</h3>
 <table>
   <th>Player</th><th>Catches</th><th>Yards</th><th>Long</th><th>Average</th><th>TD</th>
-  {% for player in player_passing %}
+  {% for player in player_receiving %}
   <tr><td>{{ player.player.name }}</td><td>{{ player.receptions }}</td><td>{{ player.yards }}</td><td>{{ player.long_yards }}</td><td>{{ player.average }}</td><td>{{ player.td }}</td></tr>
   {% endfor %}
 </table>
 {% endif %}
-
 </div>
 
 <div class="story">
