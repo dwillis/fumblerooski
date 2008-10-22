@@ -457,10 +457,12 @@ def player_game_stats(game):
         for each in f:
             each.replaceWith("0")
         if game.t1_game_type != 'A':
+            print game.id
             team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
             players = soup.teams.home.players.findAll('player')
             update_pg(players)
         else:
+            print game.id
             team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
             players = soup.teams.visitor.players.findAll('player')
             update_pg(players)
