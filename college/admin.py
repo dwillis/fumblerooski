@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
+from fumblerooski.college.models import State, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'state')
