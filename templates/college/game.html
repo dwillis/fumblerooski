@@ -7,7 +7,7 @@
 
 <h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.name }}</a>: {{ game.season }}</h3>
 
-{% if conf %}<h4>{{ conf.abbrev }} game</h4>{% endif %}
+{% if conf %}<h4>{{ conf.name }} game</h4>{% endif %}
 
 <h4><a href="{{ game.get_reverse_url }}">See {{ team_2.name }}'s stats</a> for this game, or <a href="{{ game.get_matchup_url }}">all games between these teams</a></h4>
 
