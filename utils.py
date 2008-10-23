@@ -10,15 +10,21 @@ from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
 
 
+def update_conf_games(year):
+    games = Game.objects.filter(season=year, team1__updated=True, team2__updated=True)
+    if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference:
+        game.is_conference_game = True
+        game.save()
+
 def update_college_year(year):
-    teams = College.objects.all()
+    teams = CollegeYear.objects.select_related().filter(year=2008, college__updated=True).order_by('college_college.id')
     for team in teams:
-        games = Game.objects.filter(team1=team, season=year)
+        games = Game.objects.filter(team1=team.college, season=year)
         results = {'W':0, 'L':0, 'T':0}
         for game in games:
-            results[game.t1_result] = results.get(game.t1_result, 0) +1            
-        if team.collegeyear_set.get(year=2008).conference:
-            conf = Conference.objects.get(id = team.collegeyear_set.get(year=2008).conference_id)
+            results[game.t1_result] = results.get(game.t1_result, 0) +1
+        if team.conference:
+            conf = Conference.objects.get(id = team.conference_id)
             conf_games = Game.objects.select_related().filter(team1=team, season=year, team2__conference=conf)
             conf_results = {'W':0, 'L':0, 'T':0}
             for conf_game in conf_games:
@@ -30,15 +36,14 @@ def update_college_year(year):
             conf_wins = 0
             conf_losses = 0
             conf_ties = 0
-        record, created = CollegeYear.objects.get_or_create(college=team, year=year)
-        record.wins=results['W']
-        record.losses=results['L']
-        record.ties=results['T']
-        record.conference_wins=conf_wins
-        record.conference_losses=conf_losses
-        record.conference_ties=conf_ties
+        team.wins=results['W']
+        team.losses=results['L']
+        team.ties=results['T']
+        team.conference_wins=conf_wins
+        team.conference_losses=conf_losses
+        team.conference_ties=conf_ties
         
-        record.save()
+        team.save()
 
 def game_updater(year, teams, date=None):
     
