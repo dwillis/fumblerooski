@@ -164,7 +164,7 @@ def game(request, team1, team2, year, month, day):
     date = datetime.date(int(year), int(month), int(day))
     game = get_object_or_404(Game, team1=team_1, team2=team_2, date=date)
     if game.is_conference_game == True:
-        conf = CollegeYear.objects.get(team=team_1, year=year).conference
+        conf = CollegeYear.objects.get(college=team_1, year=year).conference
     else:
         conf = None
     try:
