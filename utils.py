@@ -17,8 +17,8 @@ def update_college_year(year):
         results = {'W':0, 'L':0, 'T':0}
         for game in games:
             results[game.t1_result] = results.get(game.t1_result, 0) +1            
-        if team.conference:
-            conf = Conference.objects.get(id = team.conference_id)
+        if team.collegeyear_set.get(year=2008).conference:
+            conf = Conference.objects.get(id = team.collegeyear_set.get(year=2008).conference_id)
             conf_games = Game.objects.select_related().filter(team1=team, season=year, team2__conference=conf)
             conf_results = {'W':0, 'L':0, 'T':0}
             for conf_game in conf_games:
