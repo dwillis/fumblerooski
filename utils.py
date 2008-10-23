@@ -12,9 +12,10 @@ from fumblerooski.college.models import State, College, Game, Coach, Position, P
 
 def update_conf_games(year):
     games = Game.objects.filter(season=year, team1__updated=True, team2__updated=True)
-    if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference:
-        game.is_conference_game = True
-        game.save()
+    for game in games:
+        if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference:
+            game.is_conference_game = True
+            game.save()
 
 def update_college_year(year):
     teams = CollegeYear.objects.select_related().filter(year=2008, college__updated=True).order_by('college_college.id')
