@@ -15,11 +15,11 @@
 <table>
   <th>Date</th><th>Opponent</th><th>Outcome</th><th>Passing</th><th>Yards</th><th>Int.</th><th>TD</th><th>Pass Eff.</th>
 {% for game in passing %}
-  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td>{{ game.game.team_2.name }}</td><td>{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</td><td>{{ game.comp_att }}</td><td>{{ game.yards }}</td><td>{{ game.interceptions }}</td><td>{{ game.td }}</td><td>{{ game.pass_efficiency }}</td></tr>
-</table>
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td>{{ game.game.team2 }}</td><td>{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</td><td>{{ game.comp_att }}</td><td>{{ game.yards }}</td><td>{{ game.interceptions }}</td><td>{{ game.td }}</td><td>{{ game.pass_efficiency }}</td></tr>
 
 {% endfor %}
 
+</table>
 
 {% endif %}
 
