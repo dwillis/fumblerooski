@@ -497,6 +497,9 @@ class PlayerPass(models.Model):
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
     
+    def comp_att(self):
+        return "%d of %d" % (self.completions, self.attempts)
+    
     class Meta:
         verbose_name_plural = 'player passing'
 
