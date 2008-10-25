@@ -475,7 +475,7 @@ def player_game_stats(game):
             except:
                 players = None
                 pass
-        while players:
+        if players:
             for p in players:
                 uniform = str(p.find("uniform").contents[0])
                 name = str(p.find("name").contents[0])
