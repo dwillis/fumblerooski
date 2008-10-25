@@ -482,6 +482,10 @@ def player_game_stats(game):
                 try:
                     player = Player.objects.get(team=team, year=game.date.year, name=name, number=uniform)
                     pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True)
+                except:
+                    print "Could not find player: %s (%s)" % (name, uniform)
+                    pass
+                if player:
                     if p.find("tackles"):
                         un_t = int(p.find("tackles").find("uatackles").contents[0])
                         a_t = int(p.find("tackles").find("atackles").contents[0])
@@ -558,11 +562,8 @@ def player_game_stats(game):
                         saf = int(p.find("scoring").find("saf").contents[0])
                         pts = int(p.find("scoring").find("pts").contents[0])
                         ps, created = PlayerScoring.objects.get_or_create(player=player, game=game, td=s_td, fg_att=fg_att, fg_made=fg_made, pat_att=pat_att, pat_made=pat_made, two_pt_att=tpt_att, two_pt_made=tpt_made,def_pat_att=d_pat_att, def_pat_made=d_pat_made, def_two_pt_att=d_tpt_att, def_two_pt_made=d_tpt_made, safeties=saf, points=pts)
-                except:
-                    print "Could not find player: %s (%s)" % (name, uniform)
-                    pass
-                game.has_player_stats = True
-                game.save()
+                    game.has_player_stats = True
+                    game.save()
 
 def game_fetcher(year):
     l = get_summary_links(year)
