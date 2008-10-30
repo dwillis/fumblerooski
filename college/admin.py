@@ -48,11 +48,19 @@ class PlayerRushAdmin(admin.ModelAdmin):
     list_display = ('player', 'game', 'rushes', 'net', 'td')
     list_filter = ('td', 'net')
 
+class PlayerPassAdmin(admin.ModelAdmin):
+    list_display = ('player', 'game', 'completions', 'attempts', 'yards', 'td', 'interceptions', 'pass_efficiency')
+    list_filter = ('td', 'interceptions')
+
+class PlayerReceivingAdmin(admin.ModelAdmin):
+    list_display = ('player', 'game', 'receptions', 'yards', 'td', 'average')
+    list_filter = ('td', 'receptions')
+
 admin.site.register(CollegeYear)
-admin.site.register(PlayerPass)
+admin.site.register(PlayerPass, PlayerPassAdmin)
 admin.site.register(PlayerRush, PlayerRushAdmin)
 admin.site.register(PlayerGame)
-admin.site.register(PlayerReceiving)
+admin.site.register(PlayerReceiving, PlayerReceivingAdmin)
 admin.site.register(PlayerTackle)
 admin.site.register(PlayerTacklesLoss)
 admin.site.register(PlayerPassDefense)
