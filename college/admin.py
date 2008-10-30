@@ -44,9 +44,13 @@ class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('start_how', 'plays')
     list_display = ('game', 'team', 'drive', 'end_result')
 
+class PlayerRushAdmin(admin.ModelAdmin):
+    list_display = ('player', 'game', 'rushes', 'net', 'td')
+    list_filter = ('td', 'net')
+
 admin.site.register(CollegeYear)
 admin.site.register(PlayerPass)
-admin.site.register(PlayerRush)
+admin.site.register(PlayerRush, PlayerRushAdmin)
 admin.site.register(PlayerGame)
 admin.site.register(PlayerReceiving)
 admin.site.register(PlayerTackle)
