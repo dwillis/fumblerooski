@@ -525,7 +525,10 @@ def player_game_stats(game):
                         r_net = int(p.find("rushing").find("net").contents[0])
                         r_t = int(p.find("rushing").find("td").contents[0])
                         r_long = int(p.find("rushing").find("long").contents[0])
-                        r_avg = float(p.find("rushing").find("avg").contents[0])
+                        try:
+                            r_avg = float(p.find("rushing").find("avg").contents[0])
+                        except:
+                            pass
                         r_tp = int(p.find("rushing").find("totplays").contents[0])
                         r_ty = int(p.find("rushing").find("totyards").contents[0])
                         pr, created = PlayerRush.objects.get_or_create(player=player, game=game, rushes=r_n, gain=r_g, loss=r_l, net=r_net, td=r_t, long_yards=r_long, average=r_avg, total_plays=r_tp, total_yards=r_ty)
