@@ -11,7 +11,7 @@ Coaches:
 {% else %}
 {% endif %}
 
-<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %}</h3>
+<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
 <table>
     <th>Date</th><th>Opponent</th><th>Location</th><th>Result</th>
     {% for game in game_list %}
