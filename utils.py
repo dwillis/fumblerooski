@@ -452,7 +452,7 @@ def ranking_loader(team, year, week):
         rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
         if int(cells[1].contents[0]):
             r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0]), actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0]))
-        else
+        else:
             r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0].split('T-')[1]), is_tied = True, actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0].split('T-')[1]), is_conf_tied=True)
 
 def player_game_stats(game):
