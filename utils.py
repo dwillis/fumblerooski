@@ -451,9 +451,20 @@ def ranking_loader(team, year, week):
         cells = row.findAll('td')
         rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
         try:
-            r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0]), actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0]))
+            rk =int(cells[1].contents[0])
+            i_t = False
         except ValueError:
-            r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=int(cells[1].contents[0].split('T-')[1]), is_tied = True, actual=float(cells[2].contents[0]), conference_rank=int(cells[5].contents[0].split('T-')[1]), is_conf_tied=True)
+            rk = int(cells[1].contents[0].split('T-')[1])
+            i_t = True
+        
+        try:
+            cr = int(cells[5].contents[0])
+            ic_t = False
+        except ValueError:
+            cr = int(cells[5].contents[0].split('T-')[1])
+            ic_t = True
+        
+        r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t)
 
 def player_game_stats(game):
     while not game.has_player_stats:
