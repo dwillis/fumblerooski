@@ -445,26 +445,30 @@ def ranking_loader(team, year, week):
     w = Week.objects.get(year=year, week_num=week)
     html = urllib.urlopen(cy.get_ncaa_week_url()+str(week)).read()
     soup = BeautifulSoup(html)
-    rankings = soup.findAll('table')[4]
-    rows = rankings.findAll('tr')[5:16]
-    for row in rows:
-        cells = row.findAll('td')
-        rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
-        try:
-            rk =int(cells[1].contents[0])
-            i_t = False
-        except ValueError:
-            rk = int(cells[1].contents[0].split('T-')[1])
-            i_t = True
+    try:
+        rankings = soup.findAll('table')[4]
+    except:
+        rankings = None
+    if rankings:
+        rows = rankings.findAll('tr')[5:16]
+        for row in rows:
+            cells = row.findAll('td')
+            rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
+            try:
+                rk =int(cells[1].contents[0])
+                i_t = False
+            except ValueError:
+                rk = int(cells[1].contents[0].split('T-')[1])
+                i_t = True
         
-        try:
-            cr = int(cells[5].contents[0])
-            ic_t = False
-        except ValueError:
-            cr = int(cells[5].contents[0].split('T-')[1])
-            ic_t = True
+            try:
+                cr = int(cells[5].contents[0])
+                ic_t = False
+            except ValueError:
+                cr = int(cells[5].contents[0].split('T-')[1])
+                ic_t = True
         
-        r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t)
+            r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t)
 
 def player_game_stats(game):
     while not game.has_player_stats:
