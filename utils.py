@@ -446,7 +446,7 @@ def ranking_loader(team, year, week):
     html = urllib.urlopen(cy.get_ncaa_week_url()+str(week)).read()
     soup = BeautifulSoup(html)
     rankings = soup.findAll('table')[4]
-    rows = rankings.findAll('tr')[5:]
+    rows = rankings.findAll('tr')[5:16]
     for row in rows:
         cells = row.findAll('td')
         rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
