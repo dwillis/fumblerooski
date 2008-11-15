@@ -6,9 +6,6 @@ from fumblerooski.college import views as college_views
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^football/', include('football.foo.urls')),
-
     # Uncomment this for admin:
      (r'^admin/(.*)', admin.site.root),
      (r'^$', college_views.homepage),
@@ -27,6 +24,7 @@ urlpatterns = patterns('',
      (r'^college/teams/(?P<team>[-a-z]+)/first-downs/$', college_views.team_first_downs),     
      (r'^college/teams/(?P<team>[-a-z]+)/first-downs/(?P<category>rushing|passing|penalty)/$', college_views.team_first_downs_category),     
      (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/$', college_views.team_detail_season),
+     (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/rankings/$', college_views.team_rankings_season),
      (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/classes/(?P<cl>[fr|so|jr|sr])/$', college_views.team_by_cls),
 #     (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/positions/(?<pos>[a-z][a-z][a-z]?)/$', college_views.team_positions),
      (r'^college/teams/(?P<team>[-a-z]+)/opponents/$', college_views.team_opponents),

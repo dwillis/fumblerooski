@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+#from django.db import models
 from django import forms
 import datetime
 
@@ -72,8 +73,8 @@ class City(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
     state = models.ForeignKey(State)
-    point = models.PointField()
-    objects = models.GeoManager()
+#    point = models.PointField()
+#    objects = models.GeoManager()
     
     def __unicode__(self):
         return "%s, %s" % (self.name, self.state.id)
@@ -114,7 +115,7 @@ class College(models.Model):
     official_url = models.CharField(max_length=120, blank=True)
     official_rss = models.CharField(max_length=120, blank=True)
     updated = models.BooleanField()
-    objects = models.GeoManager()
+#    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name
