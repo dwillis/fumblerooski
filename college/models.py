@@ -459,7 +459,10 @@ class PlayerCollegeCareer(models.Model):
     player = models.ForeignKey(Player)
     first_season = models.ForeignKey(CollegeYear, related_name='first_season')
     last_season = models.ForeignKey(CollegeYear, related_name='last_season')
+    total_games = models.IntegerField(null=True, blank=True)
     
+    def __unicode__(self):
+        return self.player.name.full_name()
 
 class PlayerGame(models.Model):
     player = models.ForeignKey(Player)
