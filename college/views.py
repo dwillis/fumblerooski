@@ -260,7 +260,7 @@ def team_position_detail(request, team, pos):
     t = get_object_or_404(College, slug=team)
     p = Position.objects.get(abbrev=pos)
     player_list = Player.objects.filter(team=t, position=p)
-    return render_to_response('college/team_position_detail.html', {'team': t, 'position': p, 'player_list': player_list}})
+    return render_to_response('college/team_position_detail.html', {'team': t, 'position': p, 'player_list': player_list})
 
 def player_detail(request, team, season, player):
     t = get_object_or_404(College, slug=team)
