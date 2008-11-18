@@ -122,7 +122,7 @@ class College(models.Model):
 
     def get_absolute_url(self):
         return '/college/teams/%s/' % self.slug
-        
+    
     def current_record(self):
         return "(%d-%d)" % (self.collegeyear_set.all()[0].wins, self.collegeyear_set.all()[0].losses)
     
@@ -454,6 +454,12 @@ class Player(models.Model):
     
     def get_absolute_url(self):
         return '/college/teams/%s/%s/players/%s/' % (self.team.slug, self.year, self.slug)
+
+class PlayerCollegeCareer(models.Model):
+    player = models.ForeignKey(Player)
+    first_season = models.ForeignKey(CollegeYear, related_name='first_season')
+    last_season = models.ForeignKey(CollegeYear, related_name='last_season')
+    
 
 class PlayerGame(models.Model):
     player = models.ForeignKey(Player)

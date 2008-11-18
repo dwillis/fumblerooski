@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Fumblerooski: {{ team.name }} Positions{% endblock %}
+
+{% block content %}
+
+<h3>{{ team.name }} Positions</h3>
+<h5>{{ team.conference.name }}</h5>
+
+{% if position_list %}
+<table>
+  <th>Position</th><th>Type</th>
+  {% for position in position_list %}
+  <tr><td><a href="{{ team.get_absolute_url }}{{ position.abbrev|lower }}/">{{ position.name }}</a></td><td>{{ position.get_position_type }}</td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}
