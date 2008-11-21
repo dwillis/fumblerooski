@@ -4,7 +4,7 @@ from django.views.generic import list_detail, date_based, create_update
 from fumblerooski.college import views as college_views
 from fumblerooski.blog.models import Post
 from fumblerooski.blog.views import *
-from fumblerooski.blog.feeds import LatestPostFeed, LatestPostsByTagFeed
+from fumblerooski.blog.feeds import LatestPostFeed
  
 feeds = {
     "latest": LatestPostFeed,
