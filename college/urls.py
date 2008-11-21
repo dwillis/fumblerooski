@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import *
 
-
 urlpatterns = patterns('fumblerooski.college.views',
      url(r'^college/seasons/(?P<season>\d+)/week/(?P<week>\d+)/$', 'season_week'),
      url(r'^college/conferences/$', 'conference_index'),
@@ -16,7 +15,7 @@ urlpatterns = patterns('fumblerooski.college.views',
      url(r'^college/teams/(?P<team>[-a-z]+)/penalties/$', 'team_penalties'),
      url(r'^college/teams/(?P<team>[-a-z]+)/first-downs/$', 'team_first_downs'),     
      url(r'^college/teams/(?P<team>[-a-z]+)/first-downs/(?P<category>rushing|passing|penalty)/$', 'team_first_downs_category'),
-     url(r'^college/teams/(?P<team>[-a-z]+)/positions/(?<pos>[a-z][a-z][a-z]?)/$', 'team_position_detail'),
+#     url(r'^college/teams/(?P<team>[-a-z]+)/positions/(?<pos>[a-z][a-z][a-z]?)/$', 'team_position_detail'),
      url(r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/$', 'team_detail_season'),
      url(r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/rankings/$', 'team_rankings_season'),
      url(r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/classes/(?P<cl>[fr|so|jr|sr])/$', 'team_by_cls'),
