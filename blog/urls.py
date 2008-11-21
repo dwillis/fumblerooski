@@ -1,5 +1,4 @@
 from django.conf.urls.defaults import *
- 
 from fumblerooski.blog.models import Post
 from fumblerooski.blog.views import *
 from fumblerooski.blog.feeds import LatestPostFeed
