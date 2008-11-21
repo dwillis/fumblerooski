@@ -1,0 +1,5 @@
+{% load blog_utils %}
+<div id="entry_{{ post.pk }}" class="entry-brief{% if last %} entry-last{% endif %}">
+    <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+    <p>{% if can_edit %}<a href="/admin/blog/post/{{ post.pk }}/">Edit Post</a> | {% endif %}<a href="{{ post.get_absolute_url }}">Read Full Entry ...</a></p>
+</div>

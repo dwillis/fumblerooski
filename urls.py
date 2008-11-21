@@ -2,6 +2,18 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.views.generic import list_detail, date_based, create_update
 from fumblerooski.college import views as college_views
+from fumblerooski.blog.models import Post
+from fumblerooski.blog.views import *
+from fumblerooski.blog.feeds import LatestPostFeed, LatestPostsByTagFeed
+ 
+feeds = {
+    "latest": LatestPostFeed,
+}
+ 
+date_based_dict = {
+    "date_field": "pub_date",
+}
+
 
 admin.autodiscover()
 
@@ -22,7 +34,8 @@ urlpatterns = patterns('',
      (r'^college/teams/(?P<team>[-a-z]+)/defense/$', college_views.team_defense),
      (r'^college/teams/(?P<team>[-a-z]+)/penalties/$', college_views.team_penalties),
      (r'^college/teams/(?P<team>[-a-z]+)/first-downs/$', college_views.team_first_downs),     
-     (r'^college/teams/(?P<team>[-a-z]+)/first-downs/(?P<category>rushing|passing|penalty)/$', college_views.team_first_downs_category),     
+     (r'^college/teams/(?P<team>[-a-z]+)/first-downs/(?P<category>rushing|passing|penalty)/$', college_views.team_first_downs_category),
+     (r'^college/teams/(?P<team>[-a-z]+)/positions/(?<pos>[a-z][a-z][a-z]?)/$', college_views.team_position_detail),
      (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/$', college_views.team_detail_season),
      (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/rankings/$', college_views.team_rankings_season),
      (r'^college/teams/(?P<team>[-a-z]+)/(?P<season>\d+)/classes/(?P<cl>[fr|so|jr|sr])/$', college_views.team_by_cls),
@@ -39,4 +52,19 @@ urlpatterns = patterns('',
 #    (r'^college/teams/(?P<team>[-a-z]+)/recruits/(?P<pos>[a-z][a-z]?[a-z]?)/$', recruit_views.team_detail_position),
      (r'^states/$', college_views.state_index),
      (r'^states/(?P<state>[a-z][a-z])/$', college_views.state_detail),
+     
+    url(r"^blog/feeds/(?P<url>.*)/$", "django.contrib.syndication.views.feed", {
+        "feed_dict": feeds,
+    }, name="blog_feeds"),
+    
+    url(r"^blog/(?P<year>\d{4})/(?P<month>[a-z]{3})/(?P<day>\w{1,2})/(?P<slug>[-\w]+)/$",
+        object_detail, dict(date_based_dict, **{
+            "template_object_name": "post",
+        }), name="blog_post_detail"),
+    url(r"^blog/(?P<year>\d{4})/(?P<month>[a-z]{3})/(?P<day>\w{1,2})/$",
+        archive_day, date_based_dict, name="blog_archive_daily"),
+    url(r"^blog/(?P<year>\d{4})/(?P<month>[a-z]{3})/$",
+        archive_month, date_based_dict, name="blog_archive_month"),
+    url(r"^blog/(?P<year>\d{4})/$",
+        archive_year, date_based_dict, name="blog_archive_year"),
 )

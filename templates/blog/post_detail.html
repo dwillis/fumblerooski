@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load blog_utils %}
+ 
+{% block title %}{{ post.title }} | {{ block.super }}{% endblock %}
+ 
+{% block sl %}
+<h1>{{ post.title }}</h1>
+<div class="entry">
+    {{ post.body|to_html }}
+</div>
+ 
+<hr />
+ 
+{% block sr %}
+<h2>Entry Details</h2>
+<p>Published: <strong>{{ post.pub_date|date:"M j, Y" }} at {{ post.pub_date|time:"f A" }}</strong></p>
+{% endblock %}
