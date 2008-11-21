@@ -3,7 +3,6 @@ from fumblerooski.college import views as college_views
 
 
 urlpatterns = patterns('college_views',
-     (r'^$', homepage),
      (r'^college/seasons/(?P<season>\d+)/week/(?P<week>\d+)/$', season_week),
      (r'^college/conferences/$', conference_index),
      (r'^college/conferences/(?P<conf>[-a-z0-9]+)/(?P<season>\d+)/$', conference_detail),
