@@ -40,5 +40,5 @@ urlpatterns = patterns('',
 #    (r'^college/teams/(?P<team>[-a-z]+)/recruits/(?P<year>2\d\d\d)/$', recruit_views.team_detail_year),
 #    (r'^college/teams/(?P<team>[-a-z]+)/recruits/(?P<pos>[a-z][a-z]?[a-z]?)/$', recruit_views.team_detail_position),
      (r'^states/$', college_views.state_index),
-     (r'^states/(?P<state>[a-z][a-z])/$', college_views.state_detail),
+#     (r'^states/(?P<state>[a-z][a-z])/$', college_views.state_detail),
 )
