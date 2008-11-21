@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     # Uncomment this for admin:
      (r'^admin/(.*)', admin.site.root),
      (r'^$', college_views.homepage),
+     (r'^blog/', include('fumblerooski.blog.urls')),
      (r'^college/seasons/(?P<season>\d+)/week/(?P<week>\d+)/$', college_views.season_week),
      (r'^college/conferences/$', college_views.conference_index),
      (r'^college/conferences/(?P<conf>[-a-z0-9]+)/(?P<season>\d+)/$', college_views.conference_detail),
@@ -40,5 +41,4 @@ urlpatterns = patterns('',
 #    (r'^college/teams/(?P<team>[-a-z]+)/recruits/(?P<pos>[a-z][a-z]?[a-z]?)/$', recruit_views.team_detail_position),
      (r'^states/$', college_views.state_index),
      (r'^states/(?P<state>[a-z][a-z])/$', college_views.state_detail),
-     (r'^blog/', include('fumblerooski.blog.urls')),
 )
