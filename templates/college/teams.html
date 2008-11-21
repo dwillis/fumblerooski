@@ -6,7 +6,7 @@
 
 <ul>
 {% for team in team_list %}
-<li><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> ({{ team.current_record }})</li>
+<li><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> {{ team.current_record }}</li>
 {% endfor %}
 </ul>
 
