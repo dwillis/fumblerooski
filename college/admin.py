@@ -36,7 +36,7 @@ class RankingAdmin(admin.ModelAdmin):
     list_filter = ('year',)
 
 class WeekAdmin(admin.ModelAdmin):
-    list_display = ('year', 'week', 'end_date')
+    list_display = ('year', 'week_num', 'end_date')
     list_filter = ('year',)
 
 class DriveOutcomeAdmin(admin.ModelAdmin):
