@@ -21,7 +21,7 @@ class CollegeCoachAdmin(admin.ModelAdmin):
     list_display = ('coach', 'college', 'job', 'start_date', 'end_date')
 
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('team1', 'team2', 'date')
+    list_display = ('team1', 'team2', 'date', 't1_result', 'team1_score', 'team2_score')
     ordering = ('-date',)
     list_filter = ('season','week')
     search_fields = ('team1__name',)
