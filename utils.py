@@ -18,7 +18,7 @@ def update_conf_games(year):
             game.save()
 
 def update_college_year(year):
-    teams = CollegeYear.objects.select_related().filter(year=2008, college__updated=True).order_by('college_college.id')
+    teams = CollegeYear.objects.select_related().filter(year=year, college__updated=True).order_by('college_college.id')
     for team in teams:
         games = Game.objects.filter(team1=team.college, season=year)
         results = {'W':0, 'L':0, 'T':0}
@@ -45,7 +45,7 @@ def update_college_year(year):
         
         team.save()
 
-def game_updater(year, teams, date=None):
+def game_updater(year, teams, week):
     
     if not teams:
         teams = College.objects.filter(updated=True).order_by('id')
@@ -54,7 +54,7 @@ def game_updater(year, teams, date=None):
     
     for team in teams:
         print team.id
-        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=15" % (team.id, year)
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.id, year, week)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
         try:
