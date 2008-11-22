@@ -23,7 +23,7 @@ class GameAdmin(admin.ModelAdmin):
     list_display = ('team1', 'team2', 'date')
     ordering = ('-date',)
     list_filter = ('season','week')
-    search_fields = ('team1__name')
+    search_fields = ('first_team__name')
 
 class PlayerAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
