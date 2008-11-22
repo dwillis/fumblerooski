@@ -618,6 +618,15 @@ def load_rosters(year):
     for team in teams:
         load_team(team.id, year)
 
+
+def game_weeks(year):
+    weeks = Week.objects.filter(year=year).order_by('week_num')
+    for week in weeks:
+        games = Game.objects.filter(season=year, date__lte=week.end_date, week__isnull=True)
+        for game in games:
+            game.week = week
+            game.save()
+
 def load_team(team_id, year):
     team = College.objects.get(id=team_id)
     url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team.id)
