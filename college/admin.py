@@ -2,7 +2,7 @@ from django.contrib import admin
 from fumblerooski.college.models import State, City, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
 
 class CollegeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'state')
+    list_display = ('name',)
     ordering = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
