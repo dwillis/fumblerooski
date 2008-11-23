@@ -270,6 +270,7 @@ class Game(models.Model):
     has_stats = models.BooleanField()
     has_player_stats = models.BooleanField()
     is_conference_game = models.BooleanField()
+    is_bowl_game = models.BooleanField()
     
     def __unicode__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
