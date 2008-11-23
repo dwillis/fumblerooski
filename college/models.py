@@ -124,7 +124,7 @@ class College(models.Model):
         return '/college/teams/%s/' % self.slug
     
     def current_record(self):
-        return "(%d-%d)" % (self.collegeyear_set.all()[0].wins, self.collegeyear_set.all()[0].losses)
+        return "(%d-%d)" % (self.collegeyear_set.get(datetime.date.today().year).wins, self.collegeyear_set.get(datetime.date.today().year).losses)
     
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)
