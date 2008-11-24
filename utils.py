@@ -175,7 +175,7 @@ def load_ncaa_game_xml(game):
     """
     Loader for NCAA game xml files
     """
-    doc = urllib.urlopen(game.ncaa_xml).read()
+    doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
     # replace all interior spaces with 0
     f = soup.findAll(text="&#160;")
