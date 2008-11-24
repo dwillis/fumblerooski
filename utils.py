@@ -106,7 +106,7 @@ def game_updater(year, teams, week):
                         game_drive_loader(g)
                         g.has_drives = True
                     if not g.has_player_stats:
-                        load_player_stats(g)
+                        player_game_stats(g)
                         g.has_player_stats = True
                 else:
                     pass
