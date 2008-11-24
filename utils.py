@@ -129,7 +129,6 @@ def game_updater(year, teams, week):
         except:
             raise
     update_college_year(year)
-    return games
 
 
 """
