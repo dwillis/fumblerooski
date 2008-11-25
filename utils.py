@@ -422,7 +422,7 @@ def game_drive_loader(game):
                 start_side = 'O'
         try:
             end_result = DriveOutcome.objects.get(abbrev=str(cells[6].contents[0]))
-        except DoesNotExist:
+        except:
             continue
         end_time = datetime.time(0, int(cells[7].contents[0].split(":")[0]), int(cells[7].contents[0].split(":")[1]))
         if cells[8].contents and str(cells[8].contents[0]) != 'null':
