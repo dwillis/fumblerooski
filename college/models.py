@@ -264,6 +264,7 @@ class Game(models.Model):
     team2_score = models.IntegerField(null=True)
     site = models.CharField(max_length=90, blank=True)
     attendance = models.IntegerField(null=True, blank=True)
+    overtime = models.CharField(max_length=5, blank=True)
     ncaa_xml = models.CharField(max_length=120, blank=True)
     duration = models.TimeField(null=True, blank=True)
     has_drives = models.BooleanField()

@@ -96,6 +96,7 @@ def game_updater(year, teams, week):
                 g.team1_score = team1_score
                 g.team2_score=team2_score
                 g.t1_result=t1_result
+                g.overtime=ot
                 if game_file:
                     g.ncaa_xml = game_file.split('.xml')[0].strip()
                     games.append(g)
