@@ -103,12 +103,12 @@ def game_updater(year, teams, week):
                     if not g.has_stats:
                         load_ncaa_game_xml(g)
                         g.has_stats = True
-                    if not g.has_drives:
-                        game_drive_loader(g)
-                        g.has_drives = True
                     if not g.has_player_stats:
                         player_game_stats(g)
                         g.has_player_stats = True
+                    if not g.has_drives:
+                        game_drive_loader(g)
+                        g.has_drives = True
                 else:
                     pass
                 if ot:
