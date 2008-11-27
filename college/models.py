@@ -265,7 +265,7 @@ class BowlGame(models.Model):
         return self.name
     
     def get_absolute_url(self):
-        return '/bowl-games/%s/' % self.slug
+        return 'college/bowl-games/%s/' % self.slug
     
 
 class Game(models.Model):
