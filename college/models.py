@@ -252,6 +252,19 @@ class Position(models.Model):
     def get_absolute_url(self):
         return '/recruits/positions/%s/' % self.abbrev.lower()
 
+
+class BowlGame(models.Model):
+    name = models.CharField(max_length=75)
+    slug = models.CharField(max_length=75)
+    state = models.ForeignKey(State)
+    
+    def __unicode__(self):
+        return self.name
+    
+    def get_absolute_url(self):
+        return '/bowl-games/%s/' % self.slug
+    
+
 class Game(models.Model):
     season = models.IntegerField()
     team1 = models.ForeignKey(College, related_name='first_team')
