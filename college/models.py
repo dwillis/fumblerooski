@@ -80,7 +80,7 @@ class City(models.Model):
         return "%s, %s" % (self.name, self.state.id)
     
     def get_absolute_url(self):
-        return "/college/states/%s/%s" % (self.state.id.lower(), self.slug)
+        return "/college/states/%s/%s/" % (self.state.id.lower(), self.slug)
     
     class Meta:
         verbose_name_plural = 'cities'
@@ -256,7 +256,7 @@ class Position(models.Model):
 class BowlGame(models.Model):
     name = models.CharField(max_length=75)
     slug = models.CharField(max_length=75)
-    state = models.ForeignKey(State, null=True, blank=True)
+    city = models.ForeignKey(City)
     
     def __unicode__(self):
         return self.name
