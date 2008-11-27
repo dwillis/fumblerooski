@@ -9,7 +9,7 @@
 <table>
     <th>Name</th><th>Location</th>
     {% for game in game_list %}
-    <tr><td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td><td>{{ game.bowl_game.city }}</td></tr>
+    <tr><td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td><td>{{ game.city }}</td></tr>
     {% endfor %}
 </table>
 
