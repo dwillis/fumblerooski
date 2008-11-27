@@ -27,6 +27,11 @@ def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
     return render_to_response('college/bowl_games.html', {'game_list': game_list})
 
+def bowl_game_detail(request, bowl):
+    bg = get_object_or_404(BowlGame, slug=bowl)
+    game_list = Game.objects.filter(bowl_game=bg).order_by('-date')
+    return render_to_response('college/bowl_game_detail.html', {'bowl': bg, 'game_list': game_list})
+
 def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
     return render_to_response('college/conferences.html', {'conference_list': conference_list})
