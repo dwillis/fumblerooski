@@ -1,11 +1,14 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, City, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
+from fumblerooski.college.models import State, City, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'updated')
     list_filter = ('updated',)
     ordering = ('name',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
+class BowlGameAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class CityAdmin(admin.ModelAdmin):
@@ -79,3 +82,4 @@ admin.site.register(Ranking, RankingAdmin)
 admin.site.register(Week, WeekAdmin)
 admin.site.register(DriveOutcome, DriveOutcomeAdmin)
 admin.site.register(GameDrive, GameDriveAdmin)
+admin.site.register(BowlGame, BowlGameAdmin)
