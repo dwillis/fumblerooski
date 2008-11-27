@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Fumblerooski: Bowl Games{% endblock %}
+
+{% block content %}
+
+<h3>Bowl Games</h3>
+
+<table>
+    <th>Name</th><th>Location</th>
+    {% for game in game_list %}
+    <tr><td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td><td>{{ game.bowl_game.city }}</td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
