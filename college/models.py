@@ -77,7 +77,10 @@ class City(models.Model):
 #    objects = models.GeoManager()
     
     def __unicode__(self):
-        return "%s, %s" % (self.name, self.state.id)
+        if self.state:
+            return "%s, %s" % (self.name, self.state.id)
+        else:
+            return self.name
     
     def get_absolute_url(self):
         return "/college/states/%s/%s/" % (self.state.id.lower(), self.slug)
