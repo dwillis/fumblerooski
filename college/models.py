@@ -72,7 +72,7 @@ class StateForm(forms.Form):
 class City(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
-    state = models.ForeignKey(State)
+    state = models.ForeignKey(State, null=True, blank=True)
 #    point = models.PointField()
 #    objects = models.GeoManager()
     
