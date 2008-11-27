@@ -256,7 +256,7 @@ class Position(models.Model):
 class BowlGame(models.Model):
     name = models.CharField(max_length=75)
     slug = models.CharField(max_length=75)
-    state = models.ForeignKey(State)
+    state = models.ForeignKey(State, null=True, blank=True)
     
     def __unicode__(self):
         return self.name
