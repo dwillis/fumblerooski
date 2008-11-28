@@ -80,10 +80,10 @@ def team_bowl_games(request, team):
     game_list = Game.objects.filter(team1=t, is_bowl_game=True).order_by('-date')
     return render_to_response('college/team_bowl_games.html', {'team': t, 'game_list': game_list })
 
-def team_rankings_season(request, team, year):
-    cy = get_object_or_404(CollegeYear, college__slug=team, year=year)
+def team_rankings_season(request, team, season):
+    cy = get_object_or_404(CollegeYear, college__slug=team, year=season)
     date = datetime.date.today()-datetime.timedelta(days=7)
-    latest_week = Week.objects.get(year=2008, end_date__gte=date, end_date__lte=datetime.date.today())
+    latest_week = Week.objects.get(year=season, end_date__gte=date, end_date__lte=datetime.date.today())
     latest_rankings = Ranking.objects.filter(college=cy.college, year=year, week=latest_week).select_related().order_by('-college_week.week_num')
     return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings})
 
