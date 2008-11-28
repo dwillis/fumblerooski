@@ -2,6 +2,8 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('fumblerooski.college.views',
      url(r'^seasons/(?P<season>\d+)/week/(?P<week>\d+)/$', 'season_week'),
+#     url(r'^seasons/(?P<season>\d+)/rankings/$', 'rankings_season'),
+     url(r'^rankings/$', 'rankings_index'),
      url(r'^conferences/$', 'conference_index'),
      url(r'^conferences/(?P<conf>[-a-z0-9]+)/(?P<season>\d+)/$', 'conference_detail'),
      url(r'^games/$', 'game_index'),

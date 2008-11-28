@@ -3,6 +3,8 @@ from django.contrib.gis.db import models
 from django import forms
 import datetime
 
+CURRENT_SEASON = '2008'
+
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
     ('SO', 'Sophomore'),
@@ -666,6 +668,9 @@ class RankingType(models.Model):
     
     def __unicode__(self):
         return self.name
+    
+    def get_current_url(self):
+        return "/college/season/%s/rankings/%s/" % (CURRENT_SEASON, self.slug)
 
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)

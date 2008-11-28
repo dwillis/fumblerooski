@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Fumblerooski: Rankings{% endblock %}
+
+{% block content %}
+
+<h3>Categories</h3>
+
+<ul>
+    {% for ranking in ranking_list %}
+    <li><a href={{ ranking.get_current_url }}>{{ ranking.name }}</a></li>
+    {% endfor %}
+</ul>
+
+
+{% endblock %}

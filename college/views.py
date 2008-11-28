@@ -23,6 +23,10 @@ def season_week(request, season, week):
     game_list = Game.objects.select_related().filter(week=week).order_by('date', 'team1')
     return render_to_response('college/season_week.html', {'season': season, 'week': week, 'games': game_list})
 
+def rankings_index(request):
+    ranking_list = RankingType.objects.filter(typename='T').order_by('name')
+    return render_to_response('college/rankings_index.html', {'ranking_list':ranking_list})
+
 def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
     return render_to_response('college/bowl_games.html', {'game_list': game_list})
