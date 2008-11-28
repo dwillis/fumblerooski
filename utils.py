@@ -201,6 +201,7 @@ def load_ncaa_game_xml(game):
         gd = datetime.date(d[0], d[1], d[2])
     except:
         print "Could not find one of the teams"
+        continue
     try:
         game, created = Game.objects.get_or_create(team1=t1, team2=t2, date=gd, season=gd.year)
         game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd,season=gd.year)
@@ -444,36 +445,37 @@ def game_drive_loader(game):
             print "Could not save drive %s, %s, %s" % (drive, game, team)
 
 
-def ranking_loader(team, year, week):
-    t = College.objects.get(id=team)
-    cy = CollegeYear.objects.get(college=t, year=year)
-    w = Week.objects.get(year=year, week_num=week)
-    html = urllib.urlopen(cy.get_ncaa_week_url()+str(week)).read()
-    soup = BeautifulSoup(html)
-    try:
-        rankings = soup.findAll('table')[4]
-    except:
-        rankings = None
-    if rankings:
-        rows = rankings.findAll('tr')[5:16]
-        for row in rows:
-            cells = row.findAll('td')
-            rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
-            try:
-                rk =int(cells[1].contents[0])
-                i_t = False
-            except ValueError:
-                rk = int(cells[1].contents[0].split('T-')[1])
-                i_t = True
+def ranking_loader(year, week):
+    teams = College.objects.filter(updated=True).order_by('id')
+    for team in teams:
+        cy = CollegeYear.objects.get(college=team, year=year)
+        w = Week.objects.get(year=year, week_num=week)
+        html = urllib.urlopen(cy.get_ncaa_week_url()+str(week)).read()
+        soup = BeautifulSoup(html)
+        try:
+            rankings = soup.findAll('table')[4]
+        except:
+            rankings = None
+        if rankings:
+            rows = rankings.findAll('tr')[5:16]
+            for row in rows:
+                cells = row.findAll('td')
+                rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
+                try:
+                    rk =int(cells[1].contents[0])
+                    i_t = False
+                except ValueError:
+                    rk = int(cells[1].contents[0].split('T-')[1])
+                    i_t = True
         
-            try:
-                cr = int(cells[5].contents[0])
-                ic_t = False
-            except ValueError:
-                cr = int(cells[5].contents[0].split('T-')[1])
-                ic_t = True
+                try:
+                    cr = int(cells[5].contents[0])
+                    ic_t = False
+                except ValueError:
+                    cr = int(cells[5].contents[0].split('T-')[1])
+                    ic_t = True
         
-            r, created = Ranking.objects.get_or_create(ranking_type=rt, college=t, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t)
+                r, created = Ranking.objects.get_or_create(ranking_type=rt, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t)
 
 def player_game_stats(game):
     while not game.has_player_stats:
