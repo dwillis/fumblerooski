@@ -201,7 +201,7 @@ def load_ncaa_game_xml(game):
         gd = datetime.date(d[0], d[1], d[2])
     except:
         print "Could not find one of the teams"
-        continue
+        raise
     try:
         game, created = Game.objects.get_or_create(team1=t1, team2=t2, date=gd, season=gd.year)
         game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd,season=gd.year)
