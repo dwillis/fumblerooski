@@ -11,7 +11,7 @@
 
 <h4>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h4>
 
-<h3>Latest Week: {{ latest_week.week_num }} ( {{ latest_week.end_date|date:"F d, Y" }})</h3>
+<h3>Latest Week: {{ latest_week.week_num }} (through {{ latest_week.end_date|date:"F d, Y" }})</h3>
 
 <table>
     <th>Category</th><th>Overall Rank</th><th>Actual</th><th>Conference Rank</th>
