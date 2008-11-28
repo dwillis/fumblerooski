@@ -540,7 +540,7 @@ class PlayerReceiving(models.Model):
     td = models.IntegerField(default=0)
     long_yards = models.IntegerField(default=0)
     average = models.FloatField(default=0)
-
+    
     def __unicode__(self):
         return "%s - %s" % (self.player.name, self.game)
 
@@ -679,7 +679,7 @@ class Ranking(models.Model):
     is_conf_tied = models.BooleanField()
     
     def __unicode__(self):
-        return "%s - %s, %s (Week %s)" % (self.ranking_type, self.college, self.year, self.week)
+        return "%s - %s, %s (%s)" % (self.ranking_type, self.college, self.year, self.week)
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)

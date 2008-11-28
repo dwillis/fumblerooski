@@ -5,7 +5,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame
+from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -82,7 +82,9 @@ def team_bowl_games(request, team):
 
 def team_rankings_season(request, team, year):
     cy = get_object_or_404(CollegeYear, college__slug=team, year=year)
-    latest_rankings = Ranking.objects.filter(college=cy.college, year=year).select_related().order_by('-college_weeks.week')[0]
+    date = datetime.date.today()-datetime.timedelta(days=7)
+    latest_week = Week.objects.get(year=2008, end_date__gte=date, end_date__lte=datetime.date.today())
+    latest_rankings = Ranking.objects.filter(college=cy.college, year=year, week=latest_week).select_related().order_by('-college_week.week_num')
     return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings})
 
 def team_opponents(request, team):
