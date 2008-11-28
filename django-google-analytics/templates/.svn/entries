@@ -1,0 +1,31 @@
+8
+
+dir
+6
+http://django-google-analytics.googlecode.com/svn/trunk/templates
+http://django-google-analytics.googlecode.com/svn
+
+
+
+2008-07-07T19:55:49.590199Z
+2
+clintecker
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+0b366d68-7451-0410-bbe6-813a2710462f
+
+google_analytics
+dir
+
