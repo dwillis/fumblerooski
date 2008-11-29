@@ -670,7 +670,10 @@ class RankingType(models.Model):
         return self.name
     
     def get_current_url(self):
-        return "/college/rankings/season/%s/%s/" % (self.slug, CURRENT_SEASON)
+        return "/college/rankings/%s/%s/" % (self.slug, CURRENT_SEASON)
+    
+    def get_partial_url(self):
+        return "/college/rankings/%s/" % self.slug
 
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)

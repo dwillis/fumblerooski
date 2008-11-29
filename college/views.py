@@ -27,6 +27,13 @@ def rankings_index(request):
     ranking_list = RankingType.objects.filter(typename='T').order_by('name')
     return render_to_response('college/rankings_index.html', {'ranking_list':ranking_list})
 
+def rankings_detail(request, rankingtype, season):
+    rt = get_object_or_404(RankingType, slug=rankingtype)
+    date = datetime.date.today()-datetime.timedelta(days=7)
+    latest_week = Week.objects.get(year=season, end_date__gte=date, end_date__lte=datetime.date.today())
+    rankings_list = Ranking.objects.filter(year=season, ranking_type=rt, week=latest_week).select_related().order_by('rank')
+    return render_to_response('college/rankings_season.html', {'ranking_type': rt, 'rankings_list': rankings_list, 'season':season})
+
 def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
     return render_to_response('college/bowl_games.html', {'game_list': game_list})
