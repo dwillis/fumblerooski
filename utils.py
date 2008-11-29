@@ -457,7 +457,7 @@ def ranking_loader(year, week):
         except:
             rankings = None
         if rankings:
-            rows = rankings.findAll('tr')[5:16]
+            rows = rankings.findAll('tr')[5:22]
             for row in rows:
                 cells = row.findAll('td')
                 rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
