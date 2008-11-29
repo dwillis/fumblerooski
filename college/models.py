@@ -674,6 +674,7 @@ class RankingType(models.Model):
     
     def get_partial_url(self):
         return "/college/rankings/%s/" % self.slug
+    
 
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)
@@ -689,6 +690,9 @@ class Ranking(models.Model):
     
     def __unicode__(self):
         return "%s - %s, %s (%s)" % (self.ranking_type, self.college, self.year, self.week)
+    
+    def get_week_url(self):
+        return "/college/rankings/%s/%s/week/%s/" % (self.ranking_type.slug, self.year, self.week.week_num)
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)
