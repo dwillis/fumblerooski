@@ -475,7 +475,7 @@ def ranking_loader(year, week):
                     cr = int(cells[5].contents[0].split('T-')[1])
                     ic_t = True
         
-                r, created = Ranking.objects.get_or_create(ranking_type=rt, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t)
+                r, created = Ranking.objects.get_or_create(ranking_type=rt, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t, division = cy.division)
 
 def player_game_stats(game):
     while not game.has_player_stats:

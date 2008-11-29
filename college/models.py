@@ -685,12 +685,10 @@ class Ranking(models.Model):
     actual = models.FloatField()
     conference_rank = models.PositiveIntegerField(null=True)
     is_conf_tied = models.BooleanField()
+    division = models.CharField(max_length=1)
     
     def __unicode__(self):
         return "%s - %s, %s (%s)" % (self.ranking_type, self.college, self.year, self.week)
-    
-    def division(self):
-        return self.college.collegeyear_set.get(year=2008).division
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)
