@@ -688,6 +688,9 @@ class Ranking(models.Model):
     
     def __unicode__(self):
         return "%s - %s, %s (%s)" % (self.ranking_type, self.college, self.year, self.week)
+    
+    def division(self):
+        return self.college.collegeyear_set.get(year=2008).division
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)
