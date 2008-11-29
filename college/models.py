@@ -493,7 +493,7 @@ class PlayerGame(models.Model):
     total_yards = models.IntegerField()
     
     def __unicode__(self):
-        return self.player.name.full_name()
+        return self.player
 
 class PlayerRush(models.Model):
     player = models.ForeignKey(Player)
