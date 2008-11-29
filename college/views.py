@@ -32,7 +32,7 @@ def rankings_season(request, rankingtype, season, div='B'):
     date = datetime.date.today()-datetime.timedelta(days=7)
     latest_week = Week.objects.get(year=season, end_date__gte=date, end_date__lte=datetime.date.today())
     rankings_list = Ranking.objects.filter(year=season, ranking_type=rt, week=latest_week, division=div).select_related().order_by('rank')
-    return render_to_response('college/rankings_season.html', {'ranking_type': rt, 'rankings_list': rankings_list, 'season':season})
+    return render_to_response('college/rankings_season.html', {'ranking_type': rt, 'rankings_list': rankings_list, 'season':season, 'latest_week':latest_week})
 
 def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
