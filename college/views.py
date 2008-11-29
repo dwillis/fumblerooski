@@ -27,7 +27,7 @@ def rankings_index(request):
     ranking_list = RankingType.objects.filter(typename='T').order_by('name')
     return render_to_response('college/rankings_index.html', {'ranking_list':ranking_list})
 
-def rankings_detail(request, rankingtype, season):
+def rankings_season(request, rankingtype, season):
     rt = get_object_or_404(RankingType, slug=rankingtype)
     date = datetime.date.today()-datetime.timedelta(days=7)
     latest_week = Week.objects.get(year=season, end_date__gte=date, end_date__lte=datetime.date.today())
