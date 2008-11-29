@@ -504,7 +504,7 @@ def player_game_stats(game):
                 name = str(p.find("name").contents[0])
                 try:
                     player = Player.objects.get(team=team, year=game.date.year, name=name, number=uniform)
-                    pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True)
+                    pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True, total_plays=p.find("totplays").contents[0], total_yards=p.find("totyards").contents[0])
                     if p.find("tackles"):
                         un_t = int(p.find("tackles").find("uatackles").contents[0])
                         a_t = int(p.find("tackles").find("atackles").contents[0])
