@@ -205,8 +205,13 @@ def game(request, team1, team2, year, month, day):
         conf = None
     try:
         game_offense = GameOffense.objects.get(game=game, team=team_1)
+        fd = []
+        fd.append(game_offense.first_downs_rushing)
+        fd.append(game_offense.first_downs_passing)
+        fd.append(game_offense.first_downs_penalty)
     except:
         game_offense = None
+        fd = None
     try:
         game_defense = GameDefense.objects.get(game=game, team=team_1)
     except:
@@ -239,7 +244,7 @@ def game(request, team1, team2, year, month, day):
         player_passdefense = PlayerPassDefense.objects.filter(game=game, player__team=team_1).order_by('-interceptions')
     except:
         player_passdefense = None
-    return render_to_response('college/game.html', {'team_1': team_1, 'conf': conf, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving, 'player_tackles':player_tackles, 'player_tacklesloss':player_tacklesloss, 'player_passdefense':player_passdefense })
+    return render_to_response('college/game.html', {'team_1': team_1, 'conf': conf, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving, 'player_tackles':player_tackles, 'player_tacklesloss':player_tacklesloss, 'player_passdefense':player_passdefense, 'first_downs': fd })
 
 def game_drive(request, team1, team2, year, month, day):
     team_1 = get_object_or_404(College, slug=team1)

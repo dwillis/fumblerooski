@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load humanize %}
+{% load chart %}
 
 {% block title %}Fumblerooski: {{ team_1.name }} vs. {{ team_2.name }}, {{ game.date.year }}{% endblock %}
 
@@ -25,6 +26,14 @@
 {% if offense %}
 
 <h3>{{ team_1.name }} Offensive Stats</h3>
+
+  {% chart %}
+    {% chart-data first_downs %}
+    {% chart-size "300x200" %}
+    {% chart-type "pie" %}
+    {% chart-labels "Rush" "Pass" "Flag" %}
+    {% chart-alt "It worked!" %}
+  {% endchart %
 
 <ul>
   <li>First downs: {{ offense.first_downs_total }} ({{ offense.first_downs_rushing }} rushing, {{ offense.first_downs_passing }} passing, {{ offense.first_downs_penalty }} penalties)</li>
