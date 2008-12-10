@@ -1,5 +1,5 @@
-from django.contrib.gis.db import models
-#from django.db import models
+#from django.contrib.gis.db import models
+from django.db import models
 from django import forms
 import datetime
 
@@ -278,8 +278,8 @@ class Game(models.Model):
     week = models.ForeignKey(Week)
     t1_game_type = models.CharField(max_length=1, choices=GAME_TYPE_CHOICES)
     t1_result = models.CharField(max_length=1, choices=RESULT_CHOICES, blank=True)
-    team1_score = models.IntegerField(null=True)
-    team2_score = models.IntegerField(null=True)
+    team1_score = models.IntegerField(null=True, blank=True)
+    team2_score = models.IntegerField(null=True, blank=True)
     site = models.CharField(max_length=90, blank=True)
     attendance = models.IntegerField(null=True, blank=True)
     overtime = models.CharField(max_length=5, blank=True)

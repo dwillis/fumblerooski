@@ -42,6 +42,10 @@ def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
     return render_to_response('college/bowl_games.html', {'game_list': game_list})
 
+def bowl_game_season(request, season):
+    game_list = Game.objects.filter(is_bowl_game=True, season=season).order_by('date')
+    return render_to_response('college/bowl_game_season.html', {'season': season, 'game_list': game_list})
+
 def bowl_game_detail(request, bowl):
     bg = get_object_or_404(BowlGame, slug=bowl)
     game_list = Game.objects.filter(bowl_game=bg, t1_result='W').order_by('-date')
