@@ -296,16 +296,16 @@ def team_by_cls(request, team, year, cl):
     player_list = Player.objects.filter(team=t, year=season, status=cl)
     return render_to_response('college/team_class.html', {'team':t, 'year': year, 'cls': cl, 'player_list':player_list })
 
-def team_position_detail(request, team, pos):
+def team_position_detail(request, team, season, pos):
     t = get_object_or_404(College, slug=team)
-    p = Position.objects.get(abbrev=pos)
-    player_list = Player.objects.filter(team=t, position=p)
-    return render_to_response('college/team_position_detail.html', {'team': t, 'position': p, 'player_list': player_list})
+    p = Position.objects.get(abbrev=pos.upper())
+    player_list = Player.objects.filter(team=t, position=p, year=season).order_by('-games_played')
+    return render_to_response('college/team_position_detail.html', {'team': t, 'position': p, 'season': season, 'player_list': player_list})
 
 def player_detail(request, team, season, player):
     t = get_object_or_404(College, slug=team)
     cy = get_object_or_404(CollegeYear, college=t, year=season)
-    p = Player.objects.get(team=t, year=season, slug=player)
+    p = Player.objects.get(team=t, year=cy.year, slug=player)
     ps = PlayerScoring.objects.filter(player=p).select_related().order_by('-college_game.date')
     pret = PlayerReturn.objects.filter(player=p).select_related().order_by('-college_game.date')
     pf = PlayerFumble.objects.filter(player=p).select_related().order_by('-college_game.date')

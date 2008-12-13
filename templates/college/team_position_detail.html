@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Fumblerooski: {{ team.name }} {{ season }} {{ position.plural_name }}{% endblock %}
+
+{% block content %}
+
+<h3>{{ team.name }} {{ position.plural_name }} - {{ season }}</h3>
+<h5>{{ team.conference.name }}</h5>
+
+{% if player_list %}
+<table>
+  <th>Number</th><th>Name</th><th>Class</th><th>Games Played</th>
+  {% for player in player_list %}
+  <tr><td>{{ player.number }}</td><td><a href="{{ player.get_absolute_url }}">{{ player.name }}</a></td><td>{{ player.status }}</td><td>{{ player.games_played }}</td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}
