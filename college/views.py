@@ -302,6 +302,11 @@ def team_position_detail(request, team, season, pos):
     player_list = Player.objects.filter(team=t, position=p, year=season).order_by('-games_played')
     return render_to_response('college/team_position_detail.html', {'team': t, 'position': p, 'season': season, 'player_list': player_list})
 
+def team_class_detail(request, team, season, cls):
+    t = get_object_or_404(College, slug=team)
+    player_list = Player.objects.filter(team=t, status=cls.upper(), year=season).order_by('-games_played')
+    return render_to_response('college/team_class_detail.html', {'team': t, 'class': cls, 'season': season, 'player_list': player_list})
+
 def player_detail(request, team, season, player):
     t = get_object_or_404(College, slug=team)
     cy = get_object_or_404(CollegeYear, college=t, year=season)
