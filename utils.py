@@ -484,7 +484,10 @@ def load_player_rushing(year):
     rankings = soup.find('table', {'class': 'statstable'})
     rows = rankings.findAll('tr')[1:]
     d = datetime.date.today()
-    w = Week.objects.filter(end_date__lte=d, year=d.year).order_by('-week_num')[0]
+    if year == '2008':
+        w = Week.objects.filter(end_date__lte=d, year=d.year).order_by('-week_num')[0]
+    else:
+        w = Week.objects.filter(year=year).order_by('-week_num')[0]
     for row in rows:
         rank = int(row.findAll('td')[0].contents[0])
         year = int(row.findAll('td')[1].find('a')['href'].split('=')[1][:4])
