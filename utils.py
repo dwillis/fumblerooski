@@ -7,7 +7,7 @@ from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType
+from fumblerooski.college.models import State, College, Game, Coach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary
 
 
 def update_conf_games(year):
@@ -477,6 +477,29 @@ def ranking_loader(year, week):
         
                 r, created = Ranking.objects.get_or_create(ranking_type=rt, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t, division = cy.division)
 
+def load_player_rushing(year):
+    url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerrush&site=org" % year
+    html = urllib.urlopen(url).read()
+    soup = BeautifulSoup(html)
+    rankings = soup.find('table', {'class': 'statstable'})
+    rows = rankings.findAll('tr')[1:]
+    d = datetime.date.today()
+    w = Week.objects.filter(end_date__lte=d, year=d.year).order_by('-week_num')[0]
+    for row in rows:
+        rank = int(row.findAll('td')[0].contents[0])
+        year = int(row.findAll('td')[1].find('a')['href'].split('=')[1][:4])
+        team_id = int(row.findAll('td')[1].find('a')['href'].split('=')[2].split('&')[0])
+        p_num = str(row.findAll('td')[1].find('a')['href'].split('=')[3])
+        pos = Position.objects.get(abbrev=str(row.findAll('td')[2].contents[0]))
+        carries = int(row.findAll('td')[5].contents[0])
+        net = int(row.findAll('td')[6].contents[0])
+        td = int(row.findAll('td')[7].contents[0])
+        avg = float(row.findAll('td')[8].contents[0])
+        ypg = float(row.findAll('td')[9].contents[0])
+        team = College.objects.get(id=team_id)
+        player = Player.objects.get(team=team, number=p_num, year=year, position=pos)
+        prs, created = RushingSummary.objects.get_or_create(player=player, year=year, week=w, rank=rank, carries=carries, net=net, td=td, average=avg, yards_per_game=ypg)
+
 def player_game_stats(game):
     while not game.has_player_stats:
         html = urllib.urlopen(game.get_ncaa_xml_url()).read()
@@ -625,12 +648,13 @@ def last_week_loader():
         load_ncaa_game_xml(g)
         load_player_stats(game)
 
-def load_rosters(year):
+def load_rosters(year, teams=None):
     """
     Loader for NCAA roster information. Loops through all teams in the database and finds rosters for the given year, then populates Player table with
     information for each player for that year. Also adds aggregate class totals for team in CollegeYear model.
     """
-    teams = College.objects.filter(updated=True).order_by('id')
+    if not teams:
+        teams = College.objects.filter(updated=True).order_by('id')
     for team in teams:
         load_team(team.id, year)
 
@@ -673,7 +697,7 @@ def load_team(team_id, year):
             py.games_played=gp
             py.save()
     except:
-        raise
+        pass
 
 def load_coaches():
     import xlrd

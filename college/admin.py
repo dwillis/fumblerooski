@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, City, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame
+from fumblerooski.college.models import State, City, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'updated')
@@ -62,6 +62,11 @@ class PlayerReceivingAdmin(admin.ModelAdmin):
     list_display = ('player', 'game', 'receptions', 'yards', 'td', 'average')
     list_filter = ('td', 'receptions')
 
+class RushingSummaryAdmin(admin.ModelAdmin):
+    list_display = ('player', 'year', 'rank', 'carries', 'net', 'yards_per_game')
+    list_filter = ('year', 'rank')
+    ordering = ('-year', 'rank')
+
 admin.site.register(CollegeYear)
 admin.site.register(PlayerPass, PlayerPassAdmin)
 admin.site.register(PlayerRush, PlayerRushAdmin)
@@ -83,3 +88,4 @@ admin.site.register(Week, WeekAdmin)
 admin.site.register(DriveOutcome, DriveOutcomeAdmin)
 admin.site.register(GameDrive, GameDriveAdmin)
 admin.site.register(BowlGame, BowlGameAdmin)
+admin.site.register(RushingSummary, RushingSummaryAdmin)

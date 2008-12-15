@@ -473,7 +473,7 @@ class Player(models.Model):
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
 
     def __unicode__(self):
-        return "%s - %s" % (self.name, self.year)
+        return "%s - %s" % (self.name, self.team)
     
     def get_absolute_url(self):
         return '/college/teams/%s/%s/players/%s/' % (self.team.slug, self.year, self.slug)
@@ -697,6 +697,21 @@ class Ranking(models.Model):
     
     def get_week_url(self):
         return "/college/rankings/%s/%s/week/%s/" % (self.ranking_type.slug, self.year, self.week.week_num)
+
+class RushingSummary(models.Model):
+    player = models.ForeignKey(Player)
+    year = models.IntegerField()
+    week = models.ForeignKey(Week)
+    rank = models.PositiveIntegerField()
+    is_tied = models.BooleanField()
+    carries = models.PositiveIntegerField()
+    net = models.PositiveIntegerField()
+    td = models.PositiveIntegerField()
+    average = models.FloatField()
+    yards_per_game = models.FloatField()
+    
+    def __unicode__(self):
+        return "%s - %s, %s" (self.player, self.year, self.yards_per_game)
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)
