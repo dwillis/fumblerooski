@@ -108,7 +108,7 @@ def team_rankings_season(request, team, season, week=None):
         latest_week = Week.objects.get(year=season, end_date__gte=date, end_date__lte=datetime.date.today())
     other_weeks = Week.objects.filter(year=season).exclude(week_num=latest_week.week_num).exclude(end_date__gte=datetime.date.today()).order_by('end_date')
     latest_rankings = Ranking.objects.filter(college=cy.college, year=season, week=latest_week).select_related().order_by('-college_week.week_num')
-    return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings, 'latest_week': latest_week})
+    return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings, 'latest_week': latest_week, 'other_weeks': other_weeks})
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
