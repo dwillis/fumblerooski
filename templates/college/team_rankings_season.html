@@ -18,6 +18,9 @@
 <a href="{{ season_record.get_absolute_url }}rankings/week/{{ week.week_num }}/">{{ week.week_num }}</a> {% if forloop.last %}{% else %}|{% endif %} 
 {% endfor %}
 
+<h4>Best Category: {{ best.ranking_type.name }} - {{ best.rank|ordinal }}</h4>
+<h4>Worst Category: {{ worst.ranking_type.name }} - {{ worst.rank|ordinal }}</h4>
+
 <table>
     <th>Category</th><th>Overall Rank</th><th>Actual</th><th>Conference Rank</th>
     {% for ranking in latest_rankings %}
