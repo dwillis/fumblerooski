@@ -3,7 +3,7 @@
  
 {% block title %}Entries for {{ day|date:"M j, Y" }} | {{ block.super }}{% endblock %}
  
-{% block sl %}
+{% block content %}
 <h1>Entries for {{ day|date:"M j, Y" }}</h1>
 {% if object_list %}
 {% for post in object_list %}

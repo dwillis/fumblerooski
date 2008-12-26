@@ -3,15 +3,15 @@
  
 {% block title %}{{ post.title }} | {{ block.super }}{% endblock %}
  
-{% block sl %}
+{% block content %}
 <h1>{{ post.title }}</h1>
-<div class="entry">
+<div class="story first">
     {{ post.body|to_html }}
+
 </div>
+<div class="story">
  
-<hr />
- 
-{% block sr %}
 <h2>Entry Details</h2>
 <p>Published: <strong>{{ post.pub_date|date:"M j, Y" }} at {{ post.pub_date|time:"f A" }}</strong></p>
+</div>
 {% endblock %}

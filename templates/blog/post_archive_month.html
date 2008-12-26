@@ -3,7 +3,7 @@
  
 {% block title %}Entries for {{ month|date:"F"}}, {{ month|date:"Y" }} | {{ block.super }}{% endblock %}
  
-{% block sl %}
+{% block content %}
 <h1>Entries for {{ month|date:"F"}}, {{ month|date:"Y" }}</h1>
 {% if object_list %}
 {% for post in object_list %}
