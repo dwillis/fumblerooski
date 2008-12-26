@@ -15,7 +15,7 @@
 
 <h5>Other Weeks:</h5>
 {% for week in other_weeks %}
-<a href="/college/rankings/{{ ranking_type.slug }}/{{ season }}/week/{{ week.week_num }}/">{{ week.week_num }}</a> {% if forloop.last %}{% else %}|{% endif %} 
+<a href="{{ season_record.get_absolute_url }}/week/{{ week.week_num }}/">{{ week.week_num }}</a> {% if forloop.last %}{% else %}|{% endif %} 
 {% endfor %}
 
 <table>
