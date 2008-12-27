@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+{% load charts %}
+
+{% block title %}Fumblerooski: {{ season_record.college.name }} {{ season_record.year }} Rankings - {{ ranking_type.name }}{% endblock %}
+
+{% block content %}
+
+<h3>{{ season_record.college.name }} {{ season_record.year }} Rankings - {{ ranking_type.name }}</h3>
+
+<h2>Best Ranking: {{ best.rank }}, {{ best.week.end_date|date:"N d, Y" }}</h2>
+<h2>Worst Ranking: {{ worst.rank }}, {{ worst.week.end_date|date:"N d, Y" }}</h2>
+
+{% chart %}
+  {% chart-type "line" %}
+  {% chart-size "700x300" %}
+  {% chart-data ranks %}
+  {% chart-colors "FFFFFF" %}
+  {% chart-background "000000" %}
+  {% axis "left" %}
+     {% axis-range 0 worst.rank %}
+     {% axis-style "FFFFFF" %}
+  {% endaxis %}
+  {% axis "bottom" %}
+     {% axis-labels "Sept." "Oct." "Nov." "Dec." %}
+     {% axis-style "FFFFFF" %}
+  {% endaxis %}
+{% endchart %}
+
+
+{% endblock %}

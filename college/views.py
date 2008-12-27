@@ -112,6 +112,16 @@ def team_rankings_season(request, team, season, week=None):
     worst = latest_rankings.order_by('-rank')[0]
     return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings, 'latest_week': latest_week, 'other_weeks': other_weeks, 'best': best, 'worst': worst})
 
+def team_ranking_detail(request, team, season, rankingtype):
+    cy = get_object_or_404(CollegeYear, college__slug=team, year=season)
+    ranking_type = get_object_or_404(RankingType,slug=rankingtype)
+    rankings = Ranking.objects.filter(college=cy.college, year=season, ranking_type=ranking_type).select_related().order_by('college_week.week_num')
+    best = rankings.order_by('rank')[0]
+    worst = rankings.order_by('-rank')[0]
+    ranks = [r.rank for r in rankings]
+    weeks = [w.week.week_num for w in rankings]
+    return render_to_response('college/team_ranking_detail.html', {'season_record': cy, 'ranking_type': ranking_type, 'rankings': rankings, 'best': best, 'worst': worst, 'ranks': ranks, 'weeks': weeks})
+
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
     game_list = Game.objects.filter(team1=t).select_related().order_by('college_college.name')
