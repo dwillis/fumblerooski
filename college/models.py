@@ -238,7 +238,7 @@ class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)
     college = models.ForeignKey(College)
     job = models.ForeignKey(CoachingJob)
-    start_date = models.DateField()
+    start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     start_year = models.IntegerField(null=True, blank=True)
     end_year = models.IntegerField(null=True, blank=True)
