@@ -18,6 +18,11 @@ def state_index(request):
     form = StateForm()
     return render_to_response('college/state_index.html', {'form': form})
 
+def coach_index(request):
+    active_hc = CollegeCoach.objects.filter(job__name='Head Coach', end_date__isnull=True).select_related().order_by('start_date')
+    recent_departures = CollegeCoach.objects.filter(job__name='Head Coach', end_date__year=datetime.date.today().year).select_related().order_by('end_date')
+    return render_to_response('college/coach_index.html', {'active_coaches': active_hc, 'recent_departures': recent_departures[:10]})
+
 def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, year=season)
     game_list = Game.objects.select_related().filter(week=week).order_by('date', 'team1')
