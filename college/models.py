@@ -240,6 +240,8 @@ class CollegeCoach(models.Model):
     job = models.ForeignKey(CoachingJob)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
+    start_year = models.IntegerField(null=True, blank=True)
+    end_year = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return "%s - %s" % (self.coach, self.college)
