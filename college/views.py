@@ -7,8 +7,6 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType
 
-CURRENT_SEASON=2008
-
 def homepage(request):
     team_count = College.objects.all().count()
     game_count = Game.objects.all().count()
@@ -21,8 +19,9 @@ def state_index(request):
     return render_to_response('college/state_index.html', {'form': form})
 
 def coach_index(request):
+    two_months_ago = datetime.date.today()-datetime.timedelta(60)
     active_hc = CollegeCoach.objects.filter(job__name='Head Coach', end_date__isnull=True).select_related().order_by('start_date')
-    recent_departures = CollegeCoach.objects.filter(job__name='Head Coach', end_date__year__gte=CURRENT_SEASON).select_related().order_by('end_date')
+    recent_departures = CollegeCoach.objects.filter(job__name='Head Coach', end_date__gte=two_months_ago).select_related().order_by('end_date')
     return render_to_response('college/coach_index.html', {'active_coaches': active_hc, 'recent_departures': recent_departures[:10]})
 
 def season_week(request, season, week):
