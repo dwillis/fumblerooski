@@ -210,8 +210,12 @@ def team_vs(request, team1, team2, outcome=None):
 
 def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
-    current_job = CollegeCoach.objects.get(coach=c, end_date__isnull=True)
-    college_list = CollegeCoach.objects.filter(coach=c).order_by('-start_date')[1:5]
+    try:
+        current_job = CollegeCoach.objects.get(coach=c, end_date__isnull=True, end_year__isnull=True)
+        college_list = CollegeCoach.objects.filter(coach=c).order_by('-start_date')[1:]
+    except:
+        current_job = None
+        college_list = CollegeCoach.objects.filter(coach=c).order_by('-start_date')
     return render_to_response('college/coach_detail.html', {'coach': c, 'college_list': college_list, 'current_job': current_job })
 
 def game(request, team1, team2, year, month, day):
