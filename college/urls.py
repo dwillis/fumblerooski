@@ -11,8 +11,6 @@ urlpatterns = patterns('fumblerooski.college.views',
      url(r'^bowl-games/$', 'bowl_games'),
      url(r'^bowl-games/(?P<bowl>[-a-z]+)/$', 'bowl_game_detail'),
      url(r'^bowl-games/(?P<season>\d{4})/$', 'bowl_game_season'),
-     url(r'^coaches/$', 'coach_index'),
-     url(r'^coaches/(?P<coach>[-a-z]+)/$', 'coach_detail'),
      url(r'^teams/$', 'team_index'),
      url(r'^teams/undefeated/(?P<season>\d+)/$', 'undefeated_teams'),
      url(r'^teams/(?P<team>[-a-z]+)/$', 'team_detail'),
@@ -39,4 +37,9 @@ urlpatterns = patterns('fumblerooski.college.views',
      url(r'^teams/(?P<team1>[-a-z]+)/vs/(?P<team2>[-a-z]+)/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/drives/$', 'game_drive'),     
      url(r'^states/$', 'state_index'),
      url(r'^states/(?P<state>[a-z][a-z])/$', 'state_detail'),
+)
+
+urlpatterns += patterns('fumblerooski.coaches.views',
+     url(r'^coaches/$', 'coach_index'),
+     url(r'^coaches/(?P<coach>[-a-z]+)/$', 'coach_detail'),
 )

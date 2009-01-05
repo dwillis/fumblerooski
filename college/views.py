@@ -5,7 +5,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import Coach, College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType
+from fumblerooski.college.models import College, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType
 
 def homepage(request):
     team_count = College.objects.all().count()
@@ -17,12 +17,6 @@ def homepage(request):
 def state_index(request):
     form = StateForm()
     return render_to_response('college/state_index.html', {'form': form})
-
-def coach_index(request):
-    two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    active_hc = CollegeCoach.objects.filter(job__name='Head Coach', end_date__isnull=True).select_related().order_by('start_date')
-    recent_departures = CollegeCoach.objects.filter(job__name='Head Coach', end_date__gte=two_months_ago).select_related().order_by('end_date')
-    return render_to_response('college/coach_index.html', {'active_coaches': active_hc, 'recent_departures': recent_departures[:10]})
 
 def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, year=season)
@@ -207,16 +201,6 @@ def team_vs(request, team1, team2, outcome=None):
     except:
         last_road_win = None
     return render_to_response('college/team_vs.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'last_home_loss': last_home_loss, 'last_road_win': last_road_win, 'wins': wins, 'losses': losses, 'ties': ties, 'outcome': outcome })
-
-def coach_detail(request, coach):
-    c = get_object_or_404(Coach, slug=coach)
-    college_list = CollegeCoach.objects.filter(coach=c).order_by('-start_year')
-    if college_list[0].end_date == None and college_list[0].end_year == None:
-        current_job = college_list[0]
-        college_list = college_list[1:]
-    else:
-        current_job = None
-    return render_to_response('college/coach_detail.html', {'coach': c, 'college_list': college_list, 'current_job': current_job })
 
 def game(request, team1, team2, year, month, day):
     team_1 = get_object_or_404(College, slug=team1)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, City, College, CollegeYear, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
+from fumblerooski.college.models import State, City, College, CollegeYear, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'updated')
@@ -13,15 +13,6 @@ class BowlGameAdmin(admin.ModelAdmin):
 
 class CityAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-
-class CoachAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
-
-class CoachingJobAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
-
-class CollegeCoachAdmin(admin.ModelAdmin):
-    list_display = ('coach', 'collegeyear', 'job', 'start_date', 'end_date')
 
 class GameAdmin(admin.ModelAdmin):
     list_display = ('team1', 'team2', 'date', 't1_result', 'team1_score', 'team2_score')
@@ -78,9 +69,6 @@ admin.site.register(PlayerPassDefense)
 admin.site.register(Position)
 admin.site.register(College, CollegeAdmin)
 admin.site.register(City, CityAdmin)
-admin.site.register(Coach, CoachAdmin)
-admin.site.register(CoachingJob, CoachingJobAdmin)
-admin.site.register(CollegeCoach, CollegeCoachAdmin)
 admin.site.register(Game, GameAdmin)
 admin.site.register(RankingType, RankingTypeAdmin)
 admin.site.register(Ranking, RankingAdmin)
