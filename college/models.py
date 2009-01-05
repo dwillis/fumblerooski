@@ -3,7 +3,7 @@ from django.db import models
 from django import forms
 import datetime
 
-CURRENT_SEASON = '2008'
+CURRENT_SEASON = 2008
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
@@ -148,7 +148,7 @@ class CollegeYear(models.Model):
     division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
     
     def __unicode__(self):
-        return "%s - %s" % (self.college, str(self.year))
+        return "%s - %s" % (self.college.name, str(self.year))
     
     def game_count(self):
         return self.wins+self.losses+self.ties
@@ -236,15 +236,19 @@ class CoachingJob(models.Model):
 
 class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)
-    college = models.ForeignKey(College)
+    collegeyear = models.ForeignKey(CollegeYear)
     job = models.ForeignKey(CoachingJob)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-    start_year = models.IntegerField(null=True, blank=True)
-    end_year = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
-        return "%s - %s" % (self.coach, self.college)
+        return "%s - %s" % (self.coach, self.collegeyear)
+    
+    def is_current_job(self):
+        if self.collegeyear.year == CURRENT_SEASON and self.end_date == None:
+            return True
+        else:
+            return False
 
     class Meta:
         verbose_name_plural = 'College coaches'

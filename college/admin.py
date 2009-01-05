@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, City, College, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
+from fumblerooski.college.models import State, City, College, CollegeYear, Game, Coach, CoachingJob, CollegeCoach, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'updated')
@@ -21,7 +21,7 @@ class CoachingJobAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class CollegeCoachAdmin(admin.ModelAdmin):
-    list_display = ('coach', 'college', 'job', 'start_date', 'end_date')
+    list_display = ('coach', 'collegeyear', 'job', 'start_date', 'end_date')
 
 class GameAdmin(admin.ModelAdmin):
     list_display = ('team1', 'team2', 'date', 't1_result', 'team1_score', 'team2_score')
