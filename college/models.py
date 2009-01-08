@@ -2,6 +2,7 @@
 from django.db import models
 from django import forms
 import datetime
+from fumblerooski.coaches.models import Coach, CoachingJob
 
 CURRENT_SEASON = 2008
 
@@ -158,6 +159,25 @@ class CollegeYear(models.Model):
     
     def get_absolute_url(self):
         return "/college/teams/%s/%s/" % (self.college.slug, self.year)
+
+class CollegeCoach(models.Model):
+    coach = models.ForeignKey(Coach)
+    collegeyear = models.ForeignKey(CollegeYear)
+    job = models.ForeignKey(CoachingJob)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.coach, self.collegeyear)
+    
+    def is_current_job(self):
+        if self.collegeyear.year == CURRENT_SEASON and self.end_date == None:
+            return True
+        else:
+            return False
+
+    class Meta:
+        verbose_name_plural = 'College coaches'
 
 class CollegeTotal(models.Model):
     college = models.ForeignKey(College)
