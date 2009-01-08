@@ -19,6 +19,7 @@ class Coach(models.Model):
 
     class Meta:
         verbose_name_plural = 'Coaches'
+        db_table = 'college_coach'
 
 class CoachingJob(models.Model):
     name = models.CharField(max_length=75)
@@ -26,3 +27,6 @@ class CoachingJob(models.Model):
     
     def __unicode__(self):
         return self.name
+    
+    class Meta:
+        db_table = 'college_coachingjob'
