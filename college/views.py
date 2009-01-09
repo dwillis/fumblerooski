@@ -67,8 +67,9 @@ def team_index(request):
 
 def team_detail(request, team):
     t = get_object_or_404(College, slug=team)
+    college_years = CollegeYear.objects.filter(college=t).order_by('-year')
     try:
-        current_coach = CollegeCoach.objects.get(college=t, end_date__isnull=True)
+        current_coach = CollegeCoach.objects.get(collegeyear=college_years[0], end_date__isnull=True)
     except CollegeCoach.DoesNotExist:
         current_coach = None
     college_years = CollegeYear.objects.filter(college=t).order_by('-year')
