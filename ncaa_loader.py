@@ -7,8 +7,98 @@ from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary
-from fumblerooski.coaches.models import Coach, CoachingJob, CollegeCoach
+from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary
+from fumblerooski.coaches.models import Coach, CoachingJob
+from fumblerooski.utils import update_college_year
+
+
+def game_updater(year, teams, week):
+    
+    if not teams:
+        teams = College.objects.filter(updated=True).order_by('id')
+    
+    games = []
+    
+    for team in teams:
+        print team.id
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.id, year, week)
+        html = urllib.urlopen(url).read()
+        soup = BeautifulSoup(html)
+        try:
+            t = soup.findAll('table')[2]
+            rows = t.findAll('tr')[2:]
+            base_url = "http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/" % year
+            for row in rows:
+                try:
+                    game_file = row.findAll('td')[0].find('a')['href'].split('game=')[1]
+                    stringdate = row.findAll('td')[0].find('a').contents[0]
+                    team1_score = int(row.findAll('td')[3].contents[0])
+                    team2_score = int(row.findAll('td')[4].contents[0])
+                    if len(row.findAll('td')[5].contents[0].strip().split(' ')) == 2:
+                        t1_result, ot = row.findAll('td')[5].contents[0].strip().split(' ')
+                    else:
+                        t1_result = row.findAll('td')[5].contents[0].strip()
+                        ot = None
+                except:
+                    game_file = None
+                    stringdate = row.findAll('td')[0].contents[0]
+                    team1_score = None
+                    team2_score = None
+                    t1_result = None
+                date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
+                try:
+                    t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
+                    try:
+                        team2 = College.objects.get(id=t2)
+                    except:
+                        name = row.findAll('td')[2].find('a').contents[0].strip()
+                        slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower().strip()
+                        team2, created = College.objects.get_or_create(name=name, slug=slug)
+                except:
+                    name = row.findAll('td')[2].contents[0].strip()
+                    slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                    team2, created = College.objects.get_or_create(name=name, slug=slug)
+                print team, team2, date, team1_score, team2_score, t1_result
+                g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
+                g.team1_score = team1_score
+                g.team2_score=team2_score
+                g.t1_result=t1_result
+                g.overtime=ot
+                if game_file:
+                    g.ncaa_xml = game_file.split('.xml')[0].strip()
+                    games.append(g)
+                    if not g.has_stats:
+                        load_ncaa_game_xml(g)
+                        g.has_stats = True
+                    if not g.has_player_stats:
+                        player_game_stats(g)
+                        g.has_player_stats = True
+                    if not g.has_drives:
+                        game_drive_loader(g)
+                        g.has_drives = True
+                else:
+                    pass
+                if ot:
+                    g.ot = 't'
+                if len(row.findAll('td')[1].contents) > 0:
+                    if row.findAll('td')[1].contents[0] == '+':
+                        g.t1_game_type = 'H'
+                    elif row.findAll('td')[1].contents[0] == '*+':
+                        g.t1_game_type = 'H'
+                    elif row.findAll('td')[1].contents[0] == '*':
+                        g.t1_game_type = 'A'
+                    elif row.findAll('td')[1].contents[0] == '^':
+                        g.t1_game_type = 'N'
+                    elif row.findAll('td')[1].contents[0] == '*^':
+                        g.t1_game_type = 'N'
+                else:
+                    g.t1_game_type = 'A'
+                g.save()
+        except:
+            raise
+    update_college_year(year)
+
+
 
 """
 Loader for NCAA game summaries pre-2008
@@ -407,7 +497,7 @@ def player_game_stats(game):
                 uniform = str(p.find("uniform").contents[0])
                 name = str(p.find("name").contents[0])
                 try:
-                    player = Player.objects.get(team=team, year=game.date.year, name=name, number=uniform)
+                    player = Player.objects.get(team=team, year=game.season, name=name, number=uniform)
                     if p.find("totplays"):
                         total_plays=p.find("totplays").contents[0]
                     else:
@@ -548,7 +638,7 @@ def load_team(team_id, year):
     try:
         classes = soup.find("th").contents[0].split(":")[1].split(',') # retrieve class numbers for team
         fr, so, jr, sr = [int(c.strip()[0:2]) for c in classes] # assign class numbers
-        t = CollegeYear.objects.get(college=team, year=year)
+        t, created = CollegeYear.objects.get_or_create(college=team, year=year)
         t.freshmen = fr
         t.sophomores = so
         t.juniors = jr
