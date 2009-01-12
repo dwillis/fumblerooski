@@ -59,7 +59,7 @@
 {% if other_seasons %}
 <h4>Other Seasons for this player at this school</h4>
 {% for season in other_seasons %}
-  <a href="{{ season.get_absolute_url }}">{{ season.year }}</a>
+  <a href="{{ season.get_absolute_url }}">{{ season.year }}</a> {% if forloop.last %}{% else %}|{% endif %}
 
 {% endfor %}
 
