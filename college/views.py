@@ -5,7 +5,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType
+from fumblerooski.college.models import College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame
 from fumblerooski.coaches.models import Coach, CoachingJob
 
 def homepage(request):
@@ -336,5 +336,5 @@ def player_detail(request, team, season, player):
     pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('year')
+    other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('-year')
     return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd })
