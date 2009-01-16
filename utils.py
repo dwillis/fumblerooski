@@ -45,6 +45,11 @@ def update_college_year(year):
         
         team.save()
 
+def add_college_years(year):
+    teams = College.objects.filter(updated=True).order_by('id')
+    for team in teams:
+        cy, created = CollegeYear.objects.get_or_create(year=year, college=team)
+
 def game_weeks(year):
     weeks = Week.objects.filter(year=year).order_by('week_num')
     for week in weeks:
