@@ -1,4 +1,5 @@
 from django.shortcuts import render_to_response, get_object_or_404
+from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from django import forms
@@ -19,8 +20,20 @@ def homepage(request):
     return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[:10], 'upcoming_week':upcoming_week })
 
 def state_index(request):
-    form = StateForm()
-    return render_to_response('college/state_index.html', {'form': form})
+    if request.method == 'POST':
+        if request.POST.has_key('name'):
+            abbrev = request.POST['name']
+            try:
+                state = State.objects.get(id=abbrev)
+                college_list = College.objects.filter(updated=True, state=state).order_by('name')
+                form = StateForm(request.POST)
+            except:
+                college_list = None
+                form = StateForm()
+    else:
+        form = StateForm()
+        college_list = None
+    return render_to_response('college/state_index.html', {'form': form, 'college_list': college_list})
 
 def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, year=season)
@@ -332,6 +345,7 @@ def player_detail(request, team, season, player):
     pf = PlayerFumble.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pr = PlayerRush.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pp = PlayerPass.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    pass_totals = PlayerPass.objects.filter(player=p, game__season=season).aggregate(Sum('td'), Sum('yards'), Sum('attempts'), Sum('completions'), Sum('interceptions'), Avg('pass_efficiency'))
     prec = PlayerReceiving.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')

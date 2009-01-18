@@ -2,14 +2,19 @@
 
 {% block content %}
 
-<h3>Choose a State</h3>
+<h3>Find Colleges in a State</h3>
 
 <form action="." method="post">
-  <table class="form">
-    {{ form }}
-  </table>
+    {{ form.as_p }}
   <input type="submit" value="Submit" />
 </form>
 
+{% if college_list %}
+  <ul>
+  {% for college in college_list %}
+    <li><a href="{{ college.get_absolute_url }}">{{ college.name }}</a></li>
+  {% endfor %}
+  </ul>
+{% endif %}
 
 {% endblock %}

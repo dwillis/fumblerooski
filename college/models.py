@@ -70,7 +70,7 @@ class State(models.Model):
         return "/states/%s/" % self.id.lower()
     
 class StateForm(forms.Form):
-    name = forms.CharField(max_length=50, widget=forms.Select())
+    name = forms.ModelChoiceField(queryset=State.objects.all().order_by('name'))
 
 class City(models.Model):
     name = models.CharField(max_length=75)
