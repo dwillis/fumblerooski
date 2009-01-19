@@ -159,6 +159,9 @@ class CollegeYear(models.Model):
     
     def get_absolute_url(self):
         return "/college/teams/%s/%s/" % (self.college.slug, self.year)
+    
+    class Meta:
+        ordering = ['college', '-year']
 
 class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)

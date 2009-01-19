@@ -22,6 +22,7 @@ class Coach(models.Model):
         return self.first_name + " " + self.last_name
     
     class Meta:
+        ordering = ['last_name']
         verbose_name_plural = 'Coaches'
         db_table = 'college_coach'
 
