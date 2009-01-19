@@ -6,7 +6,7 @@
 {% block content %}
 <h1>{{ post.title }}</h1>
 <div class="story first">
-    {{ post.body|to_html }}
+    {{ post.body|markdown }}
 
 </div>
 <div class="story">

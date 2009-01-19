@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.db.models import Avg, Sum, Min, Max, Count
+#from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from django import forms
