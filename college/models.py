@@ -166,7 +166,7 @@ class CollegeYear(models.Model):
 class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)
     collegeyear = models.ForeignKey(CollegeYear)
-    job = models.ForeignKey(CoachingJob)
+    jobs = models.ManyToManyField(CoachingJob)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
 
@@ -175,6 +175,12 @@ class CollegeCoach(models.Model):
     
     def is_current_job(self):
         if self.collegeyear.year == CURRENT_SEASON and self.end_date == None:
+            return True
+        else:
+            return False
+    
+    def partial_season(self):
+        if end_date:
             return True
         else:
             return False
