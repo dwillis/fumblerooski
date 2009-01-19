@@ -174,7 +174,7 @@ class CollegeCoach(models.Model):
         return "%s - %s" % (self.coach, self.collegeyear)
     
     def jobs_display(self):
-        return " ".join([x for x in self.jobs.all()])
+        return " ".join([x.name for x in self.jobs.all()])
     
     def is_current_job(self):
         if self.collegeyear.year == CURRENT_SEASON and self.end_date == None:
