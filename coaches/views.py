@@ -4,11 +4,13 @@ from fumblerooski.college.models import College, Position, State, Game, Conferen
 from fumblerooski.coaches.models import Coach, CoachingJob
 import datetime
 
+CURRENT_SEASON = 2009
+
 def coach_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    active_hc = CollegeCoach.objects.filter(job__name='Head Coach', end_date__isnull=True).select_related().order_by('start_date')
-    recent_departures = CollegeCoach.objects.filter(job__name='Head Coach', end_date__gte=two_months_ago).select_related().order_by('end_date')
-    return render_to_response('coaches/coach_index.html', {'active_coaches': active_hc, 'recent_departures': recent_departures[:10]})
+    active_hc = CollegeCoach.objects.filter(job__name='Head Coach', end_date__isnull=True, collegeyear__year=CURRENT_SEASON).select_related().order_by('start_date')
+    recent_departures = CollegeCoach.objects.filter(job__name='Head Coach', end_date__gte=two_months_ago).select_related().order_by('end_date')[:10] or None
+    return render_to_response('coaches/coach_index.html', {'active_coaches': active_hc, 'recent_departures': recent_departures })
 
 def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
