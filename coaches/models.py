@@ -2,7 +2,6 @@ from django.db import models
 
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
-    name = models.CharField(max_length=75)
     first_name = models.CharField(max_length=75)
     last_name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
@@ -18,7 +17,10 @@ class Coach(models.Model):
 
     def get_absolute_url(self):
         return '/college/coaches/%s/' % self.slug
-
+    
+    def full_name(self):
+        return self.first_name + " " + self.last_name
+    
     class Meta:
         verbose_name_plural = 'Coaches'
         db_table = 'college_coach'
