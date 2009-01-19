@@ -3,6 +3,8 @@ from django.db import models
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     name = models.CharField(max_length=75)
+    first_name = models.CharField(max_length=75)
+    last_name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
     alma_mater = models.CharField(max_length=75)
     birth_date = models.DateField(null=True, blank=True)
