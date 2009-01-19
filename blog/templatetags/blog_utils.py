@@ -11,7 +11,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
  
 register = Library()
- 
+
 VARIANTS = {}
  
 def pygments_directive(name, arguments, options, content, lineno,
