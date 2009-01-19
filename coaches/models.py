@@ -13,7 +13,7 @@ class Coach(models.Model):
     ties = models.IntegerField(default=0, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return self.first_name + " " + self.last_name
 
     def get_absolute_url(self):
         return '/college/coaches/%s/' % self.slug
