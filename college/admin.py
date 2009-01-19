@@ -10,7 +10,7 @@ class CollegeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class CollegeCoachAdmin(admin.ModelAdmin):
-    list_display = ('coach', 'collegeyear', 'jobs', 'start_date', 'end_date')
+    list_display = ('coach', 'collegeyear', 'jobs_display', 'start_date', 'end_date')
 
 class BowlGameAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
