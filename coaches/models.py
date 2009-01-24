@@ -21,6 +21,20 @@ class Coach(models.Model):
     def full_name(self):
         return self.first_name + " " + self.last_name
     
+    def current_school(self):
+        try:
+            current_school = self.collegecoach_set.get(collegeyear__year__exact = CURRENT_SEASON, end_date = None).collegeyear.college
+        except:
+            current_school = None
+        return current_school
+    
+    def current_job_start(self):
+        if self.current_school:
+            cy = self.collegecoach_set.filter(collegeyear__college=self.current_school).order_by('start_date')[0]
+            return cy.start_date
+        else:
+            return None
+    
     class Meta:
         ordering = ['last_name']
         verbose_name_plural = 'Coaches'

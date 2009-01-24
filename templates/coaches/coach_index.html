@@ -20,7 +20,7 @@
 <table>
   <th>Coach</th><th>School</th><th>Hire Date</th>
   {% for coach in active_coaches %}
-  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td></tr>
+  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.current_job_start|date:"F d, Y" }}</td></tr>
   {% endfor %}
 </table>
 
