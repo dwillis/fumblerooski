@@ -1,5 +1,7 @@
 from django.db import models
 
+CURRENT_SEASON = 2009
+
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     first_name = models.CharField(max_length=75)
