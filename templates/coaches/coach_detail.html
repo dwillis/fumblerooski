@@ -16,7 +16,7 @@ Start date: {{ coach.current_job.start_date|date:"F d, Y" }}
 <table>
   <th>School</th><th>Job(s)</th><th>Season</th><th>Start Date</th><th>End Date</th>
     {% for school in college_list %}
-    <tr><td><a href="{{ school.college.get_absolute_url }}">{{ school.college.name }}</a></td><td>{{ school.jobs_display }}</td><td>{{ school.collegeyear.year }}</td><td>{{ school.start_date|date:"F d, Y" }}</td><td>{{ school.end_date|date:"F d, Y" }}</td></tr>
+    <tr><td><a href="{{ school.collegeyear.college.get_absolute_url }}">{{ school.collegeyear.college.name }}</a></td><td>{{ school.jobs_display }}</td><td>{{ school.collegeyear.year }}</td><td>{{ school.start_date|date:"F d, Y" }}</td><td>{{ school.end_date|date:"F d, Y" }}</td></tr>
     {% endfor %}
 </table>
 {% else %}
