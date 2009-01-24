@@ -14,7 +14,7 @@ def coach_index(request):
 
 def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
-    college_list = CollegeCoach.objects.filter(coach=c).select_related().order_by('-college_collegeyear.year')
+    college_list = CollegeCoach.objects.filter(coach=c).select_related().order_by('-college_collegeyear.year', '-start_date')
     return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list })
 
 def assistant_index(request):
