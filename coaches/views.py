@@ -8,7 +8,7 @@ CURRENT_SEASON = 2009
 
 def coach_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    active_hc = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__isnull=True, collegeyear__year=CURRENT_SEASON).order_by('-start_date')
+    active_hc = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).order_by('-start_date')
     recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('end_date')[:10]
     return render_to_response('coaches/coach_index.html', {'active_coaches': active_hc, 'recent_departures': recent_departures })
 
