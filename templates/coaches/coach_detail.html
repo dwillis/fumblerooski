@@ -4,20 +4,21 @@
 
 <h3>{{ coach.name }}</h3>
 
-{% if current_job %}
-<h4>Current School: <a href="{{ current_job.college.get_absolute_url }}">{{ current_job.college.name }}</a></h4>
-Start date: {{ current_job.start_date|date:"F d, Y" }}
+{% if coach.current_job %}
+<h4>Current School: <a href="{{ coach.current_job.college.get_absolute_url }}">{{ coach.current_job.college.name }}</a></h4>
+Start date: {{ coach.current_job.start_date|date:"F d, Y" }}
 {% endif %}
 
 <h4>Alma Mater: {{ coach.alma_mater }}</h4>
 
 {% if college_list %}
-<h4>Previous Coaching Jobs</h4>
-<ul>
+<h4>College Coaching History (2000-present)</h4>
+<table>
+  <th>School</th><th>Job(s)</th><th>Season</th><th>Start Date</th><th>End Date</th>
     {% for school in college_list %}
-    <li><a href="{{ school.college.get_absolute_url }}">{{ school.college.name }}</a>, {{ school.job.name }}, {% if school.start_date %}{{ school.start_date.year }}-{{ school.end_date.year }}{% else %}{{ school.start_year }}-{{ school.end_year }}{% endif %}</li>
+    <tr><td><a href="{{ school.college.get_absolute_url }}">{{ school.college.name }}</a></td><td>{{ school.jobs_display }}</td><td>{{ school.collegeyear.year }}</td><td>{{ school.start_date|date:"F d, Y" }}</td><td>{{ school.end_date|date:"F d, Y" }}</td></tr>
     {% endfor %}
-</ul>
+</table>
 {% else %}
 {% endif %}
 {% endblock %}

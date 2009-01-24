@@ -30,10 +30,10 @@ class Coach(models.Model):
             current_school = None
         return current_school
     
-    def current_job_start(self):
+    def current_job(self):
         if self.current_school:
             cy = self.collegecoach_set.filter(collegeyear__college=self.current_school).order_by('start_date')[0]
-            return cy.start_date
+            return cy
         else:
             return None
     
