@@ -38,9 +38,3 @@ urlpatterns = patterns('fumblerooski.college.views',
      url(r'^states/$', 'state_index'),
      url(r'^states/(?P<state>[a-z][a-z])/$', 'state_detail'),
 )
-
-urlpatterns += patterns('fumblerooski.coaches.views',
-     url(r'^coaches/$', 'coach_index'),
-     url(r'^coaches/assistants/$', 'assistant_index'),
-     url(r'^coaches/(?P<coach>[-a-z]+)/$', 'coach_detail'),
-)
