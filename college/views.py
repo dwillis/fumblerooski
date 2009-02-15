@@ -60,7 +60,7 @@ def bowl_games(request):
     return render_to_response('college/bowl_games.html', {'game_list': game_list})
 
 def bowl_game_season(request, season):
-    game_list = Game.objects.select_related().filter(is_bowl_game=True, season=season).order_by('date', 'bowlgame__name')
+    game_list = Game.objects.select_related().filter(is_bowl_game=True, season=season).order_by('date', 'bowl_game__name')
     return render_to_response('college/bowl_game_season.html', {'season': season, 'game_list': game_list})
 
 def bowl_game_detail(request, bowl):
