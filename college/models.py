@@ -172,7 +172,7 @@ class CollegeCoach(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.coach, self.collegeyear)
-    
+        
     def jobs_display(self):
         return ", ".join([x.name for x in self.jobs.all()])
     
