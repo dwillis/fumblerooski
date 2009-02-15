@@ -6,6 +6,12 @@
 
 <h3>Bowl Games</h3>
 
+{% for season in bowl_seasons %}
+
+  <a href="/{{ season }}/">{{ season }}</a> |
+
+{% endfor %}
+
 <table>
     <th>Name</th><th>Location</th>
     {% for game in game_list %}

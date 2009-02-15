@@ -57,7 +57,8 @@ def rankings_season(request, rankingtype, season, div='B', week=None):
 
 def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
-    return render_to_response('college/bowl_games.html', {'game_list': game_list})
+    bowl_seasons = Game.objects.filter(is_bowl_game=True).values_list('season', flat=True).distinct()
+    return render_to_response('college/bowl_games.html', {'game_list': game_list, 'bowl_seasons'})
 
 def bowl_game_season(request, season):
     game_list = Game.objects.select_related().filter(is_bowl_game=True, season=season).order_by('date', 'bowl_game__name')
