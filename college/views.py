@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response, get_object_or_404
-#from django.db.models import Avg, Sum, Min, Max, Count
+from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.feeds import Feed
 from django import forms
@@ -60,7 +60,7 @@ def bowl_games(request):
     return render_to_response('college/bowl_games.html', {'game_list': game_list})
 
 def bowl_game_season(request, season):
-    game_list = Game.objects.filter(is_bowl_game=True, season=season).order_by('date')
+    game_list = Game.objects.filter(is_bowl_game=True, season=season).select_related().order_by('date, college_bowlgames.name')
     return render_to_response('college/bowl_game_season.html', {'season': season, 'game_list': game_list})
 
 def bowl_game_detail(request, bowl):
