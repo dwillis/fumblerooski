@@ -7,7 +7,7 @@
 <ul>
 {% for team in teams %}
 
-<li><a href="{{ team.college.get_absolute_url }}">{{ team.college.name }}</a> ({{ team.wins }} - {{ team.losses }})</li>
+<li><a href="{{ team.get_absolute_url }}">{{ team.college.name }}</a> ({{ team.wins }} - {{ team.losses }})</li>
 
 {% endfor %}
 </ul>
