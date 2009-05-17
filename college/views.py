@@ -86,9 +86,9 @@ def team_detail(request, team):
     t = get_object_or_404(College, slug=team)
     college_years = CollegeYear.objects.filter(college=t).order_by('-year')
     try:
-        current_coach = CollegeCoach.objects.get(collegeyear=college_years[0], end_date__isnull=True)
+        current_head_coach = CollegeCoach.objects.get(collegeyear=college_years[0], end_date__isnull=True, jobs__name='Head Coach')
     except CollegeCoach.DoesNotExist:
-        current_coach = None
+        current_head_coach = None
     college_years = CollegeYear.objects.filter(college=t).order_by('-year')
     game_list = Game.objects.filter(team1=t).order_by('-date')
     opponents = {}
@@ -100,7 +100,7 @@ def team_detail(request, team):
         c = College.objects.get(id=team)
         c.number = number
         p_o.append(c)
-    return render_to_response('college/team_detail.html', {'team': t, 'coach': current_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
+    return render_to_response('college/team_detail.html', {'team': t, 'coach': current_head_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
 
 def team_detail_season(request, team, season):
     t = get_object_or_404(College, slug=team)
