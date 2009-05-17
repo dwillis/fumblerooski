@@ -8,7 +8,7 @@
 <h5>{{ team.conference.name }}</h5>
 
 {% if coach %}
-Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.name }}</a>
+Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a>
 {% else %}
 {% endif %}
 
