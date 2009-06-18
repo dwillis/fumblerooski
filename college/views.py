@@ -126,10 +126,13 @@ def team_rankings_season(request, team, season, week=None):
     else:
         # grab the latest week for that season
         latest_week = Week.objects.filter(year=season).order_by('-week_num')[0]
-    other_weeks = Week.objects.filter(year=season).exclude(week_num=latest_week.week_num).exclude(end_date__gte=datetime.date.today()).order_by('end_date')
+    other_weeks = Week.objects.filter(year=season).exclude(week_num__gte=latest_week.week_num).order_by('end_date')
     latest_rankings = Ranking.objects.filter(college=cy.college, year=season, week=latest_week).select_related().order_by('-college_week.week_num')
-    best = latest_rankings.order_by('rank')[0]
-    worst = latest_rankings.order_by('-rank')[0]
+    if latest_rankings:
+        best = latest_rankings.order_by('rank')[0]
+        worst = latest_rankings.order_by('-rank')[0]
+    else:
+        best, worst = None, None
     return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings, 'latest_week': latest_week, 'other_weeks': other_weeks, 'best': best, 'worst': worst})
 
 def team_ranking_detail(request, team, season, rankingtype):
