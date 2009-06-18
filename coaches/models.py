@@ -18,7 +18,7 @@ class Coach(models.Model):
         return self.first_name + " " + self.last_name
 
     def get_absolute_url(self):
-        return '/college/coaches/%s/' % self.slug
+        return '/college/coaches/detail/%s/' % self.slug
     
     def full_name(self):
         return self.first_name + " " + self.last_name
