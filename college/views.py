@@ -106,7 +106,7 @@ def team_detail_season(request, team, season):
     t = get_object_or_404(College, slug=team)
     season_record = get_object_or_404(CollegeYear, college=t, year=season)
     try:
-        current_coach = CollegeCoach.objects.get(collegeyear=season_record, end_date__isnull=True)
+        current_coach = CollegeCoach.objects.filter(collegeyear=season_record, end_date__isnull=True, jobs__name='Head Coach').order_by('-start_date')[0]
     except CollegeCoach.DoesNotExist:
         current_coach = None
     game_list = Game.objects.filter(team1=t, season=season).order_by('-date')
