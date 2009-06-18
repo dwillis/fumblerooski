@@ -21,4 +21,12 @@ def assistant_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
     recent_departures = CollegeCoach.objects.select_related().filter(end_date__gte=two_months_ago).exclude(jobs__name='Head Coach').order_by('-end_date')[:10]
-    return render_to_response('coaches/assistant_index.html', {'recent_hires': recent_hires, 'recent_departures': recent_departures })    
+    return render_to_response('coaches/assistant_index.html', {'recent_hires': recent_hires, 'recent_departures': recent_departures })
+    
+def recent_hires_feed(request):
+    two_months_ago = datetime.date.today()-datetime.timedelta(60)
+    recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
+    xml = render_to_string('coaches/recent_hires_feed.xml', { 'recent_hires': recent_hires })
+    return HttpResponse(xml, mimetype='application/xml')
+
+

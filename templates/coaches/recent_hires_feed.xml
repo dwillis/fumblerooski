@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+{% load humanize %}
+<rss version="2.0">
+  <channel>
+    <title>Recent Coaching Hires - Fumblerooski.org</title>
+    <link>http://www.fumblerooski.org/college/coaches/</link>
+    <description>Recent Coaching Hires</description>
+    <webMaster>web@fumblerooski.org</webMaster>
+    {% for event in events %}
+      <item>
+         <title>{{ event.link_title }}</title>
+         <link>{{ event.url }}</link>
+         <description>{{ event.my_officials|humanize_your_official_list_without_links|sentence }} {{ event.text }}</description>
+         <pubDate>{{ date|date:"D, d M Y 00:00:00 -0500" }}</pubDate>
+      </item>
+    {% endfor %}
+  </channel>
+</rss>
