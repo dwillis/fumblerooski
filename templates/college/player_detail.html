@@ -14,14 +14,15 @@
 <h3>{{ year }} Offensive Game Stats</h3>
 
 {% if passing %}
-<h3>Passing</h3>
+<h3>Passing Totals</h3>
+
+<h3>Passing By Game</h3>
 <table>
   <th>Date</th><th>Opponent</th><th>Outcome</th><th>Passing</th><th>Int.</th><th>TD</th><th>Pass Eff.</th>
 {% for game in passing %}
   <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td>{{ game.game.team2 }}</td><td>{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</td><td>{{ game.comp_att }} for {{ game.yards }} yards</td><td>{{ game.interceptions }}</td><td>{{ game.td }}</td><td>{{ game.pass_efficiency }}</td></tr>
 
 {% endfor %}
-
 </table>
 
 {% endif %}
