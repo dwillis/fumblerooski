@@ -349,11 +349,14 @@ def player_detail(request, team, season, player):
     pret = PlayerReturn.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pf = PlayerFumble.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pr = PlayerRush.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    if pr:
+        rush_totals = pr.aggregate(Sum('net'),Sum('rushes'),Sum('td'))
     pp = PlayerPass.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    pass_totals = PlayerPass.objects.filter(player=p, game__season=season).aggregate(Sum('td'), Sum('yards'), Sum('attempts'), Sum('completions'), Sum('interceptions'), Avg('pass_efficiency'))
+    if pp:
+        pass_totals = pp.aggregate(Sum('td'), Sum('yards'), Sum('attempts'), Sum('completions'), Sum('interceptions'), Avg('pass_efficiency'))
     prec = PlayerReceiving.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('-year')
-    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd })
+    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 'pass_tot_int':pass_totals['interceptions__sum'], 'pass_tot_td':pass_totals['td__sum'], 'pass_tot_attempts': pass_totals['attempts__sum'], 'pass_tot_comps': pass_totals['completions__sum'], 'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg']})

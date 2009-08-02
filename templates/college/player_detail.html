@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}Fumblerooski: {{ player.name }} - {{ year }}{% endblock %}
 
@@ -15,6 +16,11 @@
 
 {% if passing %}
 <h3>Passing Totals</h3>
+
+<table>
+  <th>Attempts</th><th>Completions</th><th>Yards</th><th>TDs</th><th>Int.</th><th>Efficiency</th>
+  <tr><td>{{ pass_tot_attempts }}</td><td>{{ pass_tot_comps }}</td><td>{{ pass_tot_yards|intcomma }}</td><td>{{ pass_tot_td }}</td><td>{{ pass_tot_int }}</td><td>{{ pass_tot_eff|floatformat }}</td></tr>
+</table>
 
 <h3>Passing By Game</h3>
 <table>
