@@ -8,7 +8,7 @@
 <h3>{{ player.name }} #{{ player.number }}</h3>
 <h4>{{ player.position.name }}/{{ player.get_status_display }}</h4>
 <h4><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> - {{ year }}</h4>
-<h4>Games Played: {{ player.games_played }}</h4>
+<h4>Games Played: {{ player.games_played }} of {{ cy.game_count }}</h4>
 
 {% ifequal player.position.position_type 'O' %}
 
@@ -16,7 +16,6 @@
 
 {% if passing %}
 <h3>Passing Totals</h3>
-
 <table>
   <th>Attempts</th><th>Completions</th><th>Yards</th><th>TDs</th><th>Int.</th><th>Efficiency</th>
   <tr><td>{{ pass_tot_attempts }}</td><td>{{ pass_tot_comps }}</td><td>{{ pass_tot_yards|intcomma }}</td><td>{{ pass_tot_td }}</td><td>{{ pass_tot_int }}</td><td>{{ pass_tot_eff|floatformat }}</td></tr>
@@ -26,7 +25,7 @@
 <table>
   <th>Date</th><th>Opponent</th><th>Outcome</th><th>Passing</th><th>Int.</th><th>TD</th><th>Pass Eff.</th>
 {% for game in passing %}
-  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td>{{ game.game.team2 }}</td><td>{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</td><td>{{ game.comp_att }} for {{ game.yards }} yards</td><td>{{ game.interceptions }}</td><td>{{ game.td }}</td><td>{{ game.pass_efficiency }}</td></tr>
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td><a href="{{ game.game.team2.get_absolute_url }}">{{ game.game.team2 }}</a></td><td><a href="{{ game.game.get_absolute_url }}">{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</a></td><td>{{ game.comp_att }} for {{ game.yards }} yards</td><td>{{ game.interceptions }}</td><td>{{ game.td }}</td><td>{{ game.pass_efficiency }}</td></tr>
 
 {% endfor %}
 </table>
@@ -34,11 +33,17 @@
 {% endif %}
 
 {% if rushing %}
-<h3>Rushing</h3>
+<h3>Rushing Totals</h3>
+  <table>
+    <th>Rushes</th><th>Gained</th><th>Lost</th><th>Net</th><th>TDs</th><th>Average</th>
+    <tr><td>{{ rush_tot_rushes }}</td><td>{{ rush_tot_gains|intcomma }}</td><td>{{ rush_tot_loss }}</td><td>{{ rush_tot_net|intcomma }}</td><td>{{ rush_tot_td }}</td><td>{{ rush_tot_avg|floatformat }}</td></tr>
+  </table>
+
+<h3>Rushing By Game</h3>
 <table>
   <th>Date</th><th>Opponent</th><th>Outcome</th><th>Rushes</th><th>Gain</th><th>Loss</th><th>Net Yards</th><th>TD</th><th>Long</th><th>Avg.</th>
 {% for game in rushing %}
-  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td>{{ game.game.team2 }}</td><td>{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</td><td>{{ game.rushes }}</td><td>{{ game.gain }}</td><td>{{ game.loss }}</td><td>{{ game.net }}</td><td>{{ game.td }}</td><td>{{ game.long_yards }}</td><td>{{ game.average }}</td></tr>
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td><a href="{{ game.game.team2.get_absolute_url }}">{{ game.game.team2 }}</a></td><td><a href="{{ game.game.get_absolute_url }}">{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</a></td><td>{{ game.rushes }}</td><td>{{ game.gain }}</td><td>{{ game.loss }}</td><td>{{ game.net }}</td><td>{{ game.td }}</td><td>{{ game.long_yards }}</td><td>{{ game.average }}</td></tr>
 
 {% endfor %}
 
@@ -51,7 +56,7 @@
 <table>
   <th>Date</th><th>Opponent</th><th>Outcome</th><th>Receptions</th><th>Yards</th><th>TD</th><th>Long</th><th>Avg.</th>
 {% for game in receiving %}
-  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td>{{ game.game.team2 }}</td><td>{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</td><td>{{ game.receptions }}</td><td>{{ game.yards }}</td><td>{{ game.td }}</td><td>{{ game.long_yards }}</td><td>{{ game.average }}</td></tr>
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td><a href="{{ game.game.team2.get_absolute_url }}">{{ game.game.team2 }}</a></td><td><a href="{{ game.game.get_absolute_url }}">{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</a></td><td>{{ game.receptions }}</td><td>{{ game.yards }}</td><td>{{ game.td }}</td><td>{{ game.long_yards }}</td><td>{{ game.average }}</td></tr>
 
 {% endfor %}
 

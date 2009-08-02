@@ -350,13 +350,23 @@ def player_detail(request, team, season, player):
     pf = PlayerFumble.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pr = PlayerRush.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     if pr:
-        rush_totals = pr.aggregate(Sum('net'),Sum('rushes'),Sum('td'))
+        rush_totals = pr.aggregate(Sum('net'),Sum('gain'),Sum('loss'),Sum('rushes'),Sum('td'))
+        rush_tot_avg = float(rush_totals['net__sum'])/float(rush_totals['rushes__sum'])
+    else:
+        rush_totals = {'rushes__sum': None, 'gain__sum': None, 'loss__sum': None, 'td__sum': None, 'net__sum': None}
+        rush_tot_avg = None
     pp = PlayerPass.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     if pp:
         pass_totals = pp.aggregate(Sum('td'), Sum('yards'), Sum('attempts'), Sum('completions'), Sum('interceptions'), Avg('pass_efficiency'))
+    else:
+        pass_totals = {'interceptions__sum': None, 'td__sum':None, 'attempts__sum': None, 'completions__sum': None, 'yards__sum': None, 'pass_efficiency__avg': None}
     prec = PlayerReceiving.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('-year')
-    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 'pass_tot_int':pass_totals['interceptions__sum'], 'pass_tot_td':pass_totals['td__sum'], 'pass_tot_attempts': pass_totals['attempts__sum'], 'pass_tot_comps': pass_totals['completions__sum'], 'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg']})
+    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'cy': cy, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 
+        'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 
+        'pass_tot_int':pass_totals['interceptions__sum'], 'pass_tot_td':pass_totals['td__sum'], 'pass_tot_attempts': pass_totals['attempts__sum'], 'pass_tot_comps': pass_totals['completions__sum'], 
+        'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg'], 'rush_tot_rushes': rush_totals['rushes__sum'], 'rush_tot_gains': rush_totals['gain__sum'],
+        'rush_tot_loss': rush_totals['loss__sum'], 'rush_tot_td': rush_totals['td__sum'], 'rush_tot_net': rush_totals['net__sum']})
