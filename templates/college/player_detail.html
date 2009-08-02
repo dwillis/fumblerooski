@@ -17,8 +17,8 @@
 {% if passing %}
 <h3>Passing Totals</h3>
 <table>
-  <th>Attempts</th><th>Completions</th><th>Yards</th><th>TDs</th><th>Int.</th><th>Efficiency</th>
-  <tr><td>{{ pass_tot_attempts }}</td><td>{{ pass_tot_comps }}</td><td>{{ pass_tot_yards|intcomma }}</td><td>{{ pass_tot_td }}</td><td>{{ pass_tot_int }}</td><td>{{ pass_tot_eff|floatformat }}</td></tr>
+  <th>Attempts</th><th>Completions</th><th>Comp. Pct.</th><th>Yards</th><th>TDs</th><th>Int.</th><th>Efficiency</th>
+  <tr><td>{{ pass_tot_attempts }}</td><td>{{ pass_tot_comps }}</td><td>{{ comp_pct|floatformat }}</td><td>{{ pass_tot_yards|intcomma }}</td><td>{{ pass_tot_td }}</td><td>{{ pass_tot_int }}</td><td>{{ pass_tot_eff|floatformat }}</td></tr>
 </table>
 
 <h3>Passing By Game</h3>
@@ -52,7 +52,13 @@
 {% endif %}
 
 {% if receiving %}
-<h3>Receiving</h3>
+<h3>Receiving Totals</h3>
+  <table>
+    <th>Receptions</th><th>Yards</th><th>TDs</th><th>Average</th>
+    <tr><td>{{ rec_tot_receptions }}</td><td>{{ rec_tot_yards|intcomma }}</td><td>{{ rec_tot_td }}</td><td>{{ rec_tot_avg|floatformat }}</td></tr>
+  </table>
+
+<h3>Receiving By Game</h3>
 <table>
   <th>Date</th><th>Opponent</th><th>Outcome</th><th>Receptions</th><th>Yards</th><th>TD</th><th>Long</th><th>Avg.</th>
 {% for game in receiving %}

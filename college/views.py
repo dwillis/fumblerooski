@@ -358,9 +358,17 @@ def player_detail(request, team, season, player):
     pp = PlayerPass.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     if pp:
         pass_totals = pp.aggregate(Sum('td'), Sum('yards'), Sum('attempts'), Sum('completions'), Sum('interceptions'), Avg('pass_efficiency'))
+        comp_pct = float(pass_totals['completions__sum'])/float(pass_totals['attempts__sum'])*100
     else:
         pass_totals = {'interceptions__sum': None, 'td__sum':None, 'attempts__sum': None, 'completions__sum': None, 'yards__sum': None, 'pass_efficiency__avg': None}
+        comp_pct = None
     prec = PlayerReceiving.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    if prec:
+        rec_totals = prec.aggregate(Sum('receptions'), Sum('yards'), Sum('td'))
+        rec_tot_avg = float(rec_totals['yards__sum'])/float(rec_totals['receptions__sum'])
+    else:
+        rec_totals = {'receptions__sum': None, 'yards__sum': None, 'td__sum': None}
+        rec_tot_avg = None
     pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
@@ -369,4 +377,5 @@ def player_detail(request, team, season, player):
         'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 
         'pass_tot_int':pass_totals['interceptions__sum'], 'pass_tot_td':pass_totals['td__sum'], 'pass_tot_attempts': pass_totals['attempts__sum'], 'pass_tot_comps': pass_totals['completions__sum'], 
         'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg'], 'rush_tot_rushes': rush_totals['rushes__sum'], 'rush_tot_gains': rush_totals['gain__sum'],
-        'rush_tot_loss': rush_totals['loss__sum'], 'rush_tot_td': rush_totals['td__sum'], 'rush_tot_net': rush_totals['net__sum']})
+        'rush_tot_loss': rush_totals['loss__sum'], 'rush_tot_td': rush_totals['td__sum'], 'rush_tot_net': rush_totals['net__sum'], 'rush_tot_avg': rush_tot_avg, 'comp_pct':comp_pct, 
+        'rec_tot_receptions': rec_totals['receptions__sum'], 'rec_tot_yards': rec_totals['yards__sum'], 'rec_tot_td': rec_totals['td__sum'], 'rec_tot_avg': rec_tot_avg})
