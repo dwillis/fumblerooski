@@ -160,6 +160,10 @@ class CollegeYear(models.Model):
     def get_absolute_url(self):
         return "/college/teams/%s/%s/" % (self.college.slug, self.year)
     
+    def get_conference_url(self):
+        if self.conference:
+            return "/college/conference/%s/%s/" % (self.conference.slug, self.year)
+    
     def record(self):
         if self.ties:
             return "%s-%s-%s" % (self.wins, self.losses, self.ties)
