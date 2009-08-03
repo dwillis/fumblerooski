@@ -162,7 +162,7 @@ class CollegeYear(models.Model):
     
     def get_conference_url(self):
         if self.conference:
-            return "/college/conference/%s/%s/" % (self.conference.slug, self.year)
+            return "/college/conference/%s/%s/" % (self.conference.abbrev, self.year)
     
     def record(self):
         if self.ties:
