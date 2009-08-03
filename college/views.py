@@ -73,7 +73,9 @@ def conference_index(request):
     conference_list = Conference.objects.all().order_by('name')
     return render_to_response('college/conferences.html', {'conference_list': conference_list})
 
-def conference_detail(request, conf, season):
+def conference_detail(request, conf, season=None):
+    if not season:
+        season = datetime.date.today().year
     c = get_object_or_404(Conference, abbrev=conf)
     team_list = CollegeYear.objects.filter(conference=c, year=season).select_related().order_by('college_college.name')
     return render_to_response('college/conference_detail.html', {'conference': c, 'team_list': team_list, 'season':season })
