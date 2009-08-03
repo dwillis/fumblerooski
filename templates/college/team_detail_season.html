@@ -5,7 +5,9 @@
 {% block content %}
 
 <h2>{{ team.name }}</h2>
+{% if season_record.conference %}
 <h3><a href="{{ season_record.get_conference_url }}">{{ season_record.conference.name }}</a></h3>
+{% endif %}
 
 {% if coach %}
 Head Coach: 
