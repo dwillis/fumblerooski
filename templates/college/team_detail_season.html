@@ -4,8 +4,8 @@
 
 {% block content %}
 
-<h3>{{ team.name }}</h3>
-<h5>{{ season_record.conference.name }}</h5>
+<h2>{{ team.name }}</h2>
+<h3><a href="{{ season_record.conference.get_absolute_url }}">{{ season_record.conference.name }}</a></h3>
 
 {% if coach %}
 Head Coach: 
