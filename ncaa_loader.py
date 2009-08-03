@@ -12,6 +12,35 @@ from fumblerooski.coaches.models import Coach, CoachingJob
 from fumblerooski.utils import update_college_year
 
 
+def load_skeds(year, teams):
+    if not teams:
+        teams = College.objects.filter(updated=True).order_by('id')
+    
+    for team in teams:
+        print team.id
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?year=%s&org=%s" % (year, team.id)
+        html = urllib.urlopen(url).read()
+        soup = BeautifulSoup(html)
+        t = soup.findAll('table')[2]
+        rows = t.findAll('tr')[2:]
+        for row in rows:
+            stringdate = row.findAll('td')[0].contents[0]
+            date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
+            try:
+                t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
+                try:
+                    team2 = College.objects.get(id=t2)
+                except:
+                    name = row.findAll('td')[2].find('a').contents[0].strip()
+                    slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower().strip()
+                    team2, created = College.objects.get_or_create(name=name, slug=slug)
+            except:
+                name = row.findAll('td')[2].contents[0].strip()
+                slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                team2, created = College.objects.get_or_create(name=name, slug=slug)
+            g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
+
+
 def game_updater(year, teams, week):
     
     if not teams:
