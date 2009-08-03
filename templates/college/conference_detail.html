@@ -9,7 +9,7 @@
 <table>
     <th>Team</th><th>State</th>
     {% for team in team_list %}
-    <tr><td><a href="{{ team.get_absolute_url }}">{{ team.name }}</a></td><td>{{ team.state }}</td></tr>
+    <tr><td><a href="{{ team.get_absolute_url }}">{{ team.college.name }}</a></td><td>{{ team.college.state }}</td></tr>
     {% endfor %}
 </table>
 
