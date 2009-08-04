@@ -39,6 +39,20 @@ def load_skeds(year, teams):
                 slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
                 team2, created = College.objects.get_or_create(name=name, slug=slug)
             g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
+            if len(row.findAll('td')[1].contents) > 0:
+                if row.findAll('td')[1].contents[0] == '+':
+                    g.t1_game_type = 'H'
+                elif row.findAll('td')[1].contents[0] == '*+':
+                    g.t1_game_type = 'H'
+                elif row.findAll('td')[1].contents[0] == '*':
+                    g.t1_game_type = 'A'
+                elif row.findAll('td')[1].contents[0] == '^':
+                    g.t1_game_type = 'N'
+                elif row.findAll('td')[1].contents[0] == '*^':
+                    g.t1_game_type = 'N'
+            else:
+                g.t1_game_type = 'A'
+            g.save()
 
 
 def game_updater(year, teams, week):
