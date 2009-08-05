@@ -93,14 +93,11 @@ def team_detail(request, team):
         current_head_coach = None
     college_years = CollegeYear.objects.filter(college=t).order_by('-year')
     game_list = Game.objects.filter(team1=t).order_by('-date')
-    opponents = {}
-    for game in game_list:
-        opponents[game.team2.id] = opponents.get(game.team2.id, 0) +1
-    popular_opponents = sorted(opponents.iteritems(), key=itemgetter(1), reverse=True)
+    popular_opponents = game_list.values("team2").annotate(games=Count("id")).order_by('-games')
     p_o = []
-    for team, number in popular_opponents[:10]:
-        c = College.objects.get(id=team)
-        c.number = number
+    for team in popular_opponents[:10]:
+        c = College.objects.get(id=team['team2'])
+        c.number = team['games']
         p_o.append(c)
     return render_to_response('college/team_detail.html', {'team': t, 'coach': current_head_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
 
