@@ -211,9 +211,22 @@ def team_vs(request, team1, team2, outcome=None):
         games = Game.objects.filter(team1=team_1, team2=team_2, t1_result=outcome[0].upper()).order_by('-date')
     else:
         games = Game.objects.filter(team1=team_1, team2=team_2).order_by('-date')
-    wins = games.filter(t1_result='W').count()
-    losses = games.filter(t1_result='L').count()
-    ties = games.filter(t1_result='T').count()        
+    totals = Game.objects.filter(team1=team_1, team2=team_2, date__lte=datetime.date.today()).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+    d = {}
+    for i in range(len(totals)):
+        d[totals[i]['t1_result']] = totals[i]['count']
+    try:
+        wins = d['W']
+    except KeyError:
+        wins = 0
+    try:
+        losses = d['L'] or None
+    except KeyError:
+        losses = 0
+    try:
+        ties = d['T']
+    except KeyError:
+        ties = 0
     try:
         last_home_loss = games.filter(t1_game_type='H', t1_result='L')[0]
     except:
