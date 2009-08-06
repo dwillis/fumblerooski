@@ -3,6 +3,7 @@ import csv
 import urllib
 import datetime
 from django.utils.encoding import smart_unicode, force_unicode
+from django.db.models import Avg, Sum, Min, Max, Count
 from time import strptime, strftime
 import time
 from urlparse import urljoin
@@ -24,29 +25,45 @@ def update_conf_games(year):
 def update_college_year(year):
     teams = CollegeYear.objects.select_related().filter(year=year, college__updated=True).order_by('college_college.id')
     for team in teams:
-        games = Game.objects.filter(team1=team.college, season=year)
-        results = {'W':0, 'L':0, 'T':0}
-        for game in games:
-            results[game.t1_result] = results.get(game.t1_result, 0) +1
+        games = Game.objects.filter(team1=team, season=year).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+        d = {}
+        for i in range(len(games)):
+            d[games[i]['t1_result']] = games[i]['count']
+        try:
+            wins = d['W']
+        except KeyError:
+            wins = 0
+        try:
+            losses = d['L']
+        except KeyError:
+            losses = 0
+        try:
+            ties = d['T']
+        except KeyError:
+            ties = 0
         if team.conference:
-            conf_games = Game.objects.select_related().filter(team1=team.college, season=year, is_conference_game=True)
-            conf_results = {'W':0, 'L':0, 'T':0}
-            for conf_game in conf_games:
-                conf_results[conf_game.t1_result] = conf_results.get(conf_game.t1_result, 0) +1
-            conf_wins = conf_results['W']
-            conf_losses = conf_results['L']
-            conf_ties = conf_results['T']
-        else:
-            conf_wins = 0
-            conf_losses = 0
-            conf_ties = 0
-        team.wins=results['W']
-        team.losses=results['L']
-        team.ties=results['T']
-        team.conference_wins=conf_wins
-        team.conference_losses=conf_losses
-        team.conference_ties=conf_ties
-        
+            conf_games = Game.objects.select_related().filter(team1=team.college, season=year, is_conference_game=True).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+            c = {}
+            for i in range(len(conf_games)):
+                c[conf_games[i]['t1_result']] = conf_games[i]['count']
+            try:
+                conf_wins = c['W']
+            except KeyError:
+                conf_wins = 0
+            try:
+                conf_losses = c['L']
+            except KeyError:
+                conf_losses = 0
+            try:
+                conf_ties = c['T']
+            except KeyError:
+                conf_ties = 0
+            team.conference_wins=conf_wins
+            team.conference_losses=conf_losses
+            team.conference_ties=conf_ties
+        team.wins=wins
+        team.losses=losses
+        team.ties=ties
         team.save()
 
 def add_college_years(year):

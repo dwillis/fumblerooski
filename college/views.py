@@ -9,11 +9,13 @@ import datetime
 from fumblerooski.college.models import College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame, PlayerSummary
 from fumblerooski.coaches.models import Coach, CoachingJob
 
+CURRENT_YEAR = 2009
+
 def homepage(request):
-    team_count = College.objects.all().count()
-    game_count = Game.objects.all().count()
+    team_count = College.objects.count()
+    game_count = Game.objects.count()
     try:
-        upcoming_week = Week.objects.filter(year=2008, end_date__gte=datetime.date.today()).order_by('end_date')[0]
+        upcoming_week = Week.objects.filter(year=CURRENT_YEAR, end_date__gte=datetime.date.today()).order_by('end_date')[0]
     except:
         upcoming_week = None
     latest_games = Game.objects.filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
