@@ -146,16 +146,11 @@ def team_ranking_detail(request, team, season, rankingtype):
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
-    game_list = Game.objects.filter(team1=t).select_related().order_by('college_college.name')
-    opponents = {}
-    for game in game_list:
-        print game.team2.id
-        opponents[game.team2.id] = opponents.get(game.team2.id, 0) +1
-    opponent_dict = sorted(opponents.iteritems(), key=itemgetter(1), reverse=True)
+    game_list = Game.objects.filter(team1=t).select_related().order_by('college_college.name').values("team2").annotate(games=Count("id")).order_by('-games')
     opp_list = []
-    for team, number in opponent_dict:
-        c = College.objects.get(id=team)
-        c.number = number
+    for team in game_list:
+        c = College.objects.get(id=team['team2'])
+        c.number = team['games']
         opp_list.append(c)
     return render_to_response('college/team_opponents.html', {'team': t, 'opponent_list': opp_list})
 
