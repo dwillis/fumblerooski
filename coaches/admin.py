@@ -3,6 +3,7 @@ from fumblerooski.coaches.models import Coach, CoachingJob
 
 class CoachAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('first_name','last_name')}
+    search_fields = ('last_name',)
     list_display = ('last_name', 'first_name', 'years')
     list_filter = ('years',)
 
