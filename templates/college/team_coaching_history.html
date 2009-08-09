@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Fumblerooski: {{ team.name }} Coaching History{% endblock %}
+
+{% block content %}
+
+<h3>{{ team.name }} Coaching History</h3>
+
+{% if coaches %}
+<table>
+  <th>Coach</th><th>Job</th><th>Season</th>
+  {% for coach in coaches %}
+  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.full_name }}</a></td><td>{{ coach.jobs_display }}</td><td>{{ coach.collegeyear.year }}</td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}

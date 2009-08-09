@@ -16,6 +16,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 
 class CollegeCoachAdmin(admin.ModelAdmin):
     list_display = ('coach', 'collegeyear', 'jobs_display', 'start_date', 'end_date')
+    search_fields = ('coach__last_name','collegeyear__college__name')
 
 class BowlGameAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}

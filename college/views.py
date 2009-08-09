@@ -187,6 +187,11 @@ def team_passing(request, team):
     
     return render_to_response('college/team_passing.html', {'team': t, })
 
+def team_coaching_history(request, team):
+    t = get_object_or_404(College, slug=team)
+    coaches = CollegeCoach.objects.filter(collegeyear__college=t).order_by('college_coach.last_name', 'college_coach.first_name')
+    return render_to_response('college/team_coaching_history.html', {'team': t, 'coaches': coaches})
+
 def team_first_downs_category(request, team, category):
     t = get_object_or_404(College, slug=team)
     cat = category.title()
@@ -195,6 +200,11 @@ def team_first_downs_category(request, team, category):
     least = offense_list.order_by(cat_key)
     most = least.reverse()
     return render_to_response('college/first_downs_category.html', {'team': t, 'offense_list': offense_list, 'most': most.values(cat_key)[0][cat_key], 'm_game': most[0], 'least': least.values(cat_key)[0][cat_key], 'l_game': least[0], 'category': cat })
+
+def team_vs_conference(request, team, conference):
+    t = get_object_or_404(College, slug=team)
+    c = get_object_or_404(Conference, abbrev=conference)
+#    games = Game.objects.filter(team1=t, team2.collegeyear_set.filter(conference=c))
 
 def team_vs(request, team1, team2, outcome=None):
     team_1 = get_object_or_404(College, slug=team1)
