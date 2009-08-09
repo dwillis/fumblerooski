@@ -38,7 +38,7 @@ class Coach(models.Model):
             return None
     
     class Meta:
-        ordering = ['last_name']
+        ordering = ['last_name', 'first_name']
         verbose_name_plural = 'Coaches'
         db_table = 'college_coach'
 
