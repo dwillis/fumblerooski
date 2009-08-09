@@ -199,6 +199,7 @@ class CollegeCoach(models.Model):
             return False
 
     class Meta:
+        ordering = ['coach__last_name','-collegeyear__year']
         verbose_name_plural = 'College coaches'
 
 class CollegeTotal(models.Model):
