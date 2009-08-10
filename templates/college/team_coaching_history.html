@@ -8,9 +8,9 @@
 
 {% if coaches %}
 <table>
-  <th>Coach</th><th>Job</th><th>Season</th>
+  <th>Coach</th>
   {% for coach in coaches %}
-  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td>{{ coach.jobs_display }}</td><td>{{ coach.collegeyear.year }}</td></tr>
+  <tr><td><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a></td></tr>
   {% endfor %}
 </table>
 

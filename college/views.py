@@ -189,7 +189,9 @@ def team_passing(request, team):
 
 def team_coaching_history(request, team):
     t = get_object_or_404(College, slug=team)
-    coaches = CollegeCoach.objects.filter(collegeyear__college=t)
+    c_list = CollegeCoach.objects.filter(collegeyear__college=t)
+    coaches = []
+    [coaches.append(c.coach) for c in c_list if c.coach not in coaches]
     return render_to_response('college/team_coaching_history.html', {'team': t, 'coaches': coaches})
 
 def team_first_downs_category(request, team, category):
