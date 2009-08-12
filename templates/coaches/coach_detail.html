@@ -5,7 +5,7 @@
 <h3>{{ coach.full_name }}</h3>
 
 {% if coach.current_job %}
-<h4>Current School: <a href="{{ coach.current_job.collegeyear.college.get_absolute_url }}">{{ coach.current_job.collegeyear.college.name }}</a></h4>
+<h4>Current School: <a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a></h4>
 Start date: {{ coach.current_job.start_date|date:"F d, Y" }}
 {% endif %}
 
