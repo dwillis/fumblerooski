@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Fumblerooski: {{ team.name }} {{ season_record.year }} Coaching Staff{% endblock %}
+
+{% block content %}
+
+<h3>{{ team.name }} - {{ season_record.year }}</h3>
+{% if season_record.conference %}
+<h2><a href="{{ season_record.get_conference_url }}">{{ season_record.conference.name }}</a></h2>
+{% endif %}
+
+{% if coaches %}
+<h3>Coaching Staff</h3>
+<table>
+    <th>Name</th><th>Job(s)</th><th>Start Date</th><th>End Date</th>
+    {% for coach in coaches %}
+    <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td>{{ coach.jobs_display }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td><td>{{ coach.end_date|date:"F d, Y" }}</td></tr>
+    {% endfor %}
+</table>
+
+{% else %}
+<p>No Coach Information Available.</p>
+
+{% endif %}
+
+{% endblock %}

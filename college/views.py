@@ -114,6 +114,12 @@ def team_detail_season(request, team, season):
     player_list = Player.objects.filter(team=t, year=season)
     return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
+def team_coaches_season(request, team, season):
+    t = get_object_or_404(College, slug=team)
+    cy = get_object_or_404(CollegeYear, college=t, year=season)
+    coaches = CollegeCoach.objects.filter(collegeyear=cy).order_by('coach__last_name', 'coach__first_name')
+    return render_to_response('college/team_coaches_season.html', {'team': t, 'season_record': cy, 'coaches': coaches })
+
 def team_bowl_games(request, team):
     t = get_object_or_404(College, slug=team)
     game_list = Game.objects.filter(team1=t, is_bowl_game=True).order_by('-date')
