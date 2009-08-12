@@ -11,7 +11,7 @@ class CollegeAdmin(admin.ModelAdmin):
 
 class CollegeYearAdmin(admin.ModelAdmin):
     list_filter = ('year',)
-    list_display = ('college__name', 'year', 'wins','losses')
+    list_display = ('college', 'year', 'wins','losses')
     search_fields = ('college__name',)
 
 class ConferenceAdmin(admin.ModelAdmin):
