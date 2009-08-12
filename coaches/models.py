@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 
 CURRENT_SEASON = 2009
 
@@ -32,7 +33,7 @@ class Coach(models.Model):
     
     def current_job(self):
         if self.current_school():
-            cy = self.collegecoach_set.filter(collegeyear__college=self.current_school).order_by('start_date')[0]
+            cy = self.collegecoach_set.filter(collegeyear__college=self.current_school).order_by('start_date')[0].jobs_display()
             return cy
         else:
             return None
@@ -41,6 +42,10 @@ class Coach(models.Model):
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'Coaches'
         db_table = 'college_coach'
+
+
+class CoachForm(forms.Form):
+    name = forms.CharField(max_length=50, initial='Last name')
 
 class CoachingJob(models.Model):
     name = models.CharField(max_length=75)

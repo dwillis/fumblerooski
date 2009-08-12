@@ -4,6 +4,24 @@
 
 {% block content %}
 
+<h3>Find Coaches</h3>
+
+<form action="." method="post">
+    {{ form.as_p }}
+  <input type="submit" value="Submit" />
+</form>
+
+{% if coach_list %}
+
+<table>
+  <th>Coach</th><th>Most Recent School</th><th>Most Recent Job</th>
+  {% for coach in coach_list %}
+  <tr><td><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a></td><td><a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a></td><td>{{ coach.current_job }}</td></tr>
+  {% endfor %}
+</table>
+
+{% endif %}
+
 {% if recent_departures %}
 <h3>Recent Departures</h3>
 
@@ -14,14 +32,5 @@
   {% endfor %}
 </table>
 {% endif %}
-
-<h3>Active Head Coaches</h3>
-
-<table>
-  <th>Coach</th><th>School</th><th>Hire Date</th>
-  {% for coach in active_coaches %}
-  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{% if coach.coach.current_job %}{{ coach.coach.current_job.start_date|date:"F d, Y" }}{% endif %}</td></tr>
-  {% endfor %}
-</table>
 
 {% endblock %}
