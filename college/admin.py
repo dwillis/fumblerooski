@@ -13,6 +13,7 @@ class CollegeYearAdmin(admin.ModelAdmin):
     list_filter = ('year',)
     list_display = ('college', 'year', 'wins','losses')
     search_fields = ('college__name',)
+    ordering = ('-id',)
 
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('name', 'abbrev')
@@ -22,6 +23,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 class CollegeCoachAdmin(admin.ModelAdmin):
     list_display = ('coach', 'collegeyear', 'jobs_display', 'start_date', 'end_date')
     search_fields = ('coach__last_name','collegeyear__college__name')
+    ordering = ('-id',)
 
 class BowlGameAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
