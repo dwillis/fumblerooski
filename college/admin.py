@@ -9,6 +9,11 @@ class CollegeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
 
+class CollegeYearAdmin(admin.ModelAdmin):
+    list_filter = ('year',)
+    list_display = ('college__name', 'year', 'wins','losses')
+    search_fields = ('college__name',)
+
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('name', 'abbrev')
     search_fields = ('name','abbrev')
@@ -68,7 +73,7 @@ class RushingSummaryAdmin(admin.ModelAdmin):
     list_filter = ('year', 'rank')
     ordering = ('-year', 'rank')
 
-admin.site.register(CollegeYear)
+admin.site.register(CollegeYear, CollegeYearAdmin)
 admin.site.register(CollegeCoach, CollegeCoachAdmin)
 admin.site.register(Conference, ConferenceAdmin)
 admin.site.register(PlayerPass, PlayerPassAdmin)
