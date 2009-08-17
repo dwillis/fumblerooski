@@ -41,9 +41,5 @@ urlpatterns = patterns('fumblerooski.college.views',
      url(r'^teams/(?P<team1>[-a-z]+)/vs/(?P<team2>[-a-z]+)/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/drives/$', 'game_drive'),     
      url(r'^states/$', 'state_index'),
      url(r'^states/(?P<state>[a-z][a-z])/$', 'state_detail'),
-     url(r'^$', 'coach_index'),
-     url(r'^active/$', 'active_coaches'),
-     url(r'^feeds/recent_hires/$', 'recent_hires_feed'),
-     url(r'^detail/(?P<coach>[-a-z]+)/$', 'coach_detail'),
-     url(r'^assistants/$', 'assistant_index'),
+
 )
