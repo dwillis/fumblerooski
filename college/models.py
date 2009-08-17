@@ -131,6 +131,10 @@ class College(models.Model):
     def current_record(self):
         return "(%d-%d)" % (self.collegeyear_set.get(year=datetime.date.today().year).wins, self.collegeyear_set.get(year=datetime.date.today().year).losses)
     
+    class Meta:
+        ordering = ['name', 'state']
+        
+
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)
     year = models.IntegerField()
