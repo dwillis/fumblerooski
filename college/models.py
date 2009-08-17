@@ -2,9 +2,8 @@
 from django.db import models
 from django import forms
 import datetime
-from fumblerooski.coaches.models import Coach, CoachingJob
 
-CURRENT_SEASON = 2008
+CURRENT_SEASON = 2009
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
@@ -172,6 +171,58 @@ class CollegeYear(models.Model):
     
     class Meta:
         ordering = ['college', '-year']
+
+class Coach(models.Model):
+    ncaa_name = models.CharField(max_length=90)
+    first_name = models.CharField(max_length=75)
+    last_name = models.CharField(max_length=75)
+    slug = models.SlugField(max_length=75)
+    alma_mater = models.CharField(max_length=75)
+    college = models.ForeignKey(College)
+    grad_year = models.IntegerField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    years = models.IntegerField(default=0, blank=True)
+    wins = models.IntegerField(default=0, blank=True)
+    losses = models.IntegerField(default=0, blank=True)
+    ties = models.IntegerField(default=0, blank=True)
+
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name
+
+    def get_absolute_url(self):
+        return '/coaches/detail/%s/' % self.slug
+    
+    def full_name(self):
+        return self.first_name + " " + self.last_name
+    
+    def current_school(self):
+        try:
+            current_school = self.collegecoach_set.get(collegeyear__year__exact = CURRENT_SEASON, end_date = None).collegeyear.college
+        except:
+            current_school = None
+        return current_school
+    
+    def current_job(self):
+        if self.current_school():
+            cy = self.collegecoach_set.filter(collegeyear__college=self.current_school).order_by('start_date')[0].jobs_display()
+            return cy
+        else:
+            return None
+    
+    class Meta:
+        ordering = ['last_name', 'first_name']
+        verbose_name_plural = 'Coaches'
+
+
+class CoachForm(forms.Form):
+    name = forms.CharField(max_length=50, initial='Last name')
+
+class CoachingJob(models.Model):
+    name = models.CharField(max_length=75)
+    slug = models.SlugField(max_length=75)
+    
+    def __unicode__(self):
+        return self.name
 
 class CollegeCoach(models.Model):
     coach = models.ForeignKey(Coach)

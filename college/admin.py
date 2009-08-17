@@ -1,6 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, City, College, CollegeYear, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
-from fumblerooski.coaches.models import Coach, CoachingJob
+from fumblerooski.college.models import State, City, College, Coach, CoachingJob, CollegeYear, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'updated')
@@ -19,6 +18,15 @@ class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('name', 'abbrev')
     search_fields = ('name','abbrev')
     ordering = ('name',)
+
+class CoachAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('first_name','last_name')}
+    search_fields = ('last_name',)
+    list_display = ('last_name', 'first_name', 'years')
+    list_filter = ('years','college', 'grad_year')
+
+class CoachingJobAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
 
 class CollegeCoachAdmin(admin.ModelAdmin):
     list_display = ('coach', 'collegeyear', 'jobs_display', 'start_date', 'end_date')
@@ -96,3 +104,5 @@ admin.site.register(DriveOutcome, DriveOutcomeAdmin)
 admin.site.register(GameDrive, GameDriveAdmin)
 admin.site.register(BowlGame, BowlGameAdmin)
 admin.site.register(RushingSummary, RushingSummaryAdmin)
+admin.site.register(Coach, CoachAdmin)
+admin.site.register(CoachingJob, CoachingJobAdmin)

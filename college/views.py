@@ -6,8 +6,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame, PlayerSummary
-from fumblerooski.coaches.models import Coach, CoachingJob
+from fumblerooski.college.models import College, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame, PlayerSummary, Coach, CoachingJob
 
 CURRENT_YEAR = 2009
 
@@ -406,3 +405,42 @@ def player_detail(request, team, season, player):
         'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg'], 'rush_tot_rushes': rush_totals['rushes__sum'], 'rush_tot_gains': rush_totals['gain__sum'],
         'rush_tot_loss': rush_totals['loss__sum'], 'rush_tot_td': rush_totals['td__sum'], 'rush_tot_net': rush_totals['net__sum'], 'rush_tot_avg': rush_tot_avg, 'comp_pct':comp_pct, 
         'rec_tot_receptions': rec_totals['receptions__sum'], 'rec_tot_yards': rec_totals['yards__sum'], 'rec_tot_td': rec_totals['td__sum'], 'rec_tot_avg': rec_tot_avg})
+
+def coach_index(request):
+    two_months_ago = datetime.date.today()-datetime.timedelta(60)
+    recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('end_date')[:10]
+    if request.method == 'POST':
+        if request.POST.has_key('name'):
+            query = request.POST['name']
+            try:
+                coach_list = Coach.objects.filter(last_name__icontains=query).order_by('last_name', 'first_name')
+                form = CoachForm(request.POST)
+            except:
+                coach_list = None
+                form = CoachForm()
+    else:
+        form = CoachForm()
+        coach_list = None
+    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'coach_list': coach_list, 'form': form })
+
+def active_coaches(request):
+    active_hc = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).order_by('-start_date')
+    return render_to_response('coaches/active_coaches.html', {'active_coaches': active_hc, 'season': CURRENT_SEASON })
+
+def coach_detail(request, coach):
+    c = get_object_or_404(Coach, slug=coach)
+    college_list = CollegeCoach.objects.filter(coach=c).select_related().order_by('-college_collegeyear.year', '-start_date')
+    return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list })
+
+
+def assistant_index(request):
+    two_months_ago = datetime.date.today()-datetime.timedelta(60)
+    recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
+    recent_departures = CollegeCoach.objects.select_related().filter(end_date__gte=two_months_ago).exclude(jobs__name='Head Coach').order_by('-end_date')[:10]
+    return render_to_response('coaches/assistant_index.html', {'recent_hires': recent_hires, 'recent_departures': recent_departures })
+    
+def recent_hires_feed(request):
+    two_months_ago = datetime.date.today()-datetime.timedelta(60)
+    recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
+    xml = render_to_string('coaches/recent_hires_feed.xml', { 'recent_hires': recent_hires })
+    return HttpResponse(xml, mimetype='application/xml')
