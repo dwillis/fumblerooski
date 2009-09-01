@@ -181,7 +181,7 @@ class Coach(models.Model):
     first_name = models.CharField(max_length=75)
     last_name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
-    college = models.ForeignKey(College, null=True, blank=True)
+    college = models.ForeignKey(College, null=True, blank=True, related_name='School')
     grad_year = models.IntegerField(null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     years = models.IntegerField(default=0, blank=True)
