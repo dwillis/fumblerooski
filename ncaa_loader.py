@@ -7,10 +7,10 @@ from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary
-from fumblerooski.coaches.models import Coach, CoachingJob
+from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary, Coach, CoachingJob
 from fumblerooski.utils import update_college_year
 
+CURRENT_SEASON = 2008
 
 def load_skeds(year, teams):
     if not teams:
@@ -214,8 +214,8 @@ def load_ncaa_game_xml(game):
         print "Could not find one of the teams"
         raise
     try:
-        game, created = Game.objects.get_or_create(team1=t1, team2=t2, date=gd, season=gd.year)
-        game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd,season=gd.year)
+        game, created = Game.objects.get_or_create(team1=t1, team2=t2, date=gd, season=CURRENT_SEASON)
+        game_v,created = Game.objects.get_or_create(team1=t2, team2=t1, date=gd,season=CURRENT_SEASON)
         try:
             game.attendance = soup.attendance.contents[0]
             game_v.attendance = soup.attendance.contents[0]
