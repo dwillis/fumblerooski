@@ -214,9 +214,9 @@ class Coach(models.Model):
     
     def head_coach_experience(self):
         if len([job for job in self.collegecoach_set.all() if 'Head Coach' in job.jobs_display()]) > 0:
-            return True
+            return "Yes"
         else:
-            return False
+            return "No"
         
 
     class Meta:
