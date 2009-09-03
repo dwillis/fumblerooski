@@ -14,7 +14,7 @@
 <table>
     <th>Name</th><th>Job(s)</th><th>Start Date</th><th>End Date</th><th>Head Coach Experience?</th>
     {% for coach in coaches %}
-    <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td>{{ coach.jobs_display }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td><td>{{ coach.end_date|date:"F d, Y" }}</td><td>{{ coach.head_coach_experience }}</td></tr>
+    <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td>{{ coach.jobs_display }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td><td>{{ coach.end_date|date:"F d, Y" }}</td><td>{{ coach.coach.head_coach_experience }}</td></tr>
     {% endfor %}
 </table>
 
