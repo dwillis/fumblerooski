@@ -11,7 +11,7 @@
 Start date: {{ coach.current_job.start_date|date:"F d, Y" }}
 {% endif %}
 
-<h4>Alma Mater: {{ coach.alma_mater }}</h4>
+<h4>Alma Mater: <a href="{{ coach.college.get_absolute_url }}">{{ coach.college }}</a> {% if coach.grad_year %}{{ coach.grad_year }}{% endif %}</h4>
 
 {% if college_list %}
 <h3>College Coaching History (2000-present)</h3>
