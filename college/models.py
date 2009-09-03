@@ -212,6 +212,13 @@ class Coach(models.Model):
         else:
             return None
     
+    def head_coach_experience(self):
+        if len([job for job in self.collegecoach_set.all() if 'Head Coach' in job.jobs_display()]) > 0:
+            return True
+        else:
+            return False
+        
+
     class Meta:
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'Coaches'
