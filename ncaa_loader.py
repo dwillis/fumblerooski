@@ -55,7 +55,7 @@ def load_skeds(year, teams):
             g.save()
 
 
-def game_updater(year, teams, week):
+def game_updater(year, teams, week, nostats=False):
     
     if not teams:
         teams = College.objects.filter(updated=True).order_by('id')
@@ -110,13 +110,11 @@ def game_updater(year, teams, week):
                 if game_file:
                     g.ncaa_xml = game_file.split('.xml')[0].strip()
                     games.append(g)
-                    if not g.has_stats:
+                    if not nostats:
                         load_ncaa_game_xml(g)
                         g.has_stats = True
-                    if not g.has_player_stats:
                         player_game_stats(g)
                         g.has_player_stats = True
-                    if not g.has_drives:
                         game_drive_loader(g)
                         g.has_drives = True
                 else:
