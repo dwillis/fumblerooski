@@ -25,7 +25,7 @@ def update_conf_games(year):
 def update_college_year(year):
     teams = CollegeYear.objects.select_related().filter(year=year, college__updated=True).order_by('college_college.id')
     for team in teams:
-        games = Game.objects.filter(team1=team, season=year).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+        games = Game.objects.filter(team1=team, season=year, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
         d = {}
         for i in range(len(games)):
             d[games[i]['t1_result']] = games[i]['count']
