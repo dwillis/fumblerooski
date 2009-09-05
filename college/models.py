@@ -213,7 +213,7 @@ class Coach(models.Model):
             return None
     
     def head_coach_experience(self):
-        if len([job for job in self.collegecoach_set.all() if 'Head Coach' in job.jobs_display()]) > 0:
+        if 1 in sum([[j.id for j in job.jobs.all() if j.id == 1] for job in self.collegecoach_set.all()],[]):
             return "Yes"
         else:
             return "No"
