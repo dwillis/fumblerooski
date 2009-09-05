@@ -205,6 +205,9 @@ class Coach(models.Model):
             current_school = None
         return current_school
     
+    def seasons_at_current_school(self):
+        len([cy.collegeyear.college.id for cy in self.collegecoach_set.all() if cy.collegeyear.college.id == self.current_school().id])
+    
     def current_job(self):
         if self.current_school():
             cy = self.collegecoach_set.filter(collegeyear__college=self.current_school).order_by('start_date')[0].jobs_display()
