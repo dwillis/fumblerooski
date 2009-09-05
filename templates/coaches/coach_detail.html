@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}Fumblerooski: {{ coach.full_name }}{% endblock %}
 
@@ -7,7 +8,7 @@
 <h3>{{ coach.full_name }}</h3>
 
 {% if coach.current_job %}
-<h4>Current School: <a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a></h4>
+<h4>Current School: <a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a> ({{ coach.seasons_at_current_school|ordinal }} season since 2000)</h4>
 Start date: {{ coach.current_job.start_date|date:"F d, Y" }}
 {% endif %}
 
