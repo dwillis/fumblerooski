@@ -9,7 +9,7 @@
 
 {% if coach.current_job %}
 <h4>Current School: <a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a> ({{ coach.seasons_at_current_school|ordinal }} season since 2000)</h4>
-Start date: {{ coach.current_job.start_date|date:"F d, Y" }}
+{% if coach.current_job.start_date %}Start date: {{ coach.current_job.start_date|date:"F d, Y" }}{% endif %}
 {% endif %}
 
 <h4>Alma Mater: <a href="{{ coach.college.get_absolute_url }}">{{ coach.college }}</a> {% if coach.grad_year %}{{ coach.grad_year }}{% endif %}</h4>
