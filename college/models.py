@@ -205,6 +205,10 @@ class Coach(models.Model):
             current_school = None
         return current_school
     
+    def seasons_at_school(self,school):
+        return [sorted([cy.collegeyear.year for cy in self.collegecoach_set.all() if cy.collegeyear.college == school])]
+        
+    
     def seasons_at_current_school(self):
         return len([cy.collegeyear.college.id for cy in self.collegecoach_set.all() if cy.collegeyear.college.id == self.current_school().id])
     

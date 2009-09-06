@@ -197,6 +197,8 @@ def team_coaching_history(request, team):
     c_list = CollegeCoach.objects.filter(collegeyear__college=t)
     coaches = []
     [coaches.append(c.coach) for c in c_list if c.coach not in coaches]
+    for coach in coaches:
+        coach.years = coach.seasons_at_school(t)[0]
     return render_to_response('college/team_coaching_history.html', {'team': t, 'coaches': coaches})
 
 def team_first_downs_category(request, team, category):
