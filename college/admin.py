@@ -66,9 +66,14 @@ class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('start_how', 'plays')
     list_display = ('game', 'team', 'drive', 'end_result')
 
+class PlayerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'team', 'year','position', 'status')
+    search_fields = ('name',)
+
 class PlayerRushAdmin(admin.ModelAdmin):
     list_display = ('player', 'game', 'rushes', 'net', 'td')
     list_filter = ('td', 'net')
+    search_fields = ('player__name',)
 
 class PlayerPassAdmin(admin.ModelAdmin):
     list_display = ('player', 'game', 'completions', 'attempts', 'yards', 'td', 'interceptions', 'pass_efficiency')
@@ -88,6 +93,7 @@ admin.site.register(CollegeYear, CollegeYearAdmin)
 admin.site.register(Coach, CoachAdmin)
 admin.site.register(CoachingJob, CoachingJobAdmin)
 admin.site.register(CollegeCoach, CollegeCoachAdmin)
+admin.site.register(Player, PlayerAdmin)
 admin.site.register(Conference, ConferenceAdmin)
 admin.site.register(PlayerPass, PlayerPassAdmin)
 admin.site.register(PlayerRush, PlayerRushAdmin)

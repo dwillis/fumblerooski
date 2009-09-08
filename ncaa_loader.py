@@ -2,6 +2,7 @@ import re
 import csv
 import urllib
 import datetime
+import logging
 from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime, strftime
 import time
@@ -10,6 +11,8 @@ from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary, Coach, CoachingJob
 from fumblerooski.utils import update_college_year
 
+LOG_FILENAME = 'ncaa_log.txt'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 CURRENT_SEASON = 2009
 
 def load_skeds(year, teams):
@@ -63,7 +66,6 @@ def game_updater(year, teams, week, nostats=False):
     games = []
     
     for team in teams:
-        print team.id
         url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.id, year, week)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
@@ -136,9 +138,16 @@ def game_updater(year, teams, week, nostats=False):
                     g.t1_game_type = 'A'
                 g.save()
         except:
-            raise
+            logging.debug("Error in game %s", g.id)
     update_college_year(year)
 
+
+def update_player_game_stats(s):
+    games = Game.objects.filter(has_player_stats=False, season=s, ncaa_xml__startswith=s)
+    for game in games:
+        player_game_stats(game)
+        game.has_player_stats = True
+        game.save()
 
 
 """
@@ -192,8 +201,12 @@ def load_ncaa_game_xml(game):
         each.replaceWith("0")
     
     try:
-        print "trying game: %s-%s" % (soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
-        t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
+        print "trying game # %s: %s-%s" % (game.id, soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
+        try:
+            t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
+        except College.DoesNotExist:
+            if soup.teams.home.orgid.contents[0] == '505632':
+                t1 = College.objects.get(id=30647)
         if soup.teams.visitor.orgid.contents[0] == '506027':
             t2 = College.objects.get(id=30504) # special case for ncaa error on southern oregon
         elif soup.teams.visitor.orgid.contents[0] == '505632':
@@ -206,6 +219,14 @@ def load_ncaa_game_xml(game):
             t2 = College.objects.get(id=1083)
         elif soup.teams.visitor.orgid.contents[0] == '506112':
             t2 = College.objects.get(id=30514)
+        elif soup.teams.visitor.orgid.contents[0] == '501982':
+            t2 = College.objects.get(id=30510)
+        elif soup.teams.visitor.orgid.contents[0] == '505632':
+            t2 = College.objects.get(id=30647)
+        elif soup.teams.visitor.orgid.contents[0] == '506116':
+            t2 = College.objects.get(id=30509)
+        elif soup.teams.visitor.orgid.contents[0] == '506037':
+            t2 = College.objects.get(id=30636)
         else:
             t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
         d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
@@ -535,7 +556,7 @@ def player_game_stats(game):
             except:
                 players = None
                 pass
-        if players:
+        if players and team.updated == True:
             for p in players:
                 uniform = str(p.find("uniform").contents[0])
                 name = str(p.find("name").contents[0])
@@ -632,7 +653,7 @@ def player_game_stats(game):
                     game.has_player_stats = True
                     game.save()
                 except:
-                    print "Could not find player: %s (%s)" % (name, uniform)
+                    logging.debug("Could not find %s player: %s (%s)" % (team.name, name, uniform))
                     pass
 
 
@@ -702,7 +723,9 @@ def load_team(team_id, year):
             py.games_played=gp
             py.save()
     except:
-        pass
+        logging.debug("No roster for %s" % team.name)
+        team.updated = False
+        team.save()
 
 def load_coaches():
     import xlrd
