@@ -548,6 +548,7 @@ def player_game_stats(game):
                 players = soup.teams.home.players.findAll('player')
             except:
                 players = None
+                logging.debug("No home team players for %s" % game.id)
                 pass
         else:
             try:
@@ -555,6 +556,7 @@ def player_game_stats(game):
                 players = soup.teams.visitor.players.findAll('player')
             except:
                 players = None
+                logging.debug("No visiting team players for %s" % game.id)
                 pass
         if players and team.updated == True:
             for p in players:
@@ -562,6 +564,11 @@ def player_game_stats(game):
                 name = str(p.find("name").contents[0])
                 try:
                     player = Player.objects.get(team=team, year=game.season, name=name, number=uniform)
+                except:
+                    logging.debug("Could not find %s player: %s (%s)" % (team.name, name, uniform))
+                    player = None
+                    pass
+                if player:
                     if p.find("totplays"):
                         total_plays=p.find("totplays").contents[0]
                     else:
@@ -650,11 +657,9 @@ def player_game_stats(game):
                         saf = int(p.find("scoring").find("saf").contents[0])
                         pts = int(p.find("scoring").find("pts").contents[0])
                         ps, created = PlayerScoring.objects.get_or_create(player=player, game=game, td=s_td, fg_att=fg_att, fg_made=fg_made, pat_att=pat_att, pat_made=pat_made, two_pt_att=tpt_att, two_pt_made=tpt_made,def_pat_att=d_pat_att, def_pat_made=d_pat_made, def_two_pt_att=d_tpt_att, def_two_pt_made=d_tpt_made, safeties=saf, points=pts)
-                    game.has_player_stats = True
-                    game.save()
-                except:
-                    logging.debug("Could not find %s player: %s (%s)" % (team.name, name, uniform))
-                    pass
+        game.has_player_stats = True
+        game.save()
+
 
 
 def stats_loader(year):

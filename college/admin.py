@@ -47,6 +47,9 @@ class GameAdmin(admin.ModelAdmin):
 
 class PlayerAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    list_display = ('name', 'team', 'year','position', 'status')
+    list_filter = ('year','position', 'status')
+    search_fields = ('name',)
 
 class RankingTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
@@ -65,10 +68,6 @@ class DriveOutcomeAdmin(admin.ModelAdmin):
 class GameDriveAdmin(admin.ModelAdmin):
     list_filter = ('start_how', 'plays')
     list_display = ('game', 'team', 'drive', 'end_result')
-
-class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'team', 'year','position', 'status')
-    search_fields = ('name',)
 
 class PlayerRushAdmin(admin.ModelAdmin):
     list_display = ('player', 'game', 'rushes', 'net', 'td')
