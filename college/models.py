@@ -403,6 +403,7 @@ class DriveOutcome(models.Model):
         return self.name
 
 class GameDrive(models.Model):
+    season = models.IntegerField()
     game = models.ForeignKey(Game)
     team = models.ForeignKey(College)
     drive = models.IntegerField()
@@ -421,6 +422,12 @@ class GameDrive(models.Model):
     
     def __unicode__(self):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
+
+
+class Score(models.Model):
+    game = models.ForeignKey(Game)
+    year = models.IntegerField()
+    
 
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)
