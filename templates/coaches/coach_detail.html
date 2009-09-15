@@ -24,4 +24,15 @@
 </table>
 {% else %}
 {% endif %}
+
+<h3>States Coached in Since 2000</h3>
+  {% chart %}
+    {% chart-size "440x220" %}
+    {% chart-background "000000" %}
+    {% chart-type "map" %}
+    {% chart-map-area "usa" %}
+    {% chart-map-data mapdata %}
+    {% chart-colors "EFEFEF" "76A4FB" "333333" %}
+  {% endchart %}
+
 {% endblock %}

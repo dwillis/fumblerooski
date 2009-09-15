@@ -225,7 +225,18 @@ class Coach(models.Model):
         else:
             return "No"
         
-
+    def years_since_2000(self):
+        return len(self.collegecoach_set.all())
+    
+    def years_at_alma_mater_since_2000(self):
+        return len([a for a in self.collegecoach_set.all() if self.college == a.collegeyear.college])
+    
+    def states_coached_in(self):
+        states = {}
+        state_list = [s.collegeyear.college.state.id for s in self.collegecoach_set.all()]
+        [states.setdefault(e,500) for e in state_list if e not in states]
+        return states
+    
     class Meta:
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'Coaches'
