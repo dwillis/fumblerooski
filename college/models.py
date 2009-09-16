@@ -194,10 +194,6 @@ class Coach(models.Model):
     def __unicode__(self):
         return self.first_name + " " + self.last_name
     
-    def save(self):
-        self.slug=slugify(str(next_coach_id())+'-'+self.first_name+self.last_name)
-        super(Coach, self).save()
-    
     def get_absolute_url(self):
         return '/coaches/detail/%s/' % self.slug
     
