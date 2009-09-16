@@ -20,7 +20,7 @@ class ConferenceAdmin(admin.ModelAdmin):
     ordering = ('name',)
 
 class CoachAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('first_name','last_name')}
+    prepopulated_fields = {'slug': ('id','first_name','last_name')}
     search_fields = ('last_name',)
     list_display = ('last_name', 'first_name', 'years')
     list_filter = ('years','college', 'grad_year')
