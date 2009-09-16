@@ -180,7 +180,7 @@ class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     first_name = models.CharField(max_length=75)
     last_name = models.CharField(max_length=75)
-    slug = models.SlugField(max_length=75)
+    slug = models.SlugField(max_length=75, editable=False)
     college = models.ForeignKey(College, null=True, blank=True, related_name='School')
     grad_year = models.IntegerField(null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
