@@ -15,6 +15,6 @@ urlpatterns += patterns('fumblerooski.college.views',
      url(r'^coaches/$', 'coach_index'),
      url(r'^coaches/active/$', 'active_coaches'),
      url(r'^coaches/feeds/recent_hires/$', 'recent_hires_feed'),
-     url(r'^coaches/detail/(?P<coach>[-a-z]+)/$', 'coach_detail'),
+     url(r'^coaches/detail/(?P<coach>[0-9+][-a-z]+)/$', 'coach_detail'),
      url(r'^coaches/assistants/$', 'assistant_index'),
 )
