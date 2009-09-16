@@ -3,7 +3,6 @@ from django.db import models
 from django import forms
 import datetime
 from django.template.defaultfilters import slugify
-from fumblerooski.utils import next_coach_id
 
 CURRENT_SEASON = 2009
 
