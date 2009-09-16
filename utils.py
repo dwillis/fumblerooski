@@ -10,6 +10,11 @@ from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary, Coach, CoachingJob
 
+
+def next_coach_id():
+    c = Coach.objects.aggregate(Max("id"))
+    return c['id__max']+1
+
 def update_conf_games(year):
     games = Game.objects.filter(season=year, team1__updated=True, team2__updated=True)
     for game in games:
