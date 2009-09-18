@@ -181,7 +181,7 @@ class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     first_name = models.CharField(max_length=75)
     last_name = models.CharField(max_length=75)
-    slug = models.SlugField(max_length=75, editable=False)
+    slug = models.CharField(max_length=75, editable=False)
     college = models.ForeignKey(College, null=True, blank=True, related_name='School')
     grad_year = models.IntegerField(null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
@@ -192,6 +192,10 @@ class Coach(models.Model):
 
     def __unicode__(self):
         return self.first_name + " " + self.last_name
+    
+    def save(self):
+        super(Coach, self).save()
+        self.slug = '%s-%s' % (str(self.id), slugify(self.full_name()))
     
     def get_absolute_url(self):
         return '/coaches/detail/%s/' % self.slug
