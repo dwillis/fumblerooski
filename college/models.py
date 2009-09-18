@@ -195,7 +195,8 @@ class Coach(models.Model):
     
     def save(self):
         super(Coach, self).save()
-        self.slug = '%s-%s' % (str(self.id), slugify(self.full_name()))
+        self.slug = '%s-%s-%s' % (str(self.id), slugify(self.first_name), slugify(self.last_name))
+        super(Coach, self).save()
     
     def get_absolute_url(self):
         return '/coaches/detail/%s/' % self.slug
