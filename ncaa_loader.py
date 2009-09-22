@@ -88,7 +88,10 @@ def game_updater(year, teams, week, nostats=False):
                 try:
                     t2 = int(row.findAll('td')[1].find('a')['href'].split('=')[1].split('&')[0])
                     try:
-                        team2 = College.objects.get(id=t2)
+                        if t2 == 115:   # hack job to cover for ncaa change
+                            team2 = College.objects.get(id=30416)
+                        else:
+                            team2 = College.objects.get(id=t2)
                     except:
                         name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
                         slug = slugify(name)
