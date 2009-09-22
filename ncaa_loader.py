@@ -42,19 +42,12 @@ def load_skeds(year, teams):
                 slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
                 team2, created = College.objects.get_or_create(name=name, slug=slug)
             g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
-            if len(row.findAll('td')[1].contents) > 0:
-                if row.findAll('td')[1].contents[0] == '+':
-                    g.t1_game_type = 'H'
-                elif row.findAll('td')[1].contents[0] == '*+':
-                    g.t1_game_type = 'H'
-                elif row.findAll('td')[1].contents[0] == '*':
-                    g.t1_game_type = 'A'
-                elif row.findAll('td')[1].contents[0] == '^':
-                    g.t1_game_type = 'N'
-                elif row.findAll('td')[1].contents[0] == '*^':
-                    g.t1_game_type = 'N'
-            else:
+            if "@" in row.findAll('td')[1].find('a').contents[0]:
                 g.t1_game_type = 'A'
+            elif "^" in row.findAll('td')[1].find('a').contents[0]:
+                g.t1_game_type = 'N'
+            else:
+                g.t1_game_type = 'H'
             g.save()
 
 
@@ -76,32 +69,32 @@ def game_updater(year, teams, week, nostats=False):
             for row in rows:
                 try:
                     game_file = row.findAll('td')[0].find('a')['href'].split('game=')[1]
-                    stringdate = row.findAll('td')[0].find('a').contents[0]
-                    team1_score = int(row.findAll('td')[3].contents[0])
-                    team2_score = int(row.findAll('td')[4].contents[0])
-                    if len(row.findAll('td')[5].contents[0].strip().split(' ')) == 2:
-                        t1_result, ot = row.findAll('td')[5].contents[0].strip().split(' ')
+                    stringdate = row.findAll('td')[0].find('a').contents[0][4:]
+                    team1_score, team2_score = [int(x) for x in row.findAll('td')[2].contents[0].split(' - ')]
+                    if len(row.findAll('td')[3].contents[0].strip().split(' ')) == 2:
+                        t1_result, ot = row.findAll('td')[3].contents[0].strip().split(' ')
                     else:
-                        t1_result = row.findAll('td')[5].contents[0].strip()
+                        t1_result = row.findAll('td')[3].contents[0].strip()
                         ot = None
+
                 except:
                     game_file = None
-                    stringdate = row.findAll('td')[0].contents[0]
+                    stringdate = row.findAll('td')[0].contents[0][4:]
                     team1_score = None
                     team2_score = None
                     t1_result = None
                 date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
                 try:
-                    t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
+                    t2 = int(row.findAll('td')[1].find('a')['href'].split('=')[1].split('&')[0])
                     try:
                         team2 = College.objects.get(id=t2)
                     except:
-                        name = row.findAll('td')[2].find('a').contents[0].strip()
-                        slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower().strip()
+                        name = row.findAll('td')[1].find('a').contents[0].replace('*','').strip()
+                        slug = row.findAll('td')[1].find('a').contents[0].replace('*','').strip().replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower()
                         team2, created = College.objects.get_or_create(name=name, slug=slug)
                 except:
-                    name = row.findAll('td')[2].contents[0].strip()
-                    slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                    name = row.findAll('td')[1].contents[0].strip()
+                    slug = row.findAll('td')[1].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
                 g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
@@ -123,22 +116,20 @@ def game_updater(year, teams, week, nostats=False):
                     pass
                 if ot:
                     g.ot = 't'
-                if len(row.findAll('td')[1].contents) > 0:
-                    if row.findAll('td')[1].contents[0] == '+':
-                        g.t1_game_type = 'H'
-                    elif row.findAll('td')[1].contents[0] == '*+':
-                        g.t1_game_type = 'H'
-                    elif row.findAll('td')[1].contents[0] == '*':
-                        g.t1_game_type = 'A'
-                    elif row.findAll('td')[1].contents[0] == '^':
-                        g.t1_game_type = 'N'
-                    elif row.findAll('td')[1].contents[0] == '*^':
-                        g.t1_game_type = 'N'
-                else:
+                if "@" in row.findAll('td')[1].contents[0]:
                     g.t1_game_type = 'A'
+                elif "^" in row.findAll('td')[1].contents[0]:
+                    g.t1_game_type = 'N'
+                elif row.findAll('td')[1].find('a') and "@" in row.findAll('td')[1].find('a').contents[0]:
+                    g.t1_game_type = 'A'
+                elif row.findAll('td')[1].find('a') and "^" in row.findAll('td')[1].find('a').contents[0]:
+                    g.t1_game_type = 'N'
+                else:
+                    g.t1_game_type = 'H'
                 g.save()
         except:
-            logging.debug("Error in game %s", g.id)
+            raise
+            logging.debug("Error in game")
     update_college_year(year)
 
 
@@ -227,6 +218,8 @@ def load_ncaa_game_xml(game):
             t2 = College.objects.get(id=30509)
         elif soup.teams.visitor.orgid.contents[0] == '506037':
             t2 = College.objects.get(id=30636)
+        elif soup.teams.visitor.orgid.contents[0] == '506083':
+            t2 = College.objects.get(id=30488)
         else:
             t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
         d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
