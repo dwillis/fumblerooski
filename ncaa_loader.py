@@ -446,7 +446,7 @@ def game_drive_loader(game):
             team = College.objects.get(drive_slug=str(cells[2].contents[0]))
         quarter = int(cells[1].contents[0])
         start_how = cells[3].contents[0]
-        start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1]))
+        start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1][:2]))
         try:
             start_position = int(cells[5].contents[0])
             start_side = "O"
