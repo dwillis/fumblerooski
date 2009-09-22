@@ -10,6 +10,7 @@ from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary, Coach, CoachingJob
 from fumblerooski.utils import update_college_year
+from django.template.defaultfilters import slugify
 
 LOG_FILENAME = 'ncaa_log.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
@@ -89,12 +90,12 @@ def game_updater(year, teams, week, nostats=False):
                     try:
                         team2 = College.objects.get(id=t2)
                     except:
-                        name = row.findAll('td')[1].find('a').contents[0].replace('*','').strip()
-                        slug = row.findAll('td')[1].find('a').contents[0].replace('*','').strip().replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower()
+                        name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
+                        slug = slugify(name)
                         team2, created = College.objects.get_or_create(name=name, slug=slug)
                 except:
-                    name = row.findAll('td')[1].contents[0].strip()
-                    slug = row.findAll('td')[1].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
+                    name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
+                    slug = slugify(name)
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
                 g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
