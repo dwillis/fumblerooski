@@ -90,6 +90,8 @@ def game_updater(year, teams, week, nostats=False):
                     try:
                         if t2 == 115:   # hack job to cover for ncaa change
                             team2 = College.objects.get(id=30416)
+                        elif t2 == 523:
+                            team2 = College.objects.get(id=30631)
                         else:
                             team2 = College.objects.get(id=t2)
                     except:
