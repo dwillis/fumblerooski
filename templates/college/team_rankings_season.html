@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h3>{{ season_record.college.name }} - <a href="{{ season_record.get_absolute_url }}">{{ season_record.year }}</a></h3>
+<h3><a href="{{ season_record.college.get_absolute_url }}">{{ season_record.college.name }}</a> - {{ season_record.year }}</h3>
 <h4>{{ season_record.conference.name }}</h4>
 
 <h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>

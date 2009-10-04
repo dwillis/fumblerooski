@@ -124,6 +124,16 @@ def team_bowl_games(request, team):
     game_list = Game.objects.filter(team1=t, is_bowl_game=True).order_by('-date')
     return render_to_response('college/team_bowl_games.html', {'team': t, 'game_list': game_list })
 
+def team_drives_season(request, team, season):
+    t = get_object_or_404(College, slug=team)
+    season_record = get_object_or_404(CollegeYear, college=t, year=season)
+    gd = GameDrive.objects.filter(team = t, season=season)
+    outcomes = gd.values('end_result__name').annotate(Count('end_result__name')).order_by('-end_result__name__count')
+    d = {}
+    for outcome in outcomes:
+        d[outcome['end_result__name']] = outcome['end_result__name__count']
+    return render_to_response('college/team_drives_season.html', {'team': t, 'season_record': season_record, 'season': season, 'total_drives': len(gd), 'outcomes': d, 'keys': d.keys(), 'values': d.values(), 'items' : d.iteritems()})
+
 def team_rankings_season(request, team, season, week=None):
     cy = get_object_or_404(CollegeYear, college__slug=team, year=season)
     date = datetime.date.today()-datetime.timedelta(days=7)
