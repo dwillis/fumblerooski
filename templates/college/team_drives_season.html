@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% load charts %}
+
+{% block title %}Fumblerooski: {{ team.name }} {{ season }} Drives{% endblock %}
+
+{% block content %}
+
+<h3>{{ team.name }} - {{ season_record.year }}</h3>
+{% if season_record.conference %}
+<h2><a href="{{ season_record.get_conference_url }}">{{ season_record.conference.name }}</a></h2>
+{% endif %}
+
+<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
+
+<h3>Drive Outcome Summary</h3>
+
+  {% chart %}
+    {% chart-data values %}
+    {% chart-size "500x300" %}
+    {% chart-background "000000" %}
+    {% chart-type "pie" %}
+    {% chart-labels keys %}
+    {% chart-alt "Drive Outcomes" %}
+  {% endchart %}
+
+<h2>Details</h2>
+Total Drives: {{ total_drives }}<br />
+{% for k,v in outcomes.items %}
+	{{ k }} : {{ v }}<br />
+{% endfor %}
+
+
+{% endblock %}
