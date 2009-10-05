@@ -22,6 +22,7 @@ Head Coach:
     <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td>{% if game.team2.updated %}<a href="{{ game.team2.get_absolute_url }}">{% endif %}{{ game.team2.name }}</td><td>{{ game.get_t1_game_type_display }}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a> {% if game.overtime %}{{ game.overtime }}{% endif %}{% else %}{% endif %}</td></tr>
     {% endfor %}
 </table>
+<h3><a href="drives/">Drive Outcomes</a></h3>
 <h3><a href="rankings/">Current Rankings</a></h3>
 <h3><a href="players/">{{ season }} Roster</a></h3>
 {% endblock %}
