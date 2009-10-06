@@ -410,7 +410,19 @@ class Game(models.Model):
             return "%s %s, %s %s" % (self.team1, self.team1_score, self.team2, self.team2_score)
         else:
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
+
+class QuarterScore(models.Model):
+    "Represents a team's scoring during a quarter of a game. OT periods begin with 5"
+    game = models.ForeignKey(Game)
+    team = models.ForeignKey(College)
+    season = models.IntegerField()
+    quarter = models.IntegerField(default=CURRENT_SEASON)
+    points = models.PositiveIntegerField(default=0)
     
+    def __unicode__(self):
+        return "%s - %s" (self.team, self.quarter)
+    
+
 class DriveOutcome(models.Model):
     abbrev = models.CharField(max_length=10)
     name = models.CharField(max_length=50, null=True)
@@ -441,9 +453,17 @@ class GameDrive(models.Model):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
 
 
-class Score(models.Model):
-    game = models.ForeignKey(Game)
-    year = models.IntegerField()
+#class SeasonTotal(models.Model):
+#    college_year = models.ForeignKey(CollegeYear)
+#    drives = models.IntegerField()
+    
+
+#class Score(models.Model):
+#    game = models.ForeignKey(Game)
+#    year = models.IntegerField()
+    
+
+#class BigPlay(models.Model):
     
 
 class GameOffense(models.Model):
