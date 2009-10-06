@@ -25,6 +25,7 @@ def update_conf_games(year):
             pass
 
 def update_quarter_scores(game):
+    "Utility to update quarter scores for existing games. New games handled via ncaa_loader."
     doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
     quarters = len(soup.findAll('score')[1:])/2
