@@ -270,11 +270,6 @@ def load_ncaa_game_xml(game):
             visitor_quarters = soup.findAll('score')[1:quarters+1]
             home_quarters = soup.findAll('score')[quarters+1:]
             
-            for i in range(quarters):
-                vqs, created = QuarterScore.objects.get_or_create(game = game, team = t2, season=game.season, quarter = i, points = int(visitor_quarters[i].contents[0]))
-                hqs, created = QuarterScore.objects.get_or_create(game = game, team = t1, season=game.season, quarter = i, points = int(home_quarters[i].contents[0]))
-                
-            
             home_time = soup.teams.home.top.contents[0].split(":") or None
             visitor_time = soup.teams.visitor.top.contents[0].split(":") or None
         
