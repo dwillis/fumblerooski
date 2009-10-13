@@ -448,7 +448,7 @@ def load_ncaa_game_xml(game):
     
 
 def game_drive_loader(game):
-    while not game.has_drives:
+    if game.has_drives == False:
         contents = urllib.urlopen(game.get_ncaa_drive_url().strip()).read()
         soup = BeautifulSoup(contents)
         rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
@@ -495,6 +495,8 @@ def game_drive_loader(game):
                 d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, start_side=start_side, end_result=end_result, end_time=end_time, end_position=end_position, end_side=end_side, plays=plays, yards=yards,time_of_possession=time_of_possession, season=game.season)
             except:
                 print "Could not save drive %s, %s, %s" % (drive, game, team)
+        game.has_drives = True
+        game.save()
 
 
 def ranking_loader(year, week):
