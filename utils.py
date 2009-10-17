@@ -18,7 +18,7 @@ def update_conf_games(year):
     games = Game.objects.filter(season=year, date__lte=datetime.date.today(), team1__updated=True, team2__updated=True)
     for game in games:
         try:
-            if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference
+            if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference:
                 game.is_conference_game = True
                 game.save()
         except:
