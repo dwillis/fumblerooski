@@ -18,7 +18,7 @@ def update_conf_games(year):
     games = Game.objects.filter(season=year, date__lte=datetime.date.today(), team1__updated=True, team2__updated=True)
     for game in games:
         try:
-            if game.team1.collegeyear_set.get(year=year).conference:
+            if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference
                 game.is_conference_game = True
                 game.save()
         except:
@@ -29,11 +29,11 @@ def update_quarter_scores(game):
     doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
     quarters = len(soup.findAll('score')[1:])/2
-    visitor_quarters = soup.findAll('score')[1:quarters+1]
-    home_quarters = soup.findAll('score')[quarters+1:]
+    t2_quarters = soup.findAll('score')[1:quarters+1] #visiting team
+    t1_quarters = soup.findAll('score')[quarters+1:] #home team
     for i in range(quarters):
-        vqs, created = QuarterScore.objects.get_or_create(game = game, team = game.team2, season=game.season, quarter = i, points = int(visitor_quarters[i].contents[0]))
-        hqs, created = QuarterScore.objects.get_or_create(game = game, team = game.team1, season=game.season, quarter = i, points = int(home_quarters[i].contents[0]))
+        vqs, created = QuarterScore.objects.get_or_create(game = game, team = game.team2, season=game.season, quarter = i+1, points = int(t2_quarters[i].contents[0]))
+        hqs, created = QuarterScore.objects.get_or_create(game = game, team = game.team1, season=game.season, quarter = i+1, points = int(t1_quarters[i].contents[0]))
         
     
 
