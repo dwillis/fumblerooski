@@ -657,7 +657,10 @@ def player_game_stats(game):
                         r_yards = int(p.find("receiving").find("yards").contents[0])
                         r_td = int(p.find("receiving").find("td").contents[0])
                         r_lg = int(p.find("receiving").find("long").contents[0])
-                        r_ag = float(p.find("receiving").find("avg").contents[0])
+                        if p.find("receiving").find("avg"):
+                            r_ag = float(p.find("receiving").find("avg").contents[0])
+                        else:
+                            r_ag = 0.0
                         prr, created = PlayerReceiving.objects.get_or_create(player=player, game=game, receptions=r_number, yards=r_yards, td=r_td, long_yards=r_lg, average=r_ag)
                     if p.find("scoring"):
                         s_td = int(p.find("scoring").find("td").contents[0])
