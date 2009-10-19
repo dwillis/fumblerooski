@@ -594,7 +594,11 @@ def player_game_stats(game):
                         total_yards=p.find("totyards").contents[0]
                     else:
                         total_yards=None
-                    pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True, total_plays=total_plays, total_yards=total_yards)
+                    if p.find("starter"):
+                        starter = int(p.find("starter").contents[0])
+                    else:
+                        starter = False
+                    pg, created = PlayerGame.objects.get_or_create(player=player, game=game, played=True, total_plays=total_plays, total_yards=total_yards, starter=starter)
                     if p.find("tackles"):
                         un_t = int(p.find("tackles").find("uatackles").contents[0])
                         a_t = int(p.find("tackles").find("atackles").contents[0])

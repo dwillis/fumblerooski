@@ -605,11 +605,13 @@ class PlayerGame(models.Model):
     player = models.ForeignKey(Player)
     game = models.ForeignKey(Game)
     played = models.BooleanField()
+    starter = models.BooleanField()
     total_plays = models.IntegerField()
     total_yards = models.IntegerField()
     
     def __unicode__(self):
         return self.player.name
+    
 
 class PlayerRush(models.Model):
     player = models.ForeignKey(Player)

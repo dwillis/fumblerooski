@@ -6,7 +6,7 @@ from django import forms
 from operator import itemgetter
 from time import strptime
 import datetime
-from fumblerooski.college.models import College, Coach, CoachForm, CoachingJob, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame, PlayerSummary
+from fumblerooski.college.models import College, Coach, CoachForm, CoachingJob, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame, PlayerSummary, QuarterScore
 
 CURRENT_YEAR = 2009
 
@@ -273,6 +273,8 @@ def game(request, team1, team2, year, month, day):
     
     date = datetime.date(int(year), int(month), int(day))
     game = get_object_or_404(Game, team1=team_1, team2=team_2, date=date)
+    t1_quarter_scores = QuarterScore.objects.filter(game=game, team=game.team1).order_by('quarter')
+    t2_quarter_scores = QuarterScore.objects.filter(game=game, team=game.team2).order_by('quarter')
     if game.is_conference_game == True:
         conf = CollegeYear.objects.get(college=team_1, year=year).conference
     else:
@@ -318,7 +320,7 @@ def game(request, team1, team2, year, month, day):
         player_passdefense = PlayerPassDefense.objects.filter(game=game, player__team=team_1).order_by('-interceptions')
     except:
         player_passdefense = None
-    return render_to_response('college/game.html', {'team_1': team_1, 'conf': conf, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving, 'player_tackles':player_tackles, 'player_tacklesloss':player_tacklesloss, 'player_passdefense':player_passdefense, 'first_downs': fd })
+    return render_to_response('college/game.html', {'team_1': team_1, 'conf': conf, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving, 'player_tackles':player_tackles, 'player_tacklesloss':player_tacklesloss, 'player_passdefense':player_passdefense, 'first_downs': fd, 't1_quarter_scores': t1_quarter_scores, 't2_quarter_scores': t2_quarter_scores })
 
 def game_drive(request, team1, team2, year, month, day):
     team_1 = get_object_or_404(College, slug=team1)
@@ -381,7 +383,7 @@ def player_detail(request, team, season, player):
     t = get_object_or_404(College, slug=team)
     cy = get_object_or_404(CollegeYear, college=t, year=season)
     p = Player.objects.get(team=t, year=cy.year, slug=player)
-    pg = PlayerGame.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    starts = PlayerGame.objects.filter(player=p, game__season=season, starter=True).count()
     ps = PlayerScoring.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pret = PlayerReturn.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pf = PlayerFumble.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
@@ -410,7 +412,7 @@ def player_detail(request, team, season, player):
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('-year')
-    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'cy': cy, 'player': p, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 
+    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'cy': cy, 'player': p, 'starts': starts, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 
         'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 
         'pass_tot_int':pass_totals['interceptions__sum'], 'pass_tot_td':pass_totals['td__sum'], 'pass_tot_attempts': pass_totals['attempts__sum'], 'pass_tot_comps': pass_totals['completions__sum'], 
         'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg'], 'rush_tot_rushes': rush_totals['rushes__sum'], 'rush_tot_gains': rush_totals['gain__sum'],
