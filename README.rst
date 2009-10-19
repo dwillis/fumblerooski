@@ -8,5 +8,5 @@ Requirements
 ------------
 
   * Python 2.5+ (lower versions may work but are untested.)
-  * Django 1.0+ (again, lower versions may work but are untested.)
+  * Django 1.1+ (aggregates)
   * django-googlecharts (http://github.com/jacobian/django-googlecharts)
