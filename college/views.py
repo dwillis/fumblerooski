@@ -210,6 +210,11 @@ def team_coaching_history(request, team):
         coach.years = coach.seasons_at_school(t)[0]
     return render_to_response('college/team_coaching_history.html', {'team': t, 'coaches': coaches})
 
+def alums_in_coaching(request, team):
+    t = get_object_or_404(College, slug=team)
+    coaches = Coach.objects.filter(college=t)
+    return render_to_response('college/alums_in_coaching.html', {'team': t, 'coaches': coaches})
+
 def team_first_downs_category(request, team, category):
     t = get_object_or_404(College, slug=team)
     cat = category.title()

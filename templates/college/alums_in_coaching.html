@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Fumblerooski: {{ team.name }} Alumni in Coaching{% endblock %}
+
+{% block content %}
+
+<h3>{{ team.name }} Active Alumni Coaches</h3>
+
+{% if coaches %}
+<table>
+  <th>Coach</th>
+  <th>Graduation Year</th>
+  <th>Current School</th>
+  <th>Current Job</th>
+  {% for coach in coaches %}
+  <tr><td><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a></td><td>{{ coach.grad_year }}</td><td><a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school }}</a></td><td>{{ coach.current_job }}</td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}
