@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h3>{{ team.name }} Active Alumni Coaches</h3>
+<h3>{{ team.name }} Alumni Coaches</h3>
 
 {% if coaches %}
 <table>
@@ -13,7 +13,7 @@
   <th>Current School</th>
   <th>Current Job</th>
   {% for coach in coaches %}
-  <tr><td><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a></td><td>{{ coach.grad_year }}</td><td><a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school }}</a></td><td>{{ coach.current_job }}</td></tr>
+  <tr><td><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a></td><td>{% if coach.grad_year %}{{ coach.grad_year }}{% endif %}</td><td>{% if coach.current_school %}<a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school }}</a>{% endif %}</td><td>{% if coach.current_job %}{{ coach.current_job }}{% endif %}</td></tr>
   {% endfor %}
 </table>
 
