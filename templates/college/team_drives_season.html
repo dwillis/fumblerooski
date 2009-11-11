@@ -28,8 +28,8 @@
 <h2>Details</h2>
 Total Drives: {{ total_drives }}<br />
 <ul>
-{% for k,v in outcomes.items %}
-	<li>{{ k }}: {{ v }} ({{ v|percent:total_drives|floatformat }}%)</li>
+{% for outcome in outcomes %}
+	<li>{{ outcome.name }}: {{ outcome.gamedrive__count }} ({{ outcome.gamedrive__count|percent:total_drives|floatformat }}%)</li>
 {% endfor %}
 </ul>
 
