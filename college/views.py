@@ -127,7 +127,7 @@ def team_bowl_games(request, team):
 def team_drives_season(request, team, season):
     t = get_object_or_404(College, slug=team)
     season_record = get_object_or_404(CollegeYear, college=t, year=season)
-    do = DriveOutcome.objects.select_related().filter(gamedrive__season=2009, gamedrive__team=t)
+    do = DriveOutcome.objects.select_related().filter(gamedrive__season=season, gamedrive__team=t)
     outcomes = do.annotate(Count('gamedrive')).order_by('-gamedrive__count')
     d = {}
     for outcome in outcomes:
