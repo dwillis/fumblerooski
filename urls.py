@@ -8,6 +8,7 @@ urlpatterns = patterns('',
      url(r"^admin/(.*)", admin.site.root),
      url(r"^blog/", include("fumblerooski.blog.urls")),
      url(r"^college/", include("fumblerooski.college.urls")),
+     url(r"^api/", include("fumblerooski.api.urls")),
      url(r"^$", "fumblerooski.college.views.homepage"),
 )
 
