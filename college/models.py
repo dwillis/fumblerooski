@@ -174,6 +174,13 @@ class CollegeYear(models.Model):
         else:
             return "%s-%s" % (self.wins, self.losses)
     
+    def conference_record(self):
+        if self.conference_ties:
+            return "%s-%s-%s" % (self.conference_wins, self.conference_losses, self.conference_ties)
+        else:
+            return "%s-%s" % (self.conference_wins, self.conference_losses)
+    
+    
     class Meta:
         ordering = ['college', '-year']
 

@@ -5,6 +5,7 @@ from fumblerooski.college.models import College
 class CollegeHandler(BaseHandler):
     allowed_methods = ('GET',)
     model = College
+    fields = ('id', 'updated', 'name', 'slug', ('state', ('id', 'name')), ('collegeyear_set', ('year','record','conference_record', 'division', ('conference', ('abbrev','name')))))
     exclude = ('official_url','official_rss', 'drive_slug')
     
     def read(self, request, slug):
