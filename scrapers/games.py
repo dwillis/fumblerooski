@@ -2,58 +2,25 @@ import re
 import csv
 import urllib
 import datetime
-import logging
 from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime, strftime
 import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import State, College, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, PlayerSummary, CollegeYear, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, RushingSummary, Coach, CoachingJob
+from fumblerooski.college.models import *
 from fumblerooski.utils import update_college_year
 from django.template.defaultfilters import slugify
 
-LOG_FILENAME = 'ncaa_log.txt'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
-CURRENT_SEASON = 2009
-
-def load_skeds(year, teams):
-    if not teams:
-        teams = College.objects.filter(updated=True).order_by('id')
-    
-    for team in teams:
-        print team.id
-        url = "http://web1.ncaa.org/football/exec/rankingSummary?year=%s&org=%s" % (year, team.id)
-        html = urllib.urlopen(url).read()
-        soup = BeautifulSoup(html)
-        t = soup.findAll('table')[2]
-        rows = t.findAll('tr')[2:]
-        for row in rows:
-            stringdate = row.findAll('td')[0].contents[0]
-            date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
-            try:
-                t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
-                try:
-                    team2 = College.objects.get(id=t2)
-                except:
-                    name = row.findAll('td')[2].find('a').contents[0].strip()
-                    slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower().strip()
-                    team2, created = College.objects.get_or_create(name=name, slug=slug)
-            except:
-                name = row.findAll('td')[2].contents[0].strip()
-                slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
-                team2, created = College.objects.get_or_create(name=name, slug=slug)
-            g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
-            if "@" in row.findAll('td')[1].find('a').contents[0]:
-                g.t1_game_type = 'A'
-            elif "^" in row.findAll('td')[1].find('a').contents[0]:
-                g.t1_game_type = 'N'
-            else:
-                g.t1_game_type = 'H'
-            g.save()
-
-
 def game_updater(year, teams, week, nostats=False):
+    """
+    Loads a team's games for a given year, creating new games as it finds them and updating scores. If needed,
+    it will create new College records for opponents. The function accepts an optional QuerySet of teams. 
+    It can be run in nostats mode, in which case the function updates only the score. If nostats=True, 
+    after the game is updated the function calls other functions to update player and drive statistics. After completing,
+    this function calls update_college_year for the given year, which updates the win-loss record of each team.
     
+    >>> game_updater(2009, teams, 12)
+    """
     if not teams:
         teams = College.objects.filter(updated=True).order_by('id')
     
@@ -135,11 +102,15 @@ def game_updater(year, teams, week, nostats=False):
                 g.save()
         except:
             raise
-            logging.debug("Error in game")
     update_college_year(year)
 
 
 def update_player_game_stats(s):
+    """
+    Updates player game statistics for an entire season for games that have not already set them. 
+    Not used as part of a weekly load of games.
+    >>> update_player_game_stats(2009)
+    """
     games = Game.objects.filter(has_player_stats=False, season=s, ncaa_xml__startswith=s)
     for game in games:
         player_game_stats(game)
@@ -147,48 +118,14 @@ def update_player_game_stats(s):
         game.save()
 
 
-"""
-Loader for NCAA game summaries pre-2008
-url format:
-
-http://web1.ncaa.org/d1mfb/2000/Internet/worksheets/DIVISION1.HTML
-http://web1.ncaa.org/d1mfb/2000/Internet/worksheets/1200020000827.HTML
-"""
-
-def get_summary_links(year):
-    """
-    Given a year, retrieves urls for weekly game lists and returns all games in a list. Do NOT use for 2008 - it displays 2007 links.
-    """
-    base_url='http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/' % year
-    url = "http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/DIVISION1.HTML" % year
-    doc = urllib.urlopen(url).read()
-    soup = BeautifulSoup(doc)
-    links = soup.findAll("a")[13:]
-    link_list = []
-    for link in links:
-        link_list.append(urljoin(base_url,link['href']))
-    l2 = set(link_list)
-    newlinks = list(l2)
-    return newlinks
-
-
-def get_game_xml_url(year, links):
-    """
-    Takes a list generated by get_summary_links() and retrieves the urls of individual game xml files.
-    """
-    games = []
-    base_url = "http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/" % year
-    for link in links:
-        doc = urllib.urlopen(link).read()
-        soup = BeautifulSoup(doc)
-        g_list = [a['href'].split("game=")[1] for a in soup.findAll("table")[3].findAll("a")]
-        for game in g_list:
-            games.append(urljoin(base_url,game))
-    return games
-
 def load_ncaa_game_xml(game):
     """
-    Loader for NCAA game xml files
+    Loader for NCAA game xml files. Accepts a Game object. The NCAA's xml needs to be cleaned up slightly by replacing
+    elements with interior spaces with 0. Some game files contain inaccurate team IDs, mostly for smaller schools, 
+    which explains the hard-coding below. On occasion, usually when a team schedules a lower-division opponent, the 
+    NCAA may not have have an ID, which will raise an error. 
+    >>> game = Game.objects.get(id=793)
+    >>> load_ncaa_game_xml(game)
     """
     doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
@@ -196,7 +133,7 @@ def load_ncaa_game_xml(game):
     f = soup.findAll(text="&#160;")
     for each in f:
         each.replaceWith("0")
-    
+
     try:
         print "trying game # %s: %s-%s" % (game.id, soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
@@ -261,26 +198,26 @@ def load_ncaa_game_xml(game):
             pass
         game.save()
         game_v.save()
-        
+
         print "Saved %s" % game
-        
+
         while not game.has_stats:
-            
+
             quarters = len(soup.findAll('score')[1:])/2
             visitor_quarters = soup.findAll('score')[1:quarters+1]
             home_quarters = soup.findAll('score')[quarters+1:]
-            
+
             home_time = soup.teams.home.top.contents[0].split(":") or None
             visitor_time = soup.teams.visitor.top.contents[0].split(":") or None
-        
+
             # home team offense
             home_offense, created = GameOffense.objects.get_or_create(game=game, team=t1)
-        
+
             if game.date.year > 2006:
                 home_offense.time_of_possession=datetime.time(0, int(home_time[0]), int(home_time[1]))
             else:
                 home_offense.time_of_possession = None
-        
+
             home_offense.third_down_attempts=int(soup.teams.home.thirddowns.att.contents[0])
             home_offense.third_down_conversions=int(soup.teams.home.thirddowns.conv.contents[0])
             home_offense.fourth_down_attempts=int(soup.teams.home.fourthdowns.att.contents[0])
@@ -324,13 +261,13 @@ def load_ncaa_game_xml(game):
             home_offense.field_goal_attempts=int(soup.teams.home.totals.scoring.fgatt.contents[0])
             home_offense.field_goals_made=int(soup.teams.home.totals.scoring.fgmade.contents[0])
             home_offense.points=int(soup.teams.home.totals.scoring.pts.contents[0])
-        
+
             home_offense.save()
             print "Home Offense: %s" % home_offense
-    
+
             # home team defense
             home_defense, created = GameDefense.objects.get_or_create(game = game, team = t1)
-        
+
             home_defense.safeties = int(soup.teams.home.totals.scoring.saf.contents[0])
             home_defense.unassisted_tackles = int(soup.teams.home.totals.tackles.uatackles.contents[0])
             home_defense.assisted_tackles = int(soup.teams.home.totals.tackles.atackles.contents[0])
@@ -348,18 +285,18 @@ def load_ncaa_game_xml(game):
             home_defense.fumbles_number = int(soup.teams.home.totals.fumbles.fumblesnumber.contents[0])
             home_defense.fumbles_yards = int(soup.teams.home.totals.fumbles.fumblesyards.contents[0])
             home_defense.fumbles_touchdowns = int(soup.teams.home.totals.fumbles.fumblestd.contents[0])
-        
+
             home_defense.save()
             print "Home Defense: %s" % home_defense
-    
+
             # visiting team offense
             visiting_offense, created = GameOffense.objects.get_or_create(game=game_v, team=t2)
-        
+
             if game.date.year > 2006:
                 visiting_offense.time_of_possession=datetime.time(0, int(visitor_time[0]), int(visitor_time[1]))
             else:
                 visiting_offense.time_of_possession=None
-        
+
             visiting_offense.third_down_attempts=int(soup.teams.visitor.thirddowns.att.contents[0])
             visiting_offense.third_down_conversions=int(soup.teams.visitor.thirddowns.conv.contents[0])
             visiting_offense.fourth_down_attempts=int(soup.teams.visitor.fourthdowns.att.contents[0])
@@ -403,7 +340,7 @@ def load_ncaa_game_xml(game):
             visiting_offense.field_goal_attempts=int(soup.teams.visitor.totals.scoring.fgatt.contents[0])
             visiting_offense.field_goals_made=int(soup.teams.visitor.totals.scoring.fgmade.contents[0])
             visiting_offense.points=int(soup.teams.visitor.totals.scoring.pts.contents[0])
-        
+
             visiting_offense.save()
             print "Visiting Offense: %s" % visiting_offense
 
@@ -430,19 +367,23 @@ def load_ncaa_game_xml(game):
 
             visiting_defense.save()
             print "Visiting Defense: %s" % visiting_defense
-            
+
             game.has_stats = True
             game.save()
             game_v.has_stats = True
             game_v.save()
-            
+
     except:
         pass
 #            print "Could not find game between %s and %s on %s" % (t1.name, t2.name, soup.gamedate.contents[0])
-            
-    
 
 def game_drive_loader(game):
+    """
+    Accepts a single Game instance and scrapes a page containing drive information for both teams if the game's
+    has_stats attribute is False. Some drive lists have improperly coded final drives, which can cause errors.
+    >>> game = Game.objects.get(id=793)
+    >>> game_drive_loader(game)
+    """
     if game.has_drives == False:
         contents = urllib.urlopen(game.get_ncaa_drive_url().strip()).read()
         soup = BeautifulSoup(contents)
@@ -493,66 +434,14 @@ def game_drive_loader(game):
         game.has_drives = True
         game.save()
 
-
-def ranking_loader(year, week):
-    teams = College.objects.filter(updated=True).order_by('id')
-    for team in teams:
-        cy = CollegeYear.objects.get(college=team, year=year)
-        w = Week.objects.get(year=year, week_num=week)
-        html = urllib.urlopen(cy.get_ncaa_week_url()+str(week)).read()
-        soup = BeautifulSoup(html)
-        try:
-            rankings = soup.findAll('table')[4]
-        except:
-            rankings = None
-        if rankings:
-            rows = rankings.findAll('tr')[5:22]
-            for row in rows:
-                cells = row.findAll('td')
-                rt = RankingType.objects.get(name=str(cells[0].find("a").contents[0]))
-                try:
-                    rk =int(cells[1].contents[0])
-                    i_t = False
-                except ValueError:
-                    rk = int(cells[1].contents[0].split('T-')[1])
-                    i_t = True
-        
-                try:
-                    cr = int(cells[5].contents[0])
-                    ic_t = False
-                except ValueError:
-                    cr = int(cells[5].contents[0].split('T-')[1])
-                    ic_t = True
-        
-                r, created = Ranking.objects.get_or_create(ranking_type=rt, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t, division = cy.division)
-
-def load_player_rushing(year):
-    url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerrush&site=org" % year
-    html = urllib.urlopen(url).read()
-    soup = BeautifulSoup(html)
-    rankings = soup.find('table', {'class': 'statstable'})
-    rows = rankings.findAll('tr')[1:]
-    d = datetime.date.today()
-    if year == '2008':
-        w = Week.objects.filter(end_date__lte=d, year=d.year).order_by('-week_num')[0]
-    else:
-        w = Week.objects.filter(year=year).order_by('-week_num')[0]
-    for row in rows:
-        rank = int(row.findAll('td')[0].contents[0])
-        year = int(row.findAll('td')[1].find('a')['href'].split('=')[1][:4])
-        team_id = int(row.findAll('td')[1].find('a')['href'].split('=')[2].split('&')[0])
-        p_num = str(row.findAll('td')[1].find('a')['href'].split('=')[3])
-        pos = Position.objects.get(abbrev=str(row.findAll('td')[2].contents[0]))
-        carries = int(row.findAll('td')[5].contents[0])
-        net = int(row.findAll('td')[6].contents[0])
-        td = int(row.findAll('td')[7].contents[0])
-        avg = float(row.findAll('td')[8].contents[0])
-        ypg = float(row.findAll('td')[9].contents[0])
-        team = College.objects.get(id=team_id)
-        player = Player.objects.get(team=team, number=p_num, year=year, position=pos)
-        prs, created = RushingSummary.objects.get_or_create(player=player, year=year, week=w, rank=rank, carries=carries, net=net, td=td, average=avg, yards_per_game=ypg)
-
 def player_game_stats(game):
+    """
+    Accepts a single instance of Game and parses the game XML file for player stats if the game's has_player_stats
+    attribute is False. As with the game stats parser, the elements that contain a space are first replaced with a 0.
+    Not all players have both offensive and defensive stats, but this function checks for both.
+    >>> game = Game.objects.get(id=793)
+    >>> player_game_stats(game)
+    """
     while not game.has_player_stats:
         html = urllib.urlopen(game.get_ncaa_xml_url()).read()
         soup = BeautifulSoup(html)
@@ -565,7 +454,6 @@ def player_game_stats(game):
                 players = soup.teams.home.players.findAll('player')
             except:
                 players = None
-                logging.debug("No home team players for %s" % game.id)
                 pass
         else:
             try:
@@ -573,7 +461,6 @@ def player_game_stats(game):
                 players = soup.teams.visitor.players.findAll('player')
             except:
                 players = None
-                logging.debug("No visiting team players for %s" % game.id)
                 pass
         if players and team.updated == True:
             for p in players:
@@ -582,7 +469,6 @@ def player_game_stats(game):
                 try:
                     player = Player.objects.get(team=team, year=game.season, name=name, number=uniform)
                 except:
-                    logging.debug("Could not find %s player: %s (%s)" % (team.name, name, uniform))
                     player = None
                     pass
                 if player:
@@ -684,98 +570,3 @@ def player_game_stats(game):
         game.has_player_stats = True
         game.save()
 
-
-
-def stats_loader(year):
-    # don't use for 2008
-    l = get_summary_links(year)
-    g = Game.objects.filter(season=year, has_stats=False, has_player_stats=False)
-    for game in g:
-        load_ncaa_game_xml(game)
-        load_player_stats(game)
-
-def partial_loader(year, id):
-    teams = College.objects.filter(updated=True, id__gt=id).order_by('id')
-    g = game_updater(2008, teams, 19)
-    for game in g:
-        load_ncaa_game_xml(g)
-        load_player_stats(game)
-
-def last_week_loader():
-    week = Week.objects.filter(year=2008, end_date__lte=datetime.date.today()).order_by('end_date')[0]
-    games = Game.objects.filter(week=week)
-    teams = []
-    for game in games:
-        teams.append(game.team1)
-    g = game_updater(2008, teams, week.week_num)
-    for game in g:
-        load_ncaa_game_xml(g)
-        load_player_stats(game)
-
-def load_rosters(year, teams=None):
-    """
-    Loader for NCAA roster information. Loops through all teams in the database and finds rosters for the given year, then populates Player table with
-    information for each player for that year. Also adds aggregate class totals for team in CollegeYear model.
-    """
-    if not teams:
-        teams = College.objects.filter(updated=True).order_by('id')
-    for team in teams:
-        load_team(team.id, year)
-
-def load_team(team_id, year):
-    team = College.objects.get(id=team_id)
-    url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team.id)
-    html = urllib.urlopen(url).read()
-    soup = BeautifulSoup(html)
-    print team.id
-    try:
-        classes = soup.find("th").contents[0].split(":")[1].split(',') # retrieve class numbers for team
-        fr, so, jr, sr = [int(c.strip()[0:2]) for c in classes] # assign class numbers
-        t, created = CollegeYear.objects.get_or_create(college=team, year=year)
-        t.freshmen = fr
-        t.sophomores = so
-        t.juniors = jr
-        t.seniors = sr
-        t.save()
-        rows = soup.findAll("tr")[5:]
-        for row in rows:
-            cells = row.findAll("td")
-            unif = cells[0].contents[0].strip()
-            name = cells[1].a.contents[0].strip()
-            if cells[2].contents[0].strip() == '-':
-                pos = Position.objects.get(id=17)
-            else:
-                pos, created = Position.objects.get_or_create(abbrev=cells[2].contents[0].strip())
-            cl = cells[3].contents[0].strip()
-            gp = int(cells[4].contents[0].strip())
-            py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, year=year, position=pos, number=unif, status=cl)
-            py.games_played=gp
-            py.save()
-    except:
-        logging.debug("No roster for %s" % team.name)
-        team.updated = False
-        team.save()
-
-def load_coaches():
-    import xlrd
-    url1 = 'http://www.ncaa.org/wps/wcm/connect/resources/file/ebbd654a53ad23b/d1a_birthdates.xls?MOD=AJPERES'
-    file = urllib.urlretrieve(url1, 'csv/coaches.xls')
-    book = xlrd.open_workbook('csv/coaches.xls')
-    sh = book.sheet_by_index(0)
-    for rx in range(1,sh.nrows):
-        n = sh.cell_value(rowx=rx, colx=0).split(' (')
-        date = datetime.date(xlrd.xldate_as_tuple(sh.cell_value(rowx=rx, colx=2),0)[0], xlrd.xldate_as_tuple(sh.cell_value(rowx=rx, colx=2),0)[1], xlrd.xldate_as_tuple(sh.cell_value(rowx=rx, colx=2),0)[2])
-        c, created = Coach.objects.get_or_create(ncaa_name = sh.cell_value(rowx=rx, colx=0), name = n[0], alma_mater = n[1].split(')')[0], birth_date = date)
-        c.slug = c.name.lower().replace(' ','-').replace(',','-').replace('.','-').replace('--','-')
-        c.save()
-    url2 = 'http://www.ncaa.org/wps/wcm/connect/resources/file/ebbd1b4a538e0d9/d1a.xls?MOD=AJPERES'
-    file2 = urllib.urlretrieve(url2, 'csv/coaches2.xls')
-    book2 = xlrd.open_workbook('csv/coaches2.xls')
-    sh2 = book2.sheet_by_index(0)
-    for rx in range(1, sh2.nrows):
-        c = Coach.objects.get(ncaa_name = sh2.cell_value(rowx=rx, colx=0))
-        c.years = sh2.cell_value(rowx=rx, colx=2)
-        c.wins = sh2.cell_value(rowx=rx, colx=3)
-        c.losses = sh2.cell_value(rowx=rx, colx=4)
-        c.ties = sh2.cell_value(rowx=rx, colx=5)
-        c.save()
