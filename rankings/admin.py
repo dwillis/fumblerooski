@@ -12,7 +12,12 @@ class RushingSummaryAdmin(admin.ModelAdmin):
     list_filter = ('year', 'rank')
     ordering = ('-year', 'rank')
 
+class PassEfficiencyAdmin(admin.ModelAdmin):
+    list_display = ('player', 'year', 'rank', 'rating')
+    list_filter = ('year', 'rank', 'week')
+    ordering = ('-year', 'rank')
 
 admin.site.register(RankingType, RankingTypeAdmin)
 admin.site.register(Ranking, RankingAdmin)
 admin.site.register(RushingSummary, RushingSummaryAdmin)
+admin.site.register(PassEfficiency, PassEfficiencyAdmin)

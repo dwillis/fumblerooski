@@ -66,10 +66,10 @@ class PassEfficiency(models.Model):
     interceptions = models.PositiveIntegerField()
     attempts_per_interception = models.FloatField()
     yards = models.PositiveIntegerField()
-    attempts_per_yard = models.FloatField()
+    yards_per_attempt = models.FloatField()
     touchdowns = models.PositiveIntegerField()
     attempts_per_touchdown = models.FloatField()
     rating = models.FloatField()
     
     def __unicode__(self):
-        return "%s - %s, %s" (self.player, self.year, self.rating)
+        return self.player.name
