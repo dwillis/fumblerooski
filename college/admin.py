@@ -1,5 +1,5 @@
 from django.contrib import admin
-from fumblerooski.college.models import State, City, College, Coach, CoachingJob, CollegeYear, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, Ranking, RankingType, BowlGame, RushingSummary
+from fumblerooski.college.models import State, City, College, Coach, CoachingJob, CollegeYear, CollegeCoach, Game, Position, Player, PlayerGame, PlayerRush, PlayerPass,PlayerReceiving, PlayerFumble, PlayerScoring, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerReturn, Conference, GameOffense, GameDefense, Week, GameDrive, DriveOutcome, BowlGame, QuarterScore
 
 class CollegeAdmin(admin.ModelAdmin):
     list_display = ('name', 'updated')
@@ -50,12 +50,6 @@ class PlayerAdmin(admin.ModelAdmin):
     list_filter = ('year','position', 'status')
     search_fields = ('name',)
 
-class RankingTypeAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
-
-class RankingAdmin(admin.ModelAdmin):
-    list_filter = ('year',)
-
 class WeekAdmin(admin.ModelAdmin):
     list_display = ('year', 'week_num', 'end_date')
     list_filter = ('year',)
@@ -86,6 +80,10 @@ class RushingSummaryAdmin(admin.ModelAdmin):
     list_filter = ('year', 'rank')
     ordering = ('-year', 'rank')
 
+class QuarterScoreAdmin(admin.ModelAdmin):
+    list_display = ('game', 'team', 'season','quarter','points')
+    list_filter = ('quarter', 'season')
+
 admin.site.register(College, CollegeAdmin)
 admin.site.register(CollegeYear, CollegeYearAdmin)
 admin.site.register(Coach, CoachAdmin)
@@ -103,10 +101,7 @@ admin.site.register(PlayerPassDefense)
 admin.site.register(Position)
 admin.site.register(City, CityAdmin)
 admin.site.register(Game, GameAdmin)
-admin.site.register(RankingType, RankingTypeAdmin)
-admin.site.register(Ranking, RankingAdmin)
 admin.site.register(Week, WeekAdmin)
 admin.site.register(DriveOutcome, DriveOutcomeAdmin)
 admin.site.register(GameDrive, GameDriveAdmin)
 admin.site.register(BowlGame, BowlGameAdmin)
-admin.site.register(RushingSummary, RushingSummaryAdmin)

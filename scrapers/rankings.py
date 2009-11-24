@@ -1,8 +1,8 @@
 import urllib
 import datetime
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import Ranking, RankingType, College, CollegeYear, Week, Position, RushingSummary, Player
-
+from fumblerooski.college.models import College, CollegeYear, Week, Position, Player
+from fumblerooski.rankings.models import Ranking, RankingType, RushingSummary, PassEfficiency
 
 def ranking_loader(year, week):
     
@@ -62,3 +62,22 @@ def player_rushing(year):
         team = College.objects.get(id=team_id)
         player = Player.objects.get(team=team, number=p_num, year=year, position=pos)
         prs, created = RushingSummary.objects.get_or_create(player=player, year=year, week=w, rank=rank, carries=carries, net=net, td=td, average=avg, yards_per_game=ypg)
+
+def pass_efficiency(year):
+    url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerpasseff&site=org" % year
+    html = urllib.urlopen(url).read()
+    soup = BeautifulSoup(html)
+    rankings = soup.find('table', {'class': 'statstable'})
+    rows = rankings.findAll('tr')[1:]
+    d = datetime.date.today()
+    if year == d.year:
+        w = Week.objects.filter(end_date__lte=d, year=year).order_by('-week_num')[0]
+    else:
+        w = Week.objects.filter(year=year).order_by('-week_num')[0]
+    for row in rows:
+        rank = int(row.findAll('td')[0].contents[0])
+        team_id = int(row.findAll('td')[1].find('a')['href'].split('=')[2].split('&')[0])
+        p_num = str(row.findAll('td')[1].find('a')['href'].split('=')[3])
+        pos = Position.objects.get(abbrev=str(row.findAll('td')[2].contents[0]))
+        team = College.objects.get(id=team_id)
+        player = Player.objects.get(team=team, number=p_num, year=year, position=pos)
