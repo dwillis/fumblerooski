@@ -1,10 +1,11 @@
 import urllib
 import datetime
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import Ranking, College, CollegeYear, Week, Position, RushingSummary
+from fumblerooski.college.models import Ranking, RankingType, College, CollegeYear, Week, Position, RushingSummary, Player
 
 
 def ranking_loader(year, week):
+    
     teams = College.objects.filter(updated=True).order_by('id')
     for team in teams:
         cy = CollegeYear.objects.get(college=team, year=year)
@@ -36,7 +37,7 @@ def ranking_loader(year, week):
         
                 r, created = Ranking.objects.get_or_create(ranking_type=rt, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t, division = cy.division)
 
-def load_player_rushing(year):
+def player_rushing(year):
     url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerrush&site=org" % year
     html = urllib.urlopen(url).read()
     soup = BeautifulSoup(html)
