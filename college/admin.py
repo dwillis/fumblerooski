@@ -75,11 +75,6 @@ class PlayerReceivingAdmin(admin.ModelAdmin):
     list_display = ('player', 'game', 'receptions', 'yards', 'td', 'average')
     list_filter = ('td', 'receptions')
 
-class RushingSummaryAdmin(admin.ModelAdmin):
-    list_display = ('player', 'year', 'rank', 'carries', 'net', 'yards_per_game')
-    list_filter = ('year', 'rank')
-    ordering = ('-year', 'rank')
-
 class QuarterScoreAdmin(admin.ModelAdmin):
     list_display = ('game', 'team', 'season','quarter','points')
     list_filter = ('quarter', 'season')
