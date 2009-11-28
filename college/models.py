@@ -249,9 +249,11 @@ class Coach(models.Model):
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'Coaches'
 
-
 class CoachForm(forms.Form):
     name = forms.CharField(max_length=50, initial='Last name')
+
+class CoachDetailForm(forms.Form):
+    coach = forms.ModelChoiceField(queryset=Coach.objects.all().order_by('last_name'))
 
 class CoachingJob(models.Model):
     name = models.CharField(max_length=75)

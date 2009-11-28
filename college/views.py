@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.contrib.syndication.feeds import Feed
 from django import forms
 from operator import itemgetter
@@ -449,9 +450,23 @@ def active_coaches(request):
 def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
     college_list = CollegeCoach.objects.filter(coach=c).select_related().order_by('-college_collegeyear.year', '-start_date')
-    return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in() })
+    if request.method == 'POST':
+        c2 = Coach.objects.get(id=int(request.POST['coach']))
+        return HttpResponseRedirect('/coaches/common/%s/%s/' % (c.slug, c2.slug)) # tried reverse(), but no luck
+    else:
+        form = CoachDetailForm()
+        return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in(), 'form': form })
 
-
+def coach_common(request, coach, coach2):
+    coach = get_object_or_404(Coach, slug=coach)
+    coach2 = get_object_or_404(Coach, slug=coach2)
+    college_list = CollegeCoach.objects.filter(coach=coach).select_related().order_by('-college_collegeyear.year', '-start_date')
+    c1_years = [y.collegeyear for y in college_list]
+    c2_list = CollegeCoach.objects.filter(coach=coach2).select_related().order_by('-college_collegeyear.year', '-start_date')
+    c2_years = [y.collegeyear for y in c2_list]
+    common = [c for c in c1_years if c in c2_years]
+    return render_to_response('coaches/coach_common.html', {'coach': coach, 'coach2': coach2, 'common': common })
+    
 def assistant_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]

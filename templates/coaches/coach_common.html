@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Fumblerooski: Season in Common, {{ coach.full_name }} and {{ coach2.full_name }}{% endblock %}
+
+{% block content %}
+
+{% if common %}
+<h3>Season in Common: <a href="{% url coach_detail coach.slug %}">{{ coach.full_name }}</a> and <a href="{% url coach_detail coach2.slug %}">{{ coach2.full_name }}</a></h3>
+
+<table>
+	<th>School</th><th>Season</th><th>Record</th>
+	{% for year in common %}
+	<tr><td><a href="{% url team_detail year.college.slug %}">{{ year.college }}</a></td><td><a href="{% url team_detail_season year.college.slug year.year %}">{{ year.year }}</a></td><td>{{ year.record }}</td></tr>
+	{% endfor %}
+</table>
+
+{% else %}
+
+<h3><a href="{% url coach_detail coach.slug %}">{{ coach.full_name }}</a> and <a href="{% url coach_detail coach2.slug %}">{{ coach2.full_name }}</a> have not worked together during the past 10 seasons.</h3>
+
+{% endif %}
+
+{% endblock %}

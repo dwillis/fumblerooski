@@ -38,6 +38,13 @@
     {% chart-colors "EFEFEF" "76A4FB" "333333" %}
   {% endchart %}
 
+<h3>Has {{ coach.full_name }} worked with?</h3>
+
+<form action="." method="post">
+    {{ form.as_p }}
+  <input type="submit" value="Submit" />
+</form>
+
 {% endif %}
 
 {% endblock %}
