@@ -4,6 +4,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.syndication.feeds import Feed
 from django import forms
+from django.forms.models import modelformset_factory
 from operator import itemgetter
 from time import strptime
 import datetime
@@ -451,10 +452,10 @@ def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
     college_list = CollegeCoach.objects.filter(coach=c).select_related().order_by('-college_collegeyear.year', '-start_date')
     if request.method == 'POST':
-        c2 = Coach.objects.get(id=int(request.POST['coach']))
+        c2 = Coach.objects.get(id=int(request.POST['coaches']))
         return HttpResponseRedirect('/coaches/common/%s/%s/' % (c.slug, c2.slug)) # tried reverse(), but no luck
     else:
-        form = CoachDetailForm()
+        form = CoachDetailForm(c.coaching_peers())
         return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in(), 'form': form })
 
 def coach_common(request, coach, coach2):

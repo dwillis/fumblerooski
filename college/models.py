@@ -245,6 +245,16 @@ class Coach(models.Model):
         [states.setdefault(e,500) for e in state_list if e not in states]
         return states
     
+    def coaching_peers(self):
+        from django.db import connection
+        cursor = connection.cursor()
+        year_ids = [str(c.collegeyear.id) for c in self.collegecoach_set.all()]
+        cursor.execute("SELECT distinct college_coach.id FROM college_coach INNER JOIN college_collegecoach ON college_coach.id=college_collegecoach.coach_id WHERE college_collegecoach.collegeyear_id IN (%s)" % ','.join(year_ids))
+        results = cursor.fetchall()
+        ids = [c[0] for c in results]
+        peers = Coach.objects.filter(id__in=ids).exclude(id=self.id)
+        return peers
+    
     class Meta:
         ordering = ['last_name', 'first_name']
         verbose_name_plural = 'Coaches'
@@ -253,7 +263,10 @@ class CoachForm(forms.Form):
     name = forms.CharField(max_length=50, initial='Last name')
 
 class CoachDetailForm(forms.Form):
-    coach = forms.ModelChoiceField(queryset=Coach.objects.all().order_by('last_name'))
+    coaches = forms.ModelChoiceField(queryset=Coach.objects.none())
+    def __init__(self, coaches, *args, **kwargs):
+        super(CoachDetailForm, self).__init__(*args, **kwargs)
+        self.fields["coaches"].queryset = coaches
 
 class CoachingJob(models.Model):
     name = models.CharField(max_length=75)
