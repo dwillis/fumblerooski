@@ -16,6 +16,11 @@ Overview
 
 Fumblerooski uses the NCAA's statistics site (http://web1.ncaa.org/mfb/mainpage.jsp?year=2009) as a base - nearly everything game and player-related derives from information parsed or scraped from this site. The NCAA provides game information in XML, but most other elements - rosters, drives and rankings included - are scraped using BeautifulSoup. Coaching information is based on an Excel file provided by the NCAA but supplemented by data entry for assistant coaches and coaching history back to 2000.
 
+Structure
+------------
+
+Fumblerooski is divided into several app or app-like structures. The main one is the college app, which contains most of the models and views, including those related to teams, games, coaches and players. The rankings and scrapers are split into their own directories as well, along with small API and blog apps.
+
 Loaders
 ------------
 
