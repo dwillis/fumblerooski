@@ -12,10 +12,17 @@ from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
 
 def next_coach_id():
+    """
+    Generates the next id for newly added coaches, since their slugs (which combine the id and name fields) 
+    are added post-commit.
+    """
     c = Coach.objects.aggregate(Max("id"))
     return c['id__max']+1
 
 def update_conf_games(year):
+    """
+    Marks a game as being a conference game if teams are both in the same conference.
+    """
     games = Game.objects.filter(season=year, team1__updated=True, team2__updated=True)
     for game in games:
         try:
@@ -26,7 +33,9 @@ def update_conf_games(year):
             pass
 
 def update_quarter_scores(game):
-    "Utility to update quarter scores for existing games. New games handled via ncaa_loader."
+    """
+    Utility to update quarter scores for existing games. New games handled via ncaa_loader.
+    """
     doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
     quarters = len(soup.findAll('score')[1:])/2
@@ -39,6 +48,9 @@ def update_quarter_scores(game):
     
 
 def update_college_year(year):
+    """
+    Updates season and conference records for teams. Run at the end of a game loader.
+    """
     teams = CollegeYear.objects.select_related().filter(year=year, college__updated=True).order_by('college_college.id')
     for team in teams:
         games = Game.objects.filter(team1=team.college, season=year, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
@@ -84,11 +96,17 @@ def update_college_year(year):
         team.save()
 
 def add_college_years(year):
+    """
+    Creates college years for teams. Used at the beginning of a new season or to backfill.
+    """
     teams = College.objects.filter(updated=True).order_by('id')
     for team in teams:
         cy, created = CollegeYear.objects.get_or_create(year=year, college=team)
 
 def game_weeks(year):
+    """
+    Populates week foreign key for games.
+    """
     weeks = Week.objects.filter(year=year).order_by('week_num')
     for week in weeks:
         games = Game.objects.filter(season=year, date__lte=week.end_date, week__isnull=True)
