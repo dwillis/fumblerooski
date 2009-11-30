@@ -427,6 +427,10 @@ def player_detail(request, team, season, player):
         'rush_tot_loss': rush_totals['loss__sum'], 'rush_tot_td': rush_totals['td__sum'], 'rush_tot_net': rush_totals['net__sum'], 'rush_tot_avg': rush_tot_avg, 'comp_pct':comp_pct, 
         'rec_tot_receptions': rec_totals['receptions__sum'], 'rec_tot_yards': rec_totals['yards__sum'], 'rec_tot_td': rec_totals['td__sum'], 'rec_tot_avg': rec_tot_avg})
 
+def rushing_losses(request, season):
+    players = Player.objects.filter(year=season).select_related().annotate(net_total=Sum('playerrush__net'),gain_total=Sum('playerrush__gain'),loss_total=Sum('playerrush__loss'),rush_total=Sum('playerrush__rushes'),td_total=Sum('playerrush__td')).filter(net_total__gte=1000, loss_total__lte=100).order_by('loss_total', '-net_total')
+    return render_to_response('college/rushing_losses.html', {'season': season, 'player_list': players})
+
 def coach_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('end_date')[:10]

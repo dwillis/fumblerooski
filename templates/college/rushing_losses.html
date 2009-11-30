@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Fumblerooski: {{ year }} Rushing Leaders: Fewest Yards Lost{% endblock %}
+
+{% block content %}
+
+<h3>{{ year }} Rushing Leaders: Fewest Yards Lost</h3>
+<h5>(At least 1,000 net yards)</h5>
+
+{% if player_list %}
+<table>
+  <th>Rank</th><th>Name</th><th>School</th><th>Position</th><th>Class</th><th>Games Played</th><th>Net Yards</th><th>Yards Lost</th>
+  {% for player in player_list %}
+  <tr><td>{{ forloop.counter }}</td><td><a href="{{ player.get_absolute_url }}">{{ player.name }}</a></td><td><a href="{{ player.team.get_absolute_url }}">{{ player.team.name }}</a></td><td><a href="positions/{{ player.position.abbrev|lower }}/">{{ player.position.abbrev }}</a></td><td>{{ player.status }}</td><td>{{ player.games_played }}</td><td>{{ player.net_total|intcomma }}</td><td>{{ player.loss_total }}</td></tr>
+  {% endfor %}
+</table>
+
+
+{% endif %}
+
+{% endblock %}
