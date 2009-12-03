@@ -70,6 +70,38 @@
 
 {% endif %}
 
+{% else %}
+
+{% if tackles %}
+<h3>Tackles By Game</h3>
+<table>
+  <th>Date</th><th>Opponent</th><th>Outcome</th><th>Unassisted</th><th>Assisted</th><th>Total</th>
+{% for game in tackles %}
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td><a href="{{ game.game.team2.get_absolute_url }}">{{ game.game.team2 }}</a></td><td><a href="{{ game.game.get_absolute_url }}">{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</a></td><td>{{ game.unassisted_tackles }}</td><td>{{ game.assisted_tackles }}</td><td>{{ game.total_tackles }}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if tacklesloss %}
+<h3>Tackles For Loss By Game</h3>
+<table>
+  <th>Date</th><th>Opponent</th><th>Outcome</th><th>Unassisted</th><th>Assisted</th><th>Yards</th><th>Sacks</th><th>Sack Yards</th>
+{% for game in tacklesloss %}
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td><a href="{{ game.game.team2.get_absolute_url }}">{{ game.game.team2 }}</a></td><td><a href="{{ game.game.get_absolute_url }}">{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</a></td><td>{{ game.unassisted_tackles_for_loss }}</td><td>{{ game.assisted_tackles_for_loss }}</td><td>{{ game.tackles_for_loss_yards }}</td><td>{{ game.total_sacks }}</td><td>{{ game.sack_yards }}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if passdefense %}
+<h3>Pass Defense By Game</h3>
+<table>
+  <th>Date</th><th>Opponent</th><th>Outcome</th><th>Interceptions</th><th>Yards</th><th>TD</th><th>Pass Breakups</th>
+{% for game in passdefense %}
+  <tr><td>{{ game.game.date|date:"N d, Y" }}</td><td><a href="{{ game.game.team2.get_absolute_url }}">{{ game.game.team2 }}</a></td><td><a href="{{ game.game.get_absolute_url }}">{{ game.game.get_t1_result_display }}, {{ game.game.team1_score }}-{{ game.game.team2_score }}</a></td><td>{{ game.interceptions }}</td><td>{{ game.interception_yards }}</td><td>{{ game.interception_td }}</td><td>{{ game.pass_breakups }}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
 
 
 {% endifequal %}
