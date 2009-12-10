@@ -450,7 +450,7 @@ def coach_index(request):
 
 def departures(request,year):
     casualties = CollegeCoach.objects.select_related().filter(end_date__isnull=False, collegeyear__year__exact=year).order_by('-end_date')
-    return render_to_response('coaches/casualties.html', {'casualties': casualties, 'year': year })
+    return render_to_response('coaches/casualties.html', {'casualties': casualties, 'year': year, 'count': len(casualties) })
 
 def active_coaches(request):
     active_hc = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).order_by('-start_date')
