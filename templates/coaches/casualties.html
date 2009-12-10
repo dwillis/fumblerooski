@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Fumblerooski: Coaching Casualties for {{ year }}{% endblock %}
+
+{% block content %}
+
+<h3>Coaching Casualties - {{ season }}</h3>
+
+<table>
+  <th>Coach</th><th>School</th><th>End Date</th>
+  {% for coach in casualties %}
+  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{% if coach.coach.current_job %}{{ coach.end_date|date:"F d, Y" }}{% endif %}</td></tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
