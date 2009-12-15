@@ -36,7 +36,7 @@
 
 {% if recent_hires %}
 <h3>Recent Hires</h3>
-(<a href="hires/{{ current_season }}/">See all hires for {{ current_season+1 }}</a>)
+(<a href="hires/{{ next_season }}/">See all hires for {{ next_season }}</a>)
 <table>
   <th>Coach</th><th>School</th><th>Start Date</th>
   {% for coach in recent_hires %}

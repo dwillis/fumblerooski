@@ -447,7 +447,7 @@ def coach_index(request):
     else:
         form = CoachForm()
         coach_list = None
-    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'form': form, 'current_season': CURRENT_SEASON })
+    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'form': form, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 })
 
 def departures(request,year):
     casualties = CollegeCoach.objects.select_related().filter(end_date__isnull=False, collegeyear__year__exact=year).order_by('-end_date')
