@@ -434,7 +434,7 @@ def rushing_losses(request, season):
 def coach_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('-end_date')[:10]
-    recent_hires = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', start_date__lte=two_months_ago).order_by('-start_date')[:10]
+    recent_hires = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', start_date__gte=two_months_ago).order_by('-start_date')[:10]
     if request.method == 'POST':
         if request.POST.has_key('name'):
             query = request.POST['name']
