@@ -24,6 +24,11 @@ Fumblerooski is divided into several app or app-like structures. The main one is
 Loaders
 ------------
 
-Information from the NCAA is scraped using the ncaa_loader.py file, and is presently very tied into the rest of the app, so running the loaders independent of the college app will not produce the desired effect (and will produce lots of errors). The NCAA produces an XML file for each completed game, but the remainder of the information used by Fumblerooski, including schedules, rosters and rankings are parsed using BeautifulSoup. 
+Information from the NCAA is scraped using the files in scrapers/, which presently are very tied into the rest of the app, so running the loaders independent of the college app will not produce the desired effect (and will produce lots of errors). The NCAA produces an XML file for each completed game, but the remainder of the information used by Fumblerooski, including schedules, rosters and rankings are parsed using BeautifulSoup.
 
 The main scraper library has three functions: full_load, full_nostats_load and partial_loader. Because of the need to scrape the HTML tables for an entire season, each of the loaders loops through each team marked to be updated (updated=True) and parses the schedule/results information. The full_load also creates drive and player stats, but those are not available until up to 12-15 hours after the end of the game, so a nostats load only records the score. Normally the full_load can be run on a Sunday afternoon to capture all of Saturday's games. It's also recommended that the load_roster scraper be run after a full_load, as it updates the number of games a player has played in. Rankings also tend to be updated on Sundays, so the team and player rankings can be run then, too.
+
+Utilities
+------------
+
+The code includes several generic utilities of use in the app but which depend on the use of the scrapers to populate the database. These include functions to generate and update CollegeYear instances, identify conference games and populate Week instances.
