@@ -171,8 +171,6 @@ def load_ncaa_game_xml(game):
             t2 = College.objects.get(id=30432)
         elif soup.teams.visitor.orgid.contents[0] == '115':
             t2 = College.objects.get(id=30416)
-        elif soup.teams.visitor.orgid.contents[0] == '523':
-            t2 = College.objects.get(id=30631)
         else:
             t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
         d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
