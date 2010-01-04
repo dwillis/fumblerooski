@@ -55,9 +55,7 @@ def game_updater(year, teams, week, nostats=False):
                 try:
                     t2 = int(row.findAll('td')[1].find('a')['href'].split('=')[1].split('&')[0])
                     try:
-                        if t2 == 523:
-                            team2 = College.objects.get(id=30631)
-                        elif t2 == 115:   # hack job to cover for ncaa change
+                        if t2 == 115:   # hack job to cover for ncaa change
                             team2 = College.objects.get(id=30416)
                         else:
                             team2 = College.objects.get(id=t2)

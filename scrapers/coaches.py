@@ -2,7 +2,7 @@ import xlrd
 import urllib
 from fumblerooski.college.models import Coach
 
-
+# deprecated
 def load_coaches():
     url1 = 'http://www.ncaa.org/wps/wcm/connect/resources/file/ebbd654a53ad23b/d1a_birthdates.xls?MOD=AJPERES'
     file = urllib.urlretrieve(url1, 'csv/coaches.xls')
