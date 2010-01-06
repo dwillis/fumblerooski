@@ -24,7 +24,7 @@ class CollegeHandler(BaseHandler):
 class CollegeYearHandler(BaseHandler):
     allowed_methods = ('GET',)
     model = CollegeYear
-    fields = ('college', ('updated', 'name', 'slug')), ('year','record','conference_record', 'division', ('conference', ('abbrev','name')), ('collegecoach_set', ('coach', 'jobs', 'start_date', 'end_date')))
+    fields = ('college', ('updated', 'name', 'slug'), ('year','record','conference_record', 'division', ('conference', ('abbrev','name')), ('collegecoach_set', ('coach', 'jobs', 'start_date', 'end_date')))
     exclude = ('official_url','official_rss', 'drive_slug')
     
     def read(self, request, slug, year):
