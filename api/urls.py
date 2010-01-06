@@ -7,5 +7,6 @@ coach_handler = Resource(CoachHandler)
 
 urlpatterns = patterns('',
    url(r'^college/teams/(?P<slug>[^/]+)/$', college_handler),
+   url(r'^college/teams/(?P<slug>[^/]+)/$', college_handler),
    url(r'^coach/(?P<slug>[^/]+)/$', coach_handler),
 )
