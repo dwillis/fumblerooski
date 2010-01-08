@@ -3,9 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
 from fumblerooski.college.models import CollegeCoach
 
-class CoachFeed(Feed):
-    title_template = "feeds/coach_title.html"
-    description_template = "feeds/coach_description.html"
+class CoachesFeed(Feed):
     link = "/coaches/"
     
     def get_object(self, bits):

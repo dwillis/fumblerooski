@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
-from fumblerooski.feeds import CoachFeed
+from fumblerooski.feeds import CoachesFeed
 
 feeds = {
-    'coaches': CoachFeed,
+    'coaches': CoachesFeed,
 }
 
 admin.autodiscover()
