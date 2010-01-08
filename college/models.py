@@ -283,7 +283,7 @@ class CollegeCoach(models.Model):
     end_date = models.DateField(null=True, blank=True)
 
     def __unicode__(self):
-        return "%s - %s" % (self.coach, self.collegeyear)
+        return "Hired on %s (%s)." % (self.start_date, self.jobs_display())
         
     def get_absolute_url(self):
         return self.coach.get_absolute_url()
