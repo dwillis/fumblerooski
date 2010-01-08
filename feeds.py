@@ -5,6 +5,7 @@ from fumblerooski.college.models import CollegeCoach
 
 class CoachFeed(Feed):
     title_template = "feeds/coach_title.html"
+    description_template = 
     link = "/coaches/"
     
     def get_object(self, bits):
@@ -27,3 +28,4 @@ class CoachFeed(Feed):
             
     def item_link(self, item):
         return item.coach.get_absolute_url()
+    
