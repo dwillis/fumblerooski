@@ -5,7 +5,7 @@ from fumblerooski.college.models import CollegeCoach
 
 class CoachFeed(Feed):
     title_template = "feeds/coach_title.html"
-    description_template = 
+    description_template = "feeds/coach_description.html"
     link = "/coaches/"
     
     def get_object(self, bits):
