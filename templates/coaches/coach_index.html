@@ -24,7 +24,7 @@
 
 {% if recent_departures %}
 <h3>Recent Departures</h3>
-(<a href="departures/{{ current_season }}/">See all departures for {{ current_season }}</a>)
+(<a href="departures/{{ current_season }}/">See all departures for {{ current_season }}</a>) <a href="/feeds/coaches/departures/"><img src="/media/img/feed.png"></a>
 
 <table>
   <th>Coach</th><th>School</th><th>End Date</th>
@@ -36,7 +36,7 @@
 
 {% if recent_hires %}
 <h3>Recent Hires</h3>
-(<a href="hires/{{ next_season }}/">See all hires for {{ next_season }}</a>)
+(<a href="hires/{{ next_season }}/">See all hires for {{ next_season }}</a>) <a href="/feeds/coaches/hires/"><img src="/media/img/feed.png"></a>
 <table>
   <th>Coach</th><th>School</th><th>Start Date</th>
   {% for coach in recent_hires %}
