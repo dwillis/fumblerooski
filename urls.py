@@ -1,5 +1,10 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
+from fumblerooski.feeds import CoachFeed
+
+feeds = {
+    'coaches': CoachFeed,
+}
 
 admin.autodiscover()
 
@@ -10,6 +15,7 @@ urlpatterns = patterns('',
      url(r"^college/", include("fumblerooski.college.urls")),
      url(r"^api/", include("fumblerooski.api.urls")),
      url(r"^$", "fumblerooski.college.views.homepage"),
+     (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
 )
 
 urlpatterns += patterns('fumblerooski.college.views',

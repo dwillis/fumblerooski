@@ -24,7 +24,7 @@ class CollegeHandler(BaseHandler):
 class CollegeYearHandler(BaseHandler):
     allowed_methods = ('GET',)
     model = CollegeYear
-    fields = ('college', ('updated', 'name', 'slug'), ('year','record','conference_record', 'division', ('conference', ('abbrev','name')), ('collegecoach_set', ('coach', 'jobs', 'start_date', 'end_date')))
+    fields = ('year','record','conference_record', 'division', ('conference', ('abbrev','name')), ('collegecoach_set', ('coach', 'jobs', 'start_date', 'end_date')))
     exclude = ('official_url','official_rss', 'drive_slug')
     
     def read(self, request, slug, year):
@@ -42,7 +42,7 @@ class CollegeYearHandler(BaseHandler):
             
     @classmethod
     def resource_uri(cls, collegeyear):
-        return ('collegeyears', ['json',])
+        return ('collegeyear', ['json',])
 
 class CoachHandler(BaseHandler):
     allowed_methods = ('GET',)
