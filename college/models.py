@@ -302,6 +302,12 @@ class CollegeCoach(models.Model):
             return True
         else:
             return False
+    
+    def feed_date(self, feedtype):
+        if feedtype == 'hires':
+            return self.start_date
+        elif feedtype == 'departures':
+            return self.end_date
 
     class Meta:
         ordering = ['coach__last_name','-collegeyear__year']
