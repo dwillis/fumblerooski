@@ -20,7 +20,7 @@ def homepage(request):
         upcoming_week = Week.objects.filter(year=CURRENT_YEAR, end_date__gte=datetime.date.today()).order_by('end_date')[0]
     except:
         upcoming_week = None
-    latest_games = Game.objects.filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
+    latest_games = Game.objects.select_related().filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
     return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[:10], 'upcoming_week':upcoming_week })
 
 def state_index(request):
@@ -96,7 +96,7 @@ def team_detail(request, team):
     except CollegeCoach.DoesNotExist:
         current_head_coach = None
     college_years = CollegeYear.objects.filter(college=t).order_by('-year')
-    game_list = Game.objects.filter(team1=t).order_by('-date')
+    game_list = Game.objects.select_related().filter(team1=t).order_by('-date')
     popular_opponents = game_list.values("team2").annotate(games=Count("id")).order_by('-games')
     p_o = []
     for team in popular_opponents[:10]:
@@ -112,7 +112,7 @@ def team_detail_season(request, team, season):
         current_coach = CollegeCoach.objects.filter(collegeyear=season_record, end_date__isnull=True, jobs__name='Head Coach').order_by('-start_date')[0]
     except IndexError:
         current_coach = None
-    game_list = Game.objects.filter(team1=t, season=season).order_by('-date')
+    game_list = Game.objects.select_related().filter(team1=t, season=season).order_by('-date')
     player_list = Player.objects.filter(team=t, year=season)
     return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
