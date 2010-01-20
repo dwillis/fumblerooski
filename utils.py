@@ -103,6 +103,22 @@ def add_college_years(year):
     for team in teams:
         cy, created = CollegeYear.objects.get_or_create(year=year, college=team)
 
+def create_weeks(year):
+    """
+    Given a year with games in the db, creates weeks for that year.
+    """
+    
+    min = Game.objects.filter(season=year).aggregate(Min('date'))['date__min']
+    max = Game.objects.filter(season=year).aggregate(Max('date'))['date__max']
+    if min.weekday() < 5:
+        dd = 5 - min.weekday()
+        end_date = min + datetime.timedelta(days=dd)
+    else:
+        end_date = min
+    week = Week.objects.get_or_create(year=min.year, )        
+        
+    
+
 def game_weeks(year):
     """
     Populates week foreign key for games.
