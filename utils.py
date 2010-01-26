@@ -110,12 +110,17 @@ def create_weeks(year):
     
     min = Game.objects.filter(season=year).aggregate(Min('date'))['date__min']
     max = Game.objects.filter(season=year).aggregate(Max('date'))['date__max']
-    if min.weekday() < 5:
-        dd = 5 - min.weekday()
-        end_date = min + datetime.timedelta(days=dd)
-    else:
-        end_date = min
-    week = Week.objects.get_or_create(year=min.year, )        
+    date = min
+    week = 1
+    while date <= max:
+        if date.weekday() < 5:
+            dd = 5 - date.weekday()
+            end_date = date + datetime.timedelta(days=dd)
+        else:
+            end_date = date
+        new_week, created = Week.objects.get_or_create(year=min.year, week_num = week, end_date = end_date)
+        date += datetime.timedelta(days=7)
+        week += 1      
         
     
 
