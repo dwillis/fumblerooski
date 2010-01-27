@@ -121,8 +121,6 @@ def create_weeks(year):
         new_week, created = Week.objects.get_or_create(year=min.year, week_num = week, end_date = end_date)
         date += datetime.timedelta(days=7)
         week += 1      
-        
-    
 
 def game_weeks(year):
     """
@@ -135,90 +133,23 @@ def game_weeks(year):
             game.week = week
             game.save()
 
+def advance_coaching_staff(team, year):
+    """
+    Takes an existing coaching staff, minus any who have an end_date value,
+    and creates new CollegeCoach records for them in the provided year.
 
-def update_offense(yr='2007'):
-    y = Year.objects.get(year=int(yr))
-    py = PlayerYear.objects.select_related().filter(year=yr)
-    cursor = connection.cursor()
-    for player in py:
-        ps = PlayerSummary.objects.get_or_create(playeryear=player)
-        cursor.execute("""
-            update football_playersummary 
-            set rushes = (
-                select sum(football_playeroffense.rushes)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            rush_gain = (
-                select sum(football_playeroffense.rush_gain)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            rush_net = (
-                select sum(football_playeroffense.rush_net)
-                from football_playeroffense
-                where football_playeroffense.playeryear_id = %s),
-            rush_td = (
-                select sum(football_playeroffense.rush_td)
-                from football_playeroffense
-                where football_playeroffense.playeryear_id = %s),
-            pass_attempts = (
-                select sum(football_playeroffense.pass_attempts)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            pass_complete = (
-                select sum(football_playeroffense.pass_complete)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            pass_yards = (
-                select sum(football_playeroffense.pass_yards)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            pass_td = (
-                select sum(football_playeroffense.pass_td)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            receptions = (
-                select sum(football_playeroffense.receptions)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            reception_yards = (
-                select sum(football_playeroffense.reception_yards)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            reception_td = (
-                select sum(football_playeroffense.reception_td)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            offense_plays = (
-                select sum(football_playeroffense.offense_plays)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s),
-            offense_yards = (
-                select sum(football_playeroffense.offense_yards)
-                from football_playeroffense 
-                where football_playeroffense.playeryear_id = %s)
-            where football_playersummary.playeryear_id = %s""", (player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id, player.id)
-            )
-
-def load_players(year):
-    file = open('csv/DivIA.csv').readlines()
-    file = file[1:]
-    players = open('players.csv','w')
-    for line in file:
-        players.write(line)
-    players.close()
-
-    reader = csv.reader(open('players.csv'))
-    for row in reader:
-        y, created = Year.objects.get_or_create(id=year)
-        t = College.objects.get(id=row[0])
-        pos, created = Position.objects.get_or_create(abbrev=row[5])
-        if row[4] == '':
-            if row[3] != 'Team':
-                first = raw_input("Enter a first name for %s on %s: " % (row[3], row[1]))
-                p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name='', first_name_fixed=force_unicode(first.upper()))
-            else:
-                pass
-        else:
-            # change to match on id and last_name only?
-            p, created=Player.objects.get_or_create(ncaa_id=row[7], last_name=force_unicode(row[3].upper()), first_name=force_unicode(row[4].upper()), first_name_fixed=force_unicode(row[4].upper()))
-        py, created = PlayerYear.objects.get_or_create(player=p, team=t, year=y, position=pos, number=row[2], ncaa_number=row[2], status=row[6])
+    Usage:    
+    >>> from fumblerooski.utils import advance_coaching_staff
+    >>> from fumblerooski.college.models import *
+    >>> team = College.objects.get(id = 8)
+    >>> advance_coaching_staff(team, 2010)
+    """
+    previous_year = int(year)-1
+    college = College.objects.get(id=team.id)
+    old_cy = CollegeYear.objects.get(college=college, year=previous_year)
+    new_cy = CollegeYear.objects.get(college=college, year=year)
+    old_staff = CollegeCoach.objects.filter(collegeyear=old_cy, end_date__isnull=True)
+    for coach in old_staff:
+        cc, created = CollegeCoach.objects.get_or_create(collegeyear=new_cy, coach=coach.coach)
+        for job in coach.jobs.all():
+            cc.jobs.add(job)
