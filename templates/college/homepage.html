@@ -6,23 +6,27 @@
 
 Tracking {{ teams }} teams and {{ games|intcomma }} games.
 
-<h4>Recent Games</h4>
+{% if recent_departures %}
+<h3>Recent Coaching Changes</h3>
+(<a href="departures/{{ current_season }}/">See all departures for {{ current_season }}</a>) <a href="/feeds/coaches/departures/"><img src="/media/img/feed.png"></a>
 
-<ul>
-{% for game in latest_games %}
-
-<li><a href="{{ game.get_absolute_url }}">{{ game.display }}</a> - {{ game.date|date:"F d, Y" }}</li>
-
-{% endfor %}
-</ul>
-
-{% if upcoming_week %}
-<h4>Current Week: {{ upcoming_week.week_num }} <a href="{{ upcoming_week.week_games_url }}">Schedule</a></h4>
-{% else %}
-<h4>Season Concluded</h4>
+<table>
+  <th>Coach</th><th>School</th><th>End Date</th>
+  {% for coach in recent_departures %}
+  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.end_date|date:"F d, Y" }}</td></tr>
+  {% endfor %}
+</table>
 {% endif %}
 
-<h4><a href="college/teams/undefeated/2009/">Undefeated Teams</a></h4>
-
+{% if recent_hires %}
+<h3>Recent Coaching Hires</h3>
+(<a href="hires/{{ next_season }}/">See all hires for {{ next_season }}</a>) <a href="/feeds/coaches/hires/"><img src="/media/img/feed.png"></a>
+<table>
+  <th>Coach</th><th>School</th><th>Start Date</th>
+  {% for coach in recent_hires %}
+  <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
 
 {% endblock %}
