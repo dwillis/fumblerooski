@@ -1,0 +1,92 @@
+{% load humanize %}
+
+{% spaceless %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>{% block title %}Fumblerooski.org{% endblock %}</title>
+
+<link rel="stylesheet" href="http://blog.thescoop.org/wp-content/themes/hemingway/style.css" type="text/css" media="screen" />
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10594199-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</head>
+<body>
+    <div id="header">
+        <div class="inside">
+            <div id="search">
+                
+            </div>
+     
+<h2><a href="/">Fumblerooski.org</a></h2>
+<p class="description">More than you wanted about college football.</p></div>
+</div>
+
+
+<div id="primary" class="twocol-stories">
+    <div class="inside">
+    
+    {% block content %}
+
+
+    {% endblock %}
+
+    <div class="clear"></div>
+</div>
+</div>
+
+<hr class="hide" />
+<div id="ancillary">
+    <div class="inside">
+        <div class="block first">
+            <ul class="blogroll">
+                <li id="linkcat-27" class="linkcat"><h2>Basics</h2>
+                    <ul>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                    </ul>
+              </ul>
+        </div>
+
+        <div class="block">
+            <ul class="blogroll">
+                <li id="linkcat-27" class="linkcat"><h2>Start Looking</h2>
+                    <ul>
+                        <li><a href="/college/teams/">Teams</a></li>
+                        <li><a href="/college/conferences/">Conferences</a></li>
+                        <li><a href="/coaches/">Coaches</a></li>
+                        <li><a href="/college/states/">States</a></li>
+                    </ul>
+              </ul>
+            
+        </div>
+        <div class="block">
+            <ul class="blogroll">
+                <li id="linkcat-27" class="linkcat"><h2>Extras</h2>
+                    <ul>
+                        <li><a href="/college/bowl-games/">Bowl Games</a></li>
+                    </ul>
+              </ul>
+            
+        </div>
+    </div>
+</div>
+<hr class="hide" />
+<div id="footer">
+    <div class="inside">
+        <p class="copyright">Powered by <a href="http://warpspire.com/hemingway">Hemingway</a> flavored <a href="http://djangoproject.com">Django</a>.</p>
+    </div>
+</div>
+{% endspaceless %}
+</body>
+</html>
