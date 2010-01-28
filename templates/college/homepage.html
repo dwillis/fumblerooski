@@ -8,7 +8,7 @@ Tracking {{ teams }} teams and {{ games|intcomma }} games.
 
 {% if recent_departures %}
 <h3>Recent Coaching Changes</h3>
-(<a href="/coaching/departures/{{ previous_season }}/">See all departures for {{ previous_season }}</a>) <a href="/feeds/coaches/departures/"><img src="/media/img/feed.png"></a>
+(<a href="/coaches/departures/{{ previous_season }}/">See all departures for {{ previous_season }}</a>) <a href="/feeds/coaches/departures/"><img src="/media/img/feed.png"></a>
 
 <table>
   <th>Coach</th><th>School</th><th>End Date</th>
@@ -20,7 +20,7 @@ Tracking {{ teams }} teams and {{ games|intcomma }} games.
 
 {% if recent_hires %}
 <h3>Recent Coaching Hires</h3>
-(<a href="/coaching/hires/{{ current_season }}/">See all hires for {{ current_season }}</a>) <a href="/feeds/coaches/hires/"><img src="/media/img/feed.png"></a>
+(<a href="/coaches/hires/{{ current_season }}/">See all hires for {{ current_season }}</a>) <a href="/feeds/coaches/hires/"><img src="/media/img/feed.png"></a>
 <table>
   <th>Coach</th><th>School</th><th>Start Date</th>
   {% for coach in recent_hires %}
