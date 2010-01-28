@@ -4,7 +4,7 @@ from django import forms
 import datetime
 from django.template.defaultfilters import slugify
 
-CURRENT_SEASON = 2010
+CURRENT_SEASON = 2009
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
