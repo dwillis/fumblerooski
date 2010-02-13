@@ -440,10 +440,10 @@ def coach_index(request):
     recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('-end_date')[:10]
     recent_hires = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', start_date__gte=two_months_ago).order_by('-start_date')[:10]
     if request.method == 'POST':
-        if request.POST.has_key('coach_name'):
+        if 'coach_name' in request.POST:
             query = request.POST['coach_name']
             try:
-                coach_list = Coach.objects.filter(last_name__icontains=query).order_by('last_name', 'first_name')
+                coach_list = Coach.objects.filter(last_name__istartswith=query).order_by('last_name', 'first_name')
             except:
                 coach_list = None
     else:
