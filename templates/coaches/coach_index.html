@@ -6,15 +6,18 @@
 
 <h3>Find Coaches</h3>
 
-<form action="." method="post">
-    {{ form.as_p }}
-  <input type="submit" value="Submit" />
+<form action="." method="post" id="coach_form">
+{% include "coaches/lookup.html" %}
 </form>
 
 {% if coach_list %}
 
-<table>
+{% include "coaches/hider.html" %}
+
+<table id="coach_list">
+  <tr>
   <th>Coach</th><th>Most Recent School</th><th>Most Recent Job</th>
+  </tr>
   {% for coach in coach_list %}
   <tr><td><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a></td><td><a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a></td><td>{{ coach.current_job }}</td></tr>
   {% endfor %}
@@ -23,26 +26,34 @@
 {% endif %}
 
 {% if recent_departures %}
+<div id="coach_depart">
 <h3>Recent Departures</h3>
 (<a href="departures/{{ current_season }}/">See all departures for {{ current_season }}</a>) <a href="/feeds/coaches/departures/"><img src="/media/img/feed.png"></a>
 
 <table>
+  <tr>
   <th>Coach</th><th>School</th><th>End Date</th>
+  </tr>
   {% for coach in recent_departures %}
   <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.end_date|date:"F d, Y" }}</td></tr>
   {% endfor %}
 </table>
+</div>
 {% endif %}
 
 {% if recent_hires %}
+<div id="coach_hired">
 <h3>Recent Hires</h3>
 (<a href="hires/{{ next_season }}/">See all hires for {{ next_season }}</a>) <a href="/feeds/coaches/hires/"><img src="/media/img/feed.png"></a>
 <table>
+  <tr>
   <th>Coach</th><th>School</th><th>Start Date</th>
+  </tr>
   {% for coach in recent_hires %}
   <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td></tr>
   {% endfor %}
 </table>
+</div>
 {% endif %}
 
 {% endblock %}
