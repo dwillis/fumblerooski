@@ -4,6 +4,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.syndication.feeds import Feed
 from django import forms
+from django.utils import simplejson
 from django.forms.models import modelformset_factory
 from operator import itemgetter
 from time import strptime
@@ -439,18 +440,27 @@ def coach_index(request):
     recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('-end_date')[:10]
     recent_hires = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', start_date__gte=two_months_ago).order_by('-start_date')[:10]
     if request.method == 'POST':
-        if request.POST.has_key('name'):
-            query = request.POST['name']
+        if request.POST.has_key('coach_name'):
+            query = request.POST['coach_name']
             try:
                 coach_list = Coach.objects.filter(last_name__icontains=query).order_by('last_name', 'first_name')
-                form = CoachForm(request.POST)
             except:
                 coach_list = None
-                form = CoachForm()
     else:
-        form = CoachForm()
         coach_list = None
-    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'form': form, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 })
+    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 })
+
+def coach_lookup(request):
+    results = []
+    if request.method == "GET":
+        if 'coach_name' in request.GET:
+            value = request.GET['coach_name']
+            # Ignore queries shorter than length 3
+            if len(value) > 2:
+                model_results = Coach.objects.filter(last_name__istartswith=value).order_by('last_name', 'first_name')
+                results = [ x.full_name() for x in model_results ]
+        json = simplejson.dumps(results)
+        return HttpResponse(json, mimetype='application/json')
 
 def departures(request,year):
     casualties = CollegeCoach.objects.select_related().filter(end_date__isnull=False, collegeyear__year__exact=year).order_by('-end_date')

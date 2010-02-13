@@ -11,7 +11,9 @@ Tracking {{ teams }} teams and {{ games|intcomma }} games.
 (<a href="/coaches/departures/{{ previous_season }}/">See all departures for {{ previous_season }}</a>) <a href="/feeds/coaches/departures/"><img src="/media/img/feed.png"></a>
 
 <table>
+  <tr>
   <th>Coach</th><th>School</th><th>End Date</th>
+  </tr>
   {% for coach in recent_departures %}
   <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.end_date|date:"F d, Y" }}</td></tr>
   {% endfor %}
@@ -22,7 +24,9 @@ Tracking {{ teams }} teams and {{ games|intcomma }} games.
 <h3>Recent Coaching Hires</h3>
 (<a href="/coaches/hires/{{ current_season }}/">See all hires for {{ current_season }}</a>) <a href="/feeds/coaches/hires/"><img src="/media/img/feed.png"></a>
 <table>
+  <tr>
   <th>Coach</th><th>School</th><th>Start Date</th>
+  </tr>
   {% for coach in recent_hires %}
   <tr><td><a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a></td><td><a href="{{ coach.collegeyear.college.get_absolute_url }}">{{ coach.collegeyear.college.name }}</a></td><td>{{ coach.start_date|date:"F d, Y" }}</td></tr>
   {% endfor %}
