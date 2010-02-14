@@ -30,7 +30,7 @@ def populate_head_coaches(game):
     an entire season or as part of the game loader. As college coach data
     grows, will need to be run periodically on games without head coaches:
     
-    >>> games = Game.objects.filter(coach1_id=0, coach2_id=0)
+    >>> games = Game.objects.filter(coach1__is_null=True, coach2__is_null=True)
     >>> for game in games:
     ...     populate_head_coaches(game)
     ...
