@@ -3,7 +3,7 @@ from django.db import models
 from django import forms
 import datetime
 from django.template.defaultfilters import slugify
-from settings import CURRENT_SEASON
+from fumblerooski.settings import CURRENT_SEASON
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
@@ -280,6 +280,7 @@ class CollegeCoach(models.Model):
     jobs = models.ManyToManyField(CoachingJob)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+    is_head_coach = models.BooleanField(default=False)
 
     def __unicode__(self):
         return "%s: %s" % (self.coach, self.collegeyear)
@@ -398,7 +399,9 @@ class BowlGame(models.Model):
 class Game(models.Model):
     season = models.IntegerField()
     team1 = models.ForeignKey(College, related_name='first_team')
+    team1_coach = models.ForeignKey(Coach, related_name='first_coach')
     team2 = models.ForeignKey(College, related_name='second_team')
+    team2_coach = models.ForeignKey(Coach, related_name='second_coach')
     date = models.DateField()
     week = models.ForeignKey(Week)
     t1_game_type = models.CharField(max_length=1, choices=GAME_TYPE_CHOICES)

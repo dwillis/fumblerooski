@@ -11,7 +11,7 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
-from settings import CURRENT_SEASON
+from fumblerooski.settings import CURRENT_SEASON
 
 def homepage(request):
     team_count = College.objects.count()
