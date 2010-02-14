@@ -8,7 +8,7 @@ import time
 from urlparse import urljoin
 from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import *
-from fumblerooski.utils import update_college_year
+from fumblerooski.utils import update_college_year, populate_head_coaches
 from django.template.defaultfilters import slugify
 
 def game_updater(year, teams, week, nostats=False):
@@ -97,6 +97,8 @@ def game_updater(year, teams, week, nostats=False):
                     g.t1_game_type = 'N'
                 else:
                     g.t1_game_type = 'H'
+                if new_game:
+                    populate_head_coaches(g)
                 g.save()
         except:
             raise
