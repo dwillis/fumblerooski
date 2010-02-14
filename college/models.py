@@ -3,8 +3,7 @@ from django.db import models
 from django import forms
 import datetime
 from django.template.defaultfilters import slugify
-
-CURRENT_SEASON = 2010
+from settings import CURRENT_SEASON
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),
@@ -71,7 +70,7 @@ class City(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
     state = models.ForeignKey(State, null=True, blank=True)
-#    point = models.PointField()
+#    point = models.PointField(srid=900913)
 #    objects = models.GeoManager()
     
     def __unicode__(self):
@@ -112,11 +111,11 @@ class College(models.Model):
     name = models.CharField(max_length=90)
     slug = models.SlugField(max_length=90)
     drive_slug = models.CharField(max_length=90)
+#    city = models.ForeignKey(City, blank=True) #
     state = models.ForeignKey(State, blank=True)
     official_url = models.CharField(max_length=120, blank=True)
     official_rss = models.CharField(max_length=120, blank=True)
     updated = models.BooleanField()
-#    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name

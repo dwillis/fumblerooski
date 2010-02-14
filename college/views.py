@@ -11,14 +11,13 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
-
-CURRENT_YEAR = 2009
+from settings import CURRENT_SEASON
 
 def homepage(request):
     team_count = College.objects.count()
     game_count = Game.objects.count()
     try:
-        upcoming_week = Week.objects.filter(year=CURRENT_YEAR, end_date__gte=datetime.date.today()).order_by('end_date')[0]
+        upcoming_week = Week.objects.filter(year=CURRENT_SEASON, end_date__gte=datetime.date.today()).order_by('end_date')[0]
     except:
         upcoming_week = None
     latest_games = Game.objects.select_related().filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
@@ -47,21 +46,6 @@ def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, year=season)
     game_list = Game.objects.select_related().filter(week=week).order_by('date', 'team1')
     return render_to_response('college/season_week.html', {'season': season, 'week': week, 'games': game_list})
-
-def rankings_index(request):
-    ranking_list = RankingType.objects.filter(typename='T').order_by('name')
-    return render_to_response('college/rankings_index.html', {'ranking_list':ranking_list})
-
-def rankings_season(request, rankingtype, season, div='B', week=None):
-    rt = get_object_or_404(RankingType, slug=rankingtype)
-    date = datetime.date.today()-datetime.timedelta(days=7)
-    if week:
-        latest_week = Week.objects.get(year=season, week_num=week)
-    else:
-        latest_week = Week.objects.filter(year=season, end_date__gte=date, end_date__lte=datetime.date.today()).order_by('end_date')[0]
-    other_weeks = Week.objects.filter(year=season).exclude(week_num=latest_week.week_num).exclude(end_date__gte=datetime.date.today()).order_by('end_date')
-    rankings_list = Ranking.objects.filter(year=season, ranking_type=rt, week=latest_week, division=div).select_related().order_by('rank')
-    return render_to_response('college/rankings_season.html', {'ranking_type': rt, 'rankings_list': rankings_list, 'season':season, 'latest_week':latest_week, 'other_weeks':other_weeks})
 
 def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
@@ -147,7 +131,7 @@ def team_rankings_season(request, team, season, week=None):
     if week:
         latest_week = Week.objects.get(year=season, week_num=week)
     else:
-        latest_week = Week.objects.filter(year=CURRENT_YEAR, end_date__lte=datetime.date.today()).order_by('-end_date')[0]
+        latest_week = Week.objects.filter(year=CURRENT_SEASON, end_date__lte=datetime.date.today()).order_by('-end_date')[0]
     other_weeks = Week.objects.filter(year=season).exclude(week_num__gte=latest_week.week_num).order_by('end_date')
     latest_rankings = Ranking.objects.select_related().filter(college=cy.college, year=season, week=latest_week).select_related().order_by('-college_week.week_num')
     if latest_rankings:
@@ -451,16 +435,11 @@ def coach_index(request):
     return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 })
 
 def coach_lookup(request):
-    results = []
-    if request.method == "GET":
-        if 'coach_name' in request.GET:
-            value = request.GET['coach_name']
-            # Ignore queries shorter than length 3
-            if len(value) > 2:
-                model_results = Coach.objects.filter(last_name__istartswith=value).order_by('last_name', 'first_name')
-                results = [ x.full_name() for x in model_results ]
-        json = simplejson.dumps(results)
-        return HttpResponse(json, mimetype='application/json')
+    if request.is_ajax():
+        message = "Hello Ajax!"
+    else:
+        message = "Hello"
+    return HttpResponse(message)
 
 def departures(request,year):
     casualties = CollegeCoach.objects.select_related().filter(end_date__isnull=False, collegeyear__year__exact=year).order_by('-end_date')

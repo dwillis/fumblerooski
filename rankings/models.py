@@ -1,5 +1,6 @@
 from django.db import models
 from fumblerooski.college.models import College, Player, Week
+from settings import CURRENT_SEASON
 
 RANKINGTYPE_CHOICES = (
     ('T', 'Team'),
