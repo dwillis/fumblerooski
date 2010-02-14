@@ -11,6 +11,7 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
+from fumblerooski.utils import calculate_record, last_home_loss_road_win
 from fumblerooski.settings import CURRENT_SEASON
 
 def homepage(request):
@@ -233,29 +234,8 @@ def team_vs(request, team1, team2, outcome=None):
     else:
         games = Game.objects.select_related().filter(team1=team_1, team2=team_2).order_by('-date')
     totals = Game.objects.filter(team1=team_1, team2=team_2, date__lte=datetime.date.today()).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
-    d = {}
-    for i in range(len(totals)):
-        d[totals[i]['t1_result']] = totals[i]['count']
-    try:
-        wins = d['W']
-    except KeyError:
-        wins = 0
-    try:
-        losses = d['L'] or None
-    except KeyError:
-        losses = 0
-    try:
-        ties = d['T']
-    except KeyError:
-        ties = 0
-    try:
-        last_home_loss = games.filter(t1_game_type='H', t1_result='L')[0]
-    except:
-        last_home_loss = None
-    try:
-        last_road_win = games.filter(t1_game_type='A', t1_result='W')[0]
-    except:
-        last_road_win = None
+    wins, losses, ties = calculate_record(totals)
+    last_home_loss, last_road_win = last_home_loss_road_win(games)
     return render_to_response('college/team_vs.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'last_home_loss': last_home_loss, 'last_road_win': last_road_win, 'wins': wins, 'losses': losses, 'ties': ties, 'outcome': outcome })
 
 def game(request, team1, team2, year, month, day):
@@ -462,6 +442,15 @@ def coach_detail(request, coach):
     else:
         form = CoachDetailForm(c.coaching_peers())
         return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in(), 'form': form })
+
+def coach_compare(request, coach, coach2):
+    coach = get_object_or_404(Coach, slug=coach)
+    coach2 = get_object_or_404(Coach, slug=coach2)
+    game_list = Game.objects.select_related().filter(coach1=coach, coach2=coach2).order_by('-date')
+    totals = game_list.filter(date__lte=datetime.date.today()).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+    wins, losses, ties = calculate_record(totals)
+    last_home_loss, last_road_win = last_home_loss_road_win(game_list)
+    return render_to_response('coaches/coach_compare.html', {'coach': coach, 'coach2': coach2, 'game_list': game_list, 'wins': wins, 'losses':losses, 'ties':ties, 'last_home_loss':last_home_loss, 'last_road_win':last_road_win })
 
 def coach_common(request, coach, coach2):
     coach = get_object_or_404(Coach, slug=coach)

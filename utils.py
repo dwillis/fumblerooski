@@ -16,6 +16,43 @@ The functions here are a collection of utilities that help with data loading
 or otherwise populate records that are not part of the scraping process.
 """
 
+def calculate_record(totals):
+    """
+    Given a dictionary of game results, calculates the W-L-T record from those games.
+    Used to calculate records for team vs opponent and coach vs coach views.
+    """
+    d = {}
+    for i in range(len(totals)):
+        d[totals[i]['t1_result']] = totals[i]['count']
+    try:
+        wins = d['W']
+    except KeyError:
+        wins = 0
+    try:
+        losses = d['L'] or None
+    except KeyError:
+        losses = 0
+    try:
+        ties = d['T']
+    except KeyError:
+        ties = 0
+    return wins, losses, ties
+
+def last_home_loss_road_win(games):
+    """
+    Given a list of games, returns the most recent home loss and road win.
+    """    
+    try:
+        last_home_loss = games.filter(t1_game_type='H', t1_result='L')[0]
+    except:
+        last_home_loss = None
+    try:
+        last_road_win = games.filter(t1_game_type='A', t1_result='W')[0]
+    except:
+        last_road_win = None
+    return last_home_loss, last_road_win
+    
+    
 def set_head_coaches():
     """
     One-time utility to add a boolean value to college coach records. Used to prepare
@@ -37,7 +74,6 @@ def populate_head_coaches(game):
     """
     try:
         hc = game.team1.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
-        print game.id
         if len(hc) > 0:
             if len(hc) == 1:
                 game.coach1 = hc[0].coach
