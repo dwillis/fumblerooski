@@ -11,6 +11,71 @@ from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
 
+"""
+The functions here are a collection of utilities that help with data loading 
+or otherwise populate records that are not part of the scraping process.
+"""
+
+def set_head_coaches():
+    """
+    One-time utility to add a boolean value to college coach records. Used to prepare
+    the populate_head_coaches function for games. 
+    """
+    cc = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach').update(is_head_coach=True)
+
+def populate_head_coaches(game):
+    """
+    Given a game, tries to find and save the head coaches for that game. 
+    If it cannot, it leaves the head coaching fields as 0. Can be run on
+    an entire season or as part of the game loader. As college coach data
+    grows, will need to be run periodically on games without head coaches:
+    
+    >>> games = Game.objects.filter(coach1_id=0, coach2_id=0)
+    >>> for game in games:
+    ...     populate_head_coaches(game)
+    ...
+    """
+    try:
+        hc = game.team1.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
+        print game.id
+        if len(hc) > 0:
+            if len(hc) == 1:
+                game.coach1 = hc[0].coach
+            else:
+                coach1, coach2 = [c for c in hc]
+                if coach1.end_date:
+                    if game.date < coach1.end_date:
+                        game.coach1 = coach1.coach
+                    elif game.date >= coach2.start_date:
+                        game.coach1 = coach2.coach
+                    else:
+                        game.coach1_id = 0                
+        else:
+            game.coach1_id = 0
+    except:
+        game.coach1_id = 0
+    game.save()
+    
+    try:
+        hc2 = game.team2.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
+        if len(hc2) > 0:
+            if len(hc2) == 1:
+                game.coach2 = hc2[0].coach
+            else:
+                coach1, coach2 = [c for c in hc2]
+                if coach1.end_date:
+                    if game.date < coach1.end_date:
+                        game.coach2 = coach1.coach
+                    elif game.date >= coach2.start_date:
+                        game.coach2 = coach2.coach
+                    else:
+                        game.coach2_id = 0                
+        else:
+            game.coach2_id = 0
+    except:
+        game.coach2_id = 0
+    game.save()
+
 def next_coach_id():
     """
     Generates the next id for newly added coaches, since their slugs (which combine the id and name fields) 

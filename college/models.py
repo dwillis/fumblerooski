@@ -399,9 +399,9 @@ class BowlGame(models.Model):
 class Game(models.Model):
     season = models.IntegerField()
     team1 = models.ForeignKey(College, related_name='first_team')
-#    team1_coach = models.ForeignKey(Coach, related_name='first_coach')
+    coach1 = models.ForeignKey(Coach, null=True, related_name='first_coach')
     team2 = models.ForeignKey(College, related_name='second_team')
-#    team2_coach = models.ForeignKey(Coach, related_name='second_coach')
+    coach2 = models.ForeignKey(Coach, null=True, related_name='second_coach')
     date = models.DateField()
     week = models.ForeignKey(Week)
     t1_game_type = models.CharField(max_length=1, choices=GAME_TYPE_CHOICES)
