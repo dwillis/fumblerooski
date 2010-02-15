@@ -14,9 +14,11 @@
 {% if last_road_win %}Last road win against {{ coach2.full_name }}: {{ last_road_win.date|date:"F d, Y" }}{% endif %}
 
 <table>
-  <th>Season</th><th>Outcome</th><th>Location</th>
+<tr>
+  <th>Season</th><th>{{ coach.full_name }} School</th><th>{{ coach2.full_name }} School</th><th>Outcome</th><th>Location</th>
+</tr>
   {% for game in game_list %}
-  <tr><td><a href="{{ team_1.get_absolute_url }}{{ game.season }}/">{{ game.season }}</a></td><td>{% if game.t1_result %}{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }} (<a href="{{ game.get_absolute_url }}">see details</a>){% else %}{{ game.date|date:"F d, Y" }}{% endif %}</td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
+  <tr><td>{{ game.season }}</td><td><a href="{% url team_detail game.team1.slug %}">{{ game.team1 }}</a></td><td><a href="{% url team_detail game.team2.slug %}">{{ game.team2 }}</a></td><td>{% if game.t1_result %}{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }} (<a href="{{ game.get_absolute_url }}">see details</a>){% else %}{{ game.date|date:"F d, Y" }}{% endif %}</td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
   {% endfor %}
 </table>
 

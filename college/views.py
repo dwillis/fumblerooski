@@ -11,7 +11,7 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
-from fumblerooski.utils import calculate_record, last_home_loss_road_win
+from fumblerooski.utils import calculate_record, last_home_loss_road_win, opposing_coaches
 from fumblerooski.settings import CURRENT_SEASON
 
 def homepage(request):
@@ -442,6 +442,11 @@ def coach_detail(request, coach):
     else:
         form = CoachDetailForm(c.coaching_peers())
         return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in(), 'form': form })
+
+def coach_vs(request, coach):
+    c = get_object_or_404(Coach, slug=coach)
+    opp_coach = opposing_coaches(c)
+    return render_to_response('coaches/coach_vs.html', {'coach': c, 'opposing_coaches': opp_coach })
 
 def coach_compare(request, coach, coach2):
     coach = get_object_or_404(Coach, slug=coach)

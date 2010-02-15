@@ -16,6 +16,10 @@ The functions here are a collection of utilities that help with data loading
 or otherwise populate records that are not part of the scraping process.
 """
 
+def opposing_coaches(coach):
+    coach_list = Coach.objects.raw("SELECT college_coach.id, college_coach.slug, count(college_game.*) as games from college_coach inner join college_game on college_coach.id = college_game.coach2_id where coach1_id = %s group by 1,2 order by 3 desc", [coach.id])
+    return coach_list
+
 def calculate_record(totals):
     """
     Given a dictionary of game results, calculates the W-L-T record from those games.

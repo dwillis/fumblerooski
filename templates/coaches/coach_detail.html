@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h3>{{ coach.full_name }}</h3>
+<h1>{{ coach.full_name }}</h1>
 
 {% if coach.current_job %}
 <h4>Current School: <a href="{{ coach.current_school.get_absolute_url }}">{{ coach.current_school.name }}</a> ({{ coach.seasons_at_current_school|ordinal }} season since 2000)</h4>
@@ -46,5 +46,7 @@
 </form>
 
 {% endif %}
+
+<h3>{{ coach.full_name }} vs.: <a href="{% url coach_vs coach.slug %}">Head-to-Head Records</a></h3>
 
 {% endblock %}
