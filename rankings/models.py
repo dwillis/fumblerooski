@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from fumblerooski.college.models import College, Player, Week
 from django.conf import settings
