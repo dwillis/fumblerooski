@@ -16,6 +16,11 @@ Overview
 
 Fumblerooski uses the NCAA's statistics site (http://web1.ncaa.org/mfb/mainpage.jsp?year=2009) as a base - nearly everything game and player-related derives from information parsed or scraped from this site. The NCAA provides game information in XML, but most other elements - rosters, drives and rankings included - are scraped using BeautifulSoup. Coaching information is based on an Excel file provided by the NCAA but supplemented by data entry for assistant coaches and coaching history back to 2000.
 
+Setup
+------------
+
+Rename settings.py.example to settings.py, fill in the values for the admin, database, media location and template paths. There is a setting called CURRENT_SEASON that is set in settings.py and used in various places in the application. It is currently set to 2010.
+
 Structure
 ------------
 
