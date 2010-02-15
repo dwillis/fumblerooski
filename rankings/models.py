@@ -1,6 +1,8 @@
 from django.db import models
 from fumblerooski.college.models import College, Player, Week
-from fumblerooski.settings import CURRENT_SEASON
+from django.conf import settings
+
+CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year) 
 
 RANKINGTYPE_CHOICES = (
     ('T', 'Team'),
