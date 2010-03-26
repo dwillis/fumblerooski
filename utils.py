@@ -78,8 +78,8 @@ def populate_head_coaches(game):
     """
     try:
         hc = game.team1.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
-        if len(hc) > 0:
-            if len(hc) == 1:
+        if hc.count() > 0:
+            if hc.count() == 1:
                 game.coach1 = hc[0].coach
             else:
                 coach1, coach2 = [c for c in hc]
@@ -98,8 +98,8 @@ def populate_head_coaches(game):
     
     try:
         hc2 = game.team2.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
-        if len(hc2) > 0:
-            if len(hc2) == 1:
+        if hc2.count() > 0:
+            if hc2.coun() == 1:
                 game.coach2 = hc2[0].coach
             else:
                 coach1, coach2 = [c for c in hc2]
@@ -160,7 +160,7 @@ def update_college_year(year):
     for team in teams:
         games = Game.objects.filter(team1=team.college, season=year, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
         d = {}
-        for i in range(len(games)):
+        for i in range(games.count()):
             d[games[i]['t1_result']] = games[i]['count']
         try:
             wins = d['W']
@@ -178,7 +178,7 @@ def update_college_year(year):
             conf_games = Game.objects.select_related().filter(team1=team.college, season=year, is_conference_game=True, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
             if conf_games:
                 c = {}
-                for i in range(len(conf_games)):
+                for i in range(conf_games.count()):
                     c[conf_games[i]['t1_result']] = conf_games[i]['count']
                 try:
                     conf_wins = c['W']
