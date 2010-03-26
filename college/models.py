@@ -124,7 +124,8 @@ class College(models.Model):
         return '/college/teams/%s/' % self.slug
     
     def current_record(self):
-        return "(%d-%d)" % (self.collegeyear_set.get(year=datetime.date.today().year).wins, self.collegeyear_set.get(year=datetime.date.today().year).losses)
+        current_season = self.collegeyear_set.get(year=datetime.date.today()).year
+        return "(%d-%d)" % (current_season.wins, current_season.losses)
     
     class Meta:
         ordering = ['name', 'state']
@@ -233,7 +234,7 @@ class Coach(models.Model):
             return "No"
         
     def years_since_2000(self):
-        return len(self.collegecoach_set.all())
+        return self.collegecoach_set.all().count()
     
     def years_at_alma_mater_since_2000(self):
         return len([a for a in self.collegecoach_set.all() if self.college == a.collegeyear.college])
@@ -251,8 +252,7 @@ class Coach(models.Model):
         cursor.execute("SELECT distinct college_coach.id FROM college_coach INNER JOIN college_collegecoach ON college_coach.id=college_collegecoach.coach_id WHERE college_collegecoach.collegeyear_id IN (%s)" % ','.join(year_ids))
         results = cursor.fetchall()
         ids = [c[0] for c in results]
-        peers = Coach.objects.filter(id__in=ids).exclude(id=self.id)
-        return peers
+        return Coach.objects.filter(id__in=ids).exclude(id=self.id)
     
     class Meta:
         ordering = ['last_name', 'first_name']
