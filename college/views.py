@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.syndication.feeds import Feed
 from django import forms
@@ -12,7 +13,8 @@ import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
 from fumblerooski.utils import calculate_record, last_home_loss_road_win, opposing_coaches
-from fumblerooski.settings import CURRENT_SEASON
+
+CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year) 
 
 def homepage(request):
     team_count = College.objects.count()

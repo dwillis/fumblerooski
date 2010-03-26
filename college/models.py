@@ -3,7 +3,9 @@ from django.db import models
 from django import forms
 import datetime
 from django.template.defaultfilters import slugify
-from fumblerooski.settings import CURRENT_SEASON
+from django.conf import settings
+
+CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year) 
 
 STATUS_CHOICES = (
     ('FR', 'Freshman'),

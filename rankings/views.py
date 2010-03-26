@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.contrib.syndication.feeds import Feed
 from django import forms
 from django.utils import simplejson
@@ -11,7 +12,8 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
-from fumblerooski.settings import CURRENT_SEASON
+
+CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year) 
 
 def rankings_index(request):
     ranking_list = RankingType.objects.filter(typename='T').order_by('name')
