@@ -52,7 +52,7 @@ def season_week(request, season, week):
 
 def bowl_games(request):
     game_list = BowlGame.objects.all().order_by('name')
-    bowl_seasons = Game.objects.filter(is_bowl_game=True).values_list('season', flat=True).distinct()
+    bowl_seasons = Game.objects.filter(is_bowl_game=True).values_list('season', flat=True).distinct().order_by('season')
     return render_to_response('college/bowl_games.html', {'game_list': game_list, 'bowl_seasons': bowl_seasons})
 
 def bowl_game_season(request, season):
