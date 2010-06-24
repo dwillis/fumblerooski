@@ -3,7 +3,10 @@ from django.db import models
 from fumblerooski.college.models import College, Player, Week
 from django.conf import settings
 
-CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year) 
+if datetime.date.today().month < 8:
+    CURRENT_SEASON = datetime.date.today().year-1
+else:
+    CURRENT_SEASON = datetime.date.today().year-1
 
 RANKINGTYPE_CHOICES = (
     ('T', 'Team'),

@@ -13,7 +13,10 @@ import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
 
-CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year)
+if datetime.date.today().month < 8:
+    CURRENT_SEASON = datetime.date.today().year-1
+else:
+    CURRENT_SEASON = datetime.date.today().year-1
 
 def rankings_index(request):
     ranking_list = RankingType.objects.filter(typename='T').order_by('name')
