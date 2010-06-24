@@ -20,10 +20,10 @@ class RankingType(models.Model):
         return self.name
     
     def get_current_url(self):
-        return "/college/rankings/%s/%s/" % (self.slug, CURRENT_SEASON)
+        return "/rankings/%s/%s/" % (self.slug, CURRENT_SEASON)
     
     def get_partial_url(self):
-        return "/college/rankings/%s/" % self.slug
+        return "/rankings/%s/" % self.slug
     
 
 class Ranking(models.Model):
@@ -42,7 +42,7 @@ class Ranking(models.Model):
         return "%s - %s, %s (%s)" % (self.ranking_type, self.college, self.year, self.week)
     
     def get_week_url(self):
-        return "/college/rankings/%s/%s/week/%s/" % (self.ranking_type.slug, self.year, self.week.week_num)
+        return "/rankings/%s/%s/week/%s/" % (self.ranking_type.slug, self.year, self.week.week_num)
 
 class RushingSummary(models.Model):
     player = models.ForeignKey(Player)
