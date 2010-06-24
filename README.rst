@@ -7,7 +7,7 @@ Requirements
 ------------
 
   * Python 2.5+ (lower versions may work but are untested.)
-  * Django 1.1+ (aggregates support required)
+  * Django 1.2+ (aggregates support required and settings use new multi-db syntax)
   * BeautifulSoup (HTML and XML parsing)
   * django-googlecharts (http://github.com/jacobian/django-googlecharts)
 
