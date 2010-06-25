@@ -1,4 +1,3 @@
-#from django.contrib.gis.db import models
 from django.db import models
 from django import forms
 import datetime
@@ -72,8 +71,6 @@ class City(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
     state = models.ForeignKey(State, null=True, blank=True)
-#    point = models.PointField(srid=900913)
-#    objects = models.GeoManager()
     
     def __unicode__(self):
         if self.state:

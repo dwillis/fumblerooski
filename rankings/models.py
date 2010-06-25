@@ -1,6 +1,6 @@
 import datetime
 from django.db import models
-from fumblerooski.college.models import College, Player, Week
+from fumblerooski.college.models import College, Player, Week, CollegeYear
 from django.conf import settings
 
 if datetime.date.today().month < 8:
@@ -31,7 +31,7 @@ class RankingType(models.Model):
 
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)
-    college = models.ForeignKey(College)
+    collegeyear = models.ForeignKey(CollegeYear)
     year = models.IntegerField()
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
@@ -42,7 +42,7 @@ class Ranking(models.Model):
     division = models.CharField(max_length=1)
     
     def __unicode__(self):
-        return "%s - %s, %s (%s)" % (self.ranking_type, self.college, self.year, self.week)
+        return "%s - %s, %s (%s)" % (self.ranking_type, self.collegeyear, self.week)
     
     def get_week_url(self):
         return "/rankings/%s/%s/week/%s/" % (self.ranking_type.slug, self.year, self.week.week_num)
