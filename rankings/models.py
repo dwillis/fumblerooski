@@ -27,7 +27,9 @@ class RankingType(models.Model):
     
     def get_partial_url(self):
         return "/rankings/%s/" % self.slug
-    
+        
+    def year_list(self):
+        return list(set([y.year for y in self.ranking_set.all()]))    
 
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)
@@ -42,7 +44,7 @@ class Ranking(models.Model):
     division = models.CharField(max_length=1)
     
     def __unicode__(self):
-        return "%s - %s, %s (%s)" % (self.ranking_type, self.collegeyear, self.week)
+        return "%s - %s (%s)" % (self.ranking_type, self.collegeyear, self.week)
     
     def get_week_url(self):
         return "/rankings/%s/%s/week/%s/" % (self.ranking_type.slug, self.year, self.week.week_num)
