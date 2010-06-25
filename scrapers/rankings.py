@@ -35,7 +35,7 @@ def ranking_loader(year, week):
                     cr = int(cells[5].contents[0].split('T-')[1])
                     ic_t = True
         
-                r, created = Ranking.objects.get_or_create(ranking_type=rt, college_year=cy, college=team, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t, division = cy.division)
+                r, created = Ranking.objects.get_or_create(ranking_type=rt, college_year=cy, year=year, week=w, rank=rk, is_tied = i_t, actual=float(cells[2].contents[0]), conference_rank=cr, is_conf_tied=ic_t, division = cy.division)
 
 def player_rushing(year):
     url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerrush&site=org" % year
