@@ -6,7 +6,7 @@
 
 <h3>Find Coaches</h3>
 
-<form action="." method="post" id="coach_form">
+<form action="." method="post" id="coach_form">{% csrf_token %}
 {% include "coaches/lookup.html" %}
 </form>
 

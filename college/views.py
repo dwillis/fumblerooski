@@ -1,6 +1,8 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_protect
+from django.template import RequestContext
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.syndication.feeds import Feed
@@ -29,6 +31,7 @@ def homepage(request):
     recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago).order_by('-start_date')[:10]
     return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[:10], 'upcoming_week':upcoming_week, 'recent_departures': recent_departures, 'recent_hires': recent_hires, 'current_season': CURRENT_SEASON, 'previous_season': CURRENT_SEASON-1})
 
+@csrf_protect
 def state_index(request):
     if request.method == 'POST':
         if request.POST.has_key('name'):
@@ -43,7 +46,7 @@ def state_index(request):
     else:
         form = StateForm()
         college_list = None
-    return render_to_response('college/state_index.html', {'form': form, 'college_list': college_list})
+    return render_to_response('college/state_index.html', {'form': form, 'college_list': college_list}, context_instance=RequestContext(request))
 
 def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, year=season)
@@ -404,6 +407,7 @@ def rushing_losses(request, season):
     players = Player.objects.filter(year=season).select_related().annotate(net_total=Sum('playerrush__net'),gain_total=Sum('playerrush__gain'),loss_total=Sum('playerrush__loss'),rush_total=Sum('playerrush__rushes'),td_total=Sum('playerrush__td')).filter(net_total__gte=1000, loss_total__lte=100).order_by('loss_total', '-net_total')
     return render_to_response('college/rushing_losses.html', {'season': season, 'player_list': players})
 
+@csrf_protect
 def coach_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('-end_date')[:10]
@@ -417,7 +421,7 @@ def coach_index(request):
                 coach_list = None
     else:
         coach_list = None
-    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 })
+    return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 }, context_instance=RequestContext(request))
 
 def coach_lookup(request):
     if request.is_ajax():

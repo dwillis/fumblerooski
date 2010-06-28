@@ -398,8 +398,10 @@ class BowlGame(models.Model):
 class Game(models.Model):
     season = models.IntegerField()
     team1 = models.ForeignKey(College, related_name='first_team')
+    first_team = models.ForeignKey(College, related_name='team1')
     coach1 = models.ForeignKey(Coach, null=True, related_name='first_coach')
     team2 = models.ForeignKey(College, related_name='second_team')
+    second_team = models.ForeignKey(College, related_name='team2')
     coach2 = models.ForeignKey(Coach, null=True, related_name='second_coach')
     date = models.DateField()
     week = models.ForeignKey(Week)
