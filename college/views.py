@@ -487,3 +487,8 @@ def recent_hires_feed(request):
     recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__year__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
     xml = render_to_string('coaches/recent_hires_feed.xml', { 'recent_hires': recent_hires })
     return HttpResponse(xml, mimetype='application/xml')
+    
+def admin_coach_totals(request):
+    team_list = CollegeYear.objects.select_related().filter(year=2010, college__updated=True).order_by('college_college.name')
+    return render_to_response('admin/coach_totals.html', {'team_list': team_list})
+    

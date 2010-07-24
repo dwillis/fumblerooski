@@ -9,6 +9,7 @@ feeds = {
 admin.autodiscover()
 
 urlpatterns = patterns('',
+     url(r'^admin/coach_totals/', "fumblerooski.college.views.admin_coach_totals"),
      url(r'^admin/doc/', include('django.contrib.admindocs.urls')), 
      url(r"^admin/(.*)", admin.site.root),
      url(r"^blog/", include("fumblerooski.blog.urls")),

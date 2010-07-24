@@ -162,6 +162,9 @@ class CollegeYear(models.Model):
         if self.conference:
             return "/college/conferences/%s/%s/" % (self.conference.abbrev, self.year)
     
+    def coaching_staff_url(self):
+        return self.get_absolute_url()+'coaches/'
+    
     def record(self):
         if self.ties:
             return "%s-%s-%s" % (self.wins, self.losses, self.ties)
@@ -174,6 +177,8 @@ class CollegeYear(models.Model):
         else:
             return "%s-%s" % (self.conference_wins, self.conference_losses)
     
+    def coach_total(self):
+        return len(self.collegecoach_set.filter(end_date__isnull=True))
     
     class Meta:
         ordering = ['college', '-year']
@@ -398,8 +403,10 @@ class BowlGame(models.Model):
 class Game(models.Model):
     season = models.IntegerField()
     team1 = models.ForeignKey(College, related_name='first_team')
+    first_team = models.ForeignKey(College, related_name='team1')
     coach1 = models.ForeignKey(Coach, null=True, related_name='first_coach')
     team2 = models.ForeignKey(College, related_name='second_team')
+    second_team = models.ForeignKey(College, related_name='team2')
     coach2 = models.ForeignKey(Coach, null=True, related_name='second_coach')
     date = models.DateField()
     week = models.ForeignKey(Week)
