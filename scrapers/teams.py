@@ -6,7 +6,16 @@ from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime, strftime
 import time
 from BeautifulSoup import BeautifulSoup
-from fumblerooski.college.models import *
+from fumblerooski.college.models import College, Game, CollegeYear, Player, Position
+
+def create_teams(year):
+    """
+    Scrapes basic team information and creates College instances. Used most often to populate an empty db.
+    >>> create_teams(2010)
+    """
+    
+    
+    
 
 def load_skeds(year, teams):
     """

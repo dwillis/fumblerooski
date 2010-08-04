@@ -19,7 +19,7 @@ def game_updater(year, teams, week, nostats=False):
     after the game is updated the function calls other functions to update player and drive statistics. After completing,
     this function calls update_college_year for the given year, which updates the win-loss record of each team.
     
-    >>> game_updater(2009, teams, 12)
+    >>> game_updater(2010, teams, 12)
     """
     if not teams:
         teams = College.objects.filter(updated=True).order_by('id')
@@ -51,12 +51,15 @@ def game_updater(year, teams, week, nostats=False):
                     team1_score = None
                     team2_score = None
                     t1_result = None
+                    ot = None
                 date = datetime.date(*(time.strptime(stringdate, '%m/%d/%Y')[0:3]))
                 try:
                     t2 = int(row.findAll('td')[1].find('a')['href'].split('=')[1].split('&')[0])
                     try:
                         if t2 == 115:   # hack job to cover for ncaa change
                             team2 = College.objects.get(id=30416)
+                        elif t2 == 357: # another one like the above - Lincoln Univ. PA
+                            team2 = College.objects.get(id=30417)
                         else:
                             team2 = College.objects.get(id=t2)
                     except:
@@ -64,6 +67,9 @@ def game_updater(year, teams, week, nostats=False):
                         slug = slugify(name)
                         team2, created = College.objects.get_or_create(name=name, slug=slug)
                 except:
+                    # handle blank rows
+                    if row.findAll('td')[1].contents == []:
+                        continue
                     name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
                     slug = slugify(name)
                     team2, created = College.objects.get_or_create(name=name, slug=slug)
