@@ -16,6 +16,16 @@ The functions here are a collection of utilities that help with data loading
 or otherwise populate records that are not part of the scraping process.
 """
 
+def prepare_new_season(year):
+    create_weeks(year)
+    game_weeks(year)
+    add_college_year(year)
+    game_updater(year, None, 15)
+    games = Game.objects.filter(season=year, coach1__isnull=True, coach2__isnull=True)
+    for game in games:
+        populate_head_coaches(game)
+    
+
 def opposing_coaches(coach):
     coach_list = Coach.objects.raw("SELECT college_coach.id, college_coach.slug, count(college_game.*) as games from college_coach inner join college_game on college_coach.id = college_game.coach2_id where coach1_id = %s group by 1,2 order by 3 desc", [coach.id])
     return coach_list
@@ -71,7 +81,7 @@ def populate_head_coaches(game):
     an entire season or as part of the game loader. As college coach data
     grows, will need to be run periodically on games without head coaches:
     
-    >>> games = Game.objects.filter(coach1__is_null=True, coach2__is_null=True)
+    >>> games = Game.objects.filter(coach1__isnull=True, coach2__isnull=True)
     >>> for game in games:
     ...     populate_head_coaches(game)
     ...
