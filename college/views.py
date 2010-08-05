@@ -14,7 +14,7 @@ from time import strptime
 import datetime
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
-from fumblerooski.utils import calculate_record, last_home_loss_road_win, opposing_coaches
+from fumblerooski.utils import calculate_record, last_home_loss_road_win, opposing_coaches, update_college_year
 
 CURRENT_SEASON = getattr(settings, 'CURRENT_SEASON', datetime.date.today().year) 
 
@@ -24,7 +24,7 @@ def homepage(request):
     try:
         upcoming_week = Week.objects.filter(year=CURRENT_SEASON, end_date__gte=datetime.date.today()).order_by('end_date')[0]
     except:
-        upcoming_week = None
+        upcoming_week = Week.objects.none()
     latest_games = Game.objects.select_related().filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_departures = CollegeCoach.objects.select_related().filter(end_date__gte=two_months_ago).order_by('-end_date')[:10]
@@ -41,11 +41,11 @@ def state_index(request):
                 college_list = College.objects.filter(updated=True, state=state).order_by('name')
                 form = StateForm(request.POST)
             except:
-                college_list = None
+                college_list = College.objects.none()
                 form = StateForm()
     else:
         form = StateForm()
-        college_list = None
+        college_list = College.objects.none()
     return render_to_response('college/state_index.html', {'form': form, 'college_list': college_list}, context_instance=RequestContext(request))
 
 def season_week(request, season, week):
@@ -88,7 +88,7 @@ def team_detail(request, team):
     try:
         current_head_coach = CollegeCoach.objects.get(collegeyear=college_years[0], end_date__isnull=True, jobs__name='Head Coach')
     except CollegeCoach.DoesNotExist:
-        current_head_coach = None
+        current_head_coach = CollegeCoach.objects.none()
     college_years = CollegeYear.objects.filter(college=t).order_by('-year')
     game_list = Game.objects.select_related().filter(team1=t).order_by('-date')
     popular_opponents = game_list.values("team2").annotate(games=Count("id")).order_by('-games')
@@ -105,8 +105,8 @@ def team_detail_season(request, team, season):
     try:
         current_coach = CollegeCoach.objects.filter(collegeyear=season_record, end_date__isnull=True, jobs__name='Head Coach').order_by('-start_date')[0]
     except IndexError:
-        current_coach = None
-    game_list = Game.objects.select_related().filter(team1=t, season=season).order_by('-date')
+        current_coach = CollegeCoach.objects.none()
+    game_list = Game.objects.select_related().filter(team1=t, season=season).order_by('date')
     player_list = Player.objects.filter(team=t, year=season)
     return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
@@ -147,7 +147,7 @@ def team_rankings_season(request, team, season, week=None):
         best = latest_rankings.order_by('rank')[0]
         worst = latest_rankings.order_by('-rank')[0]
     else:
-        best, worst = None, None
+        best, worst = Ranking.objects.none(), Ranking.objects.none()
     return render_to_response('college/team_rankings_season.html', {'season_record': cy, 'latest_rankings': latest_rankings, 'latest_week': latest_week, 'other_weeks': other_weeks, 'best': best, 'worst': worst})
 
 def team_ranking_detail(request, team, season, rankingtype):
@@ -162,7 +162,7 @@ def team_ranking_detail(request, team, season, rankingtype):
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
-    game_list = Game.objects.select_related().filter(team1=t).select_related().order_by('college_college.name').values("team2").annotate(games=Count("id")).order_by('-games')
+    game_list = Game.objects.select_related().filter(team1=t).order_by('college_college.name').values("team2").annotate(games=Count("id")).order_by('-games')
     opp_list = []
     for team in game_list:
         c = College.objects.get(id=team['team2'])
@@ -234,9 +234,9 @@ def team_vs(request, team1, team2, outcome=None):
     try:
         team_2 = College.objects.get(slug=team2)
         if team_1 == team_2:
-            team_2 = None
+            team_2 = College.objects.none()
     except:
-        team_2 = None
+        team_2 = College.objects.none()
     if outcome:
         games = Game.objects.select_related().filter(team1=team_1, team2=team_2, t1_result=outcome[0].upper()).order_by('-date')
     else:
@@ -251,7 +251,7 @@ def game(request, team1, team2, year, month, day):
     try:
         team_2 = College.objects.get(slug=team2)
         if team_1 == team_2:
-            team_2 = None
+            team_2 = College.objects.none()
     except:
         team_2 = None
     
@@ -262,7 +262,7 @@ def game(request, team1, team2, year, month, day):
     if game.is_conference_game == True:
         conf = CollegeYear.objects.get(college=team_1, year=year).conference
     else:
-        conf = None
+        conf = CollegeYear.objects.none()
     try:
         game_offense = GameOffense.objects.get(game=game, team=team_1)
         fd = []
@@ -270,40 +270,40 @@ def game(request, team1, team2, year, month, day):
         fd.append(game_offense.first_downs_passing)
         fd.append(game_offense.first_downs_penalty)
     except:
-        game_offense = None
+        game_offense = GameOffense.objects.none()
         fd = None
     try:
         game_defense = GameDefense.objects.get(game=game, team=team_1)
     except:
-        game_defense = None
+        game_defense = GameDefense.objects.none()
     try:
         drives = GameDrive.objects.get(game=game, team=team_1)
     except:
-        drives = None
+        drives = GameDrive.objects.none()
     try:
         player_rushing = PlayerRush.objects.filter(game=game, player__team=team_1).order_by('-net')
     except:
-        player_rushing = None
+        player_rushing = PlayerRush.objects.none()
     try:
         player_passing = PlayerPass.objects.filter(game=game, player__team=team_1).order_by('-yards')
     except:
-        player_passing = None
+        player_passing = PlayerPass.objects.none()
     try:
         player_receiving = PlayerReceiving.objects.filter(game=game, player__team=team_1).order_by('-yards')
     except:
-        player_receiving = None
+        player_receiving = PlayerReceiving.objects.none()
     try:
         player_tackles = PlayerTackle.objects.filter(game=game, player__team=team_1).order_by('-unassisted_tackles')[:5]
     except:
-        player_tackles = None
+        player_tackles = PlayerTackle.objects.none()
     try:
         player_tacklesloss = PlayerTacklesLoss.objects.filter(game=game, player__team=team_1).order_by('-unassisted_tackles_for_loss')
     except:
-        player_tacklesloss = None
+        player_tacklesloss = PlayerTacklesLoss.objects.none()
     try:
         player_passdefense = PlayerPassDefense.objects.filter(game=game, player__team=team_1).order_by('-interceptions')
     except:
-        player_passdefense = None
+        player_passdefense = PlayerPassDefense.objects.none()
     return render_to_response('college/game.html', {'team_1': team_1, 'conf': conf, 'team_2': team_2, 'game': game, 'offense': game_offense, 'defense': game_defense, 'drives': drives, 'player_rushing': player_rushing, 'player_passing': player_passing, 'player_receiving':player_receiving, 'player_tackles':player_tackles, 'player_tacklesloss':player_tacklesloss, 'player_passdefense':player_passdefense, 'first_downs': fd, 't1_quarter_scores': t1_quarter_scores, 't2_quarter_scores': t2_quarter_scores })
 
 def game_drive(request, team1, team2, year, month, day):
@@ -311,16 +311,16 @@ def game_drive(request, team1, team2, year, month, day):
     try:
         team_2 = College.objects.get(slug=team2)
         if team_1 == team_2:
-            team_2 = None
+            team_2 = College.objects.none()
     except:
-        team_2 = None
+        team_2 = College.objects.none()
     
     date = datetime.date(int(year), int(month), int(day))
     game = get_object_or_404(Game, team1=team_1, team2=team_2, date=date)
     try:
         drives = GameDrive.objects.filter(game=game, team=team_1).order_by('drive')
     except:
-        drives = None
+        drives = GameDrive.objects.none()
     return render_to_response('college/game_drives.html', {'team_1': team_1, 'team_2': team_2, 'game': game, 'drives': drives })
 
 
@@ -418,9 +418,9 @@ def coach_index(request):
             try:
                 coach_list = Coach.objects.filter(last_name__istartswith=query).order_by('last_name', 'first_name')
             except:
-                coach_list = None
+                coach_list = Coach.objects.none()
     else:
-        coach_list = None
+        coach_list = Coach.objects.none()
     return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 }, context_instance=RequestContext(request))
 
 def coach_lookup(request):
