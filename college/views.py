@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
 from django.conf import settings
@@ -29,7 +30,7 @@ def homepage(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
     recent_departures = CollegeCoach.objects.select_related().filter(end_date__gte=two_months_ago).order_by('-end_date')[:10]
     recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago).order_by('-start_date')[:10]
-    return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[:10], 'upcoming_week':upcoming_week, 'recent_departures': recent_departures, 'recent_hires': recent_hires, 'current_season': CURRENT_SEASON, 'previous_season': CURRENT_SEASON-1})
+    return render_to_response('college/homepage_maintenance.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[:10], 'upcoming_week':upcoming_week, 'recent_departures': recent_departures, 'recent_hires': recent_hires, 'current_season': CURRENT_SEASON, 'previous_season': CURRENT_SEASON-1})
 
 @csrf_protect
 def state_index(request):
@@ -100,21 +101,19 @@ def team_detail(request, team):
     return render_to_response('college/team_detail.html', {'team': t, 'coach': current_head_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
 
 def team_detail_season(request, team, season):
-    t = get_object_or_404(College, slug=team)
-    season_record = get_object_or_404(CollegeYear, college=t, year=season)
+    season_record = get_object_or_404(CollegeYear, college__slug=team, year=season)
     try:
         current_coach = CollegeCoach.objects.filter(collegeyear=season_record, end_date__isnull=True, jobs__name='Head Coach').order_by('-start_date')[0]
     except IndexError:
         current_coach = CollegeCoach.objects.none()
-    game_list = Game.objects.select_related().filter(team1=t, season=season).order_by('date')
-    player_list = Player.objects.filter(team=t, year=season)
-    return render_to_response('college/team_detail_season.html', {'team': t, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
+    game_list = Game.objects.filter(team1=season_record, season=season).order_by('date')
+    player_list = Player.objects.filter(team=season_record.college, year=season)
+    return render_to_response('college/team_detail_season.html', {'team': season_record.college, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
 def team_coaches_season(request, team, season):
-    t = get_object_or_404(College, slug=team)
-    cy = get_object_or_404(CollegeYear, college=t, year=season)
+    cy = get_object_or_404(CollegeYear, college__slug=team, year=season)
     coaches = CollegeCoach.objects.filter(collegeyear=cy).order_by('coach__last_name', 'coach__first_name')
-    return render_to_response('college/team_coaches_season.html', {'team': t, 'season_record': cy, 'coaches': coaches })
+    return render_to_response('college/team_coaches_season.html', {'team': cy.college, 'season_record': cy, 'coaches': coaches })
 
 def team_bowl_games(request, team):
     t = get_object_or_404(College, slug=team)
@@ -247,20 +246,21 @@ def team_vs(request, team1, team2, outcome=None):
     return render_to_response('college/team_vs.html', {'team_1': team_1, 'team_2': team_2, 'games': games, 'last_home_loss': last_home_loss, 'last_road_win': last_road_win, 'wins': wins, 'losses': losses, 'ties': ties, 'outcome': outcome })
 
 def game(request, team1, team2, year, month, day):
-    team_1 = get_object_or_404(College, slug=team1)
-    try:
-        team_2 = College.objects.get(slug=team2)
-        if team_1 == team_2:
-            team_2 = College.objects.none()
-    except:
-        team_2 = None
-    
+    if team1 == team2:
+        raise Http404
+    # deal with games in the new year
+    if int(month) < 8:
+        team_year = int(year)-1
+    else:
+        team_year = int(year)
+    team_1 = get_object_or_404(CollegeYear, college__slug=team1, year=team_year)
+    team_2 = CollegeYear.objects.get(college__slug=team2, year=team_year)    
     date = datetime.date(int(year), int(month), int(day))
     game = get_object_or_404(Game, team1=team_1, team2=team_2, date=date)
-    t1_quarter_scores = QuarterScore.objects.filter(game=game, team=game.team1).order_by('quarter')
-    t2_quarter_scores = QuarterScore.objects.filter(game=game, team=game.team2).order_by('quarter')
+    t1_quarter_scores = None #QuarterScore.objects.filter(game=game, team=game.team1).order_by('quarter')
+    t2_quarter_scores = None #QuarterScore.objects.filter(game=game, team=game.team2).order_by('quarter')
     if game.is_conference_game == True:
-        conf = CollegeYear.objects.get(college=team_1, year=year).conference
+        conf = team_1.conference
     else:
         conf = CollegeYear.objects.none()
     try:
@@ -337,8 +337,8 @@ def state_detail(request, state):
     return render_to_response('college/state.html', {'team_list': team_list, 'state': s})
 
 def team_players(request, team, season):
-    t = get_object_or_404(College, slug=team)
-    player_list = Player.objects.select_related().filter(team=t, year=season)
+    t = get_object_or_404(CollegeYear, college__slug=team, year=season)
+    player_list = Player.objects.filter(team=t).select_related()
     return render_to_response('college/team_players.html', {'team': t, 'year': season, 'player_list': player_list })
 
 def team_positions(request, team):
@@ -348,25 +348,26 @@ def team_positions(request, team):
 
 def team_by_cls(request, team, year, cl):
     t = get_object_or_404(College, slug=team)
-    cy = get_object_or_404(CollegeYear, team=t, year=season)
-    player_list = Player.objects.filter(team=t, year=season, status=cl)
-    return render_to_response('college/team_class.html', {'team':t, 'year': year, 'cls': cl, 'player_list':player_list })
+    cy = get_object_or_404(CollegeYear, college=t, year=year)
+    player_list = Player.objects.filter(team=cy, year=year, status=cl.upper())
+    return render_to_response('college/team_class_detail.html', {'team':t, 'year': year, 'cls': cl, 'player_list':player_list })
 
 def team_position_detail(request, team, season, pos):
     t = get_object_or_404(College, slug=team)
+    cy = get_object_or_404(CollegeYear, college=t, year=year)
     p = Position.objects.get(abbrev=pos.upper())
-    player_list = Player.objects.filter(team=t, position=p, year=season).order_by('-games_played')
+    player_list = Player.objects.filter(team=cy, position=p).order_by('-games_played')
     return render_to_response('college/team_position_detail.html', {'team': t, 'position': p, 'season': season, 'player_list': player_list})
 
 def team_class_detail(request, team, season, cls):
     t = get_object_or_404(College, slug=team)
-    player_list = Player.objects.filter(team=t, status=cls.upper(), year=season).order_by('-games_played')
+    cy = get_object_or_404(CollegeYear, college=t, year=year)
+    player_list = Player.objects.filter(team=cy, status=cls.upper()).order_by('-games_played')
     return render_to_response('college/team_class_detail.html', {'team': t, 'class': cls, 'season': season, 'player_list': player_list})
 
 def player_detail(request, team, season, player):
-    t = get_object_or_404(College, slug=team)
-    cy = get_object_or_404(CollegeYear, college=t, year=season)
-    p = Player.objects.get(team=t, year=cy.year, slug=player)
+    cy = get_object_or_404(CollegeYear, college__slug=team, year=season)
+    p = Player.objects.get(team=cy, year=cy.year, slug=player)
     starts = PlayerGame.objects.filter(player=p, game__season=season, starter=True).count()
     ps = PlayerScoring.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     pret = PlayerReturn.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
@@ -395,8 +396,8 @@ def player_detail(request, team, season, player):
     pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
     ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    other_seasons = Player.objects.filter(team=t, slug=p.slug).exclude(year=season).order_by('-year')
-    return render_to_response('college/player_detail.html', {'team': t, 'year': season, 'cy': cy, 'player': p, 'starts': starts, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 
+    other_seasons = Player.objects.filter(team__college=cy.college, slug=p.slug).exclude(year=season).order_by('-year')
+    return render_to_response('college/player_detail.html', {'team': cy.college, 'year': season, 'cy': cy, 'player': p, 'starts': starts, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 
         'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 
         'pass_tot_int':pass_totals['interceptions__sum'], 'pass_tot_td':pass_totals['td__sum'], 'pass_tot_attempts': pass_totals['attempts__sum'], 'pass_tot_comps': pass_totals['completions__sum'], 
         'pass_tot_yards': pass_totals['yards__sum'], 'pass_tot_eff': pass_totals['pass_efficiency__avg'], 'rush_tot_rushes': rush_totals['rushes__sum'], 'rush_tot_gains': rush_totals['gain__sum'],
@@ -450,7 +451,7 @@ def coach_detail(request, coach):
         return HttpResponseRedirect('/coaches/common/%s/%s/' % (c.slug, c2.slug)) # tried reverse(), but no luck
     else:
         form = CoachDetailForm(c.coaching_peers())
-        return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in(), 'form': form })
+        return render_to_response('coaches/coach_detail.html', {'coach': c, 'college_list': college_list, 'mapdata': c.states_coached_in(), 'form': form }, context_instance=RequestContext(request))
 
 def coach_vs(request, coach):
     c = get_object_or_404(Coach, slug=coach)
@@ -466,6 +467,7 @@ def coach_compare(request, coach, coach2):
     last_home_loss, last_road_win = last_home_loss_road_win(game_list)
     return render_to_response('coaches/coach_compare.html', {'coach': coach, 'coach2': coach2, 'game_list': game_list, 'wins': wins, 'losses':losses, 'ties':ties, 'last_home_loss':last_home_loss, 'last_road_win':last_road_win })
 
+@csrf_protect
 def coach_common(request, coach, coach2):
     coach = get_object_or_404(Coach, slug=coach)
     coach2 = get_object_or_404(Coach, slug=coach2)
@@ -474,7 +476,7 @@ def coach_common(request, coach, coach2):
     c2_list = CollegeCoach.objects.select_related().filter(coach=coach2).select_related().order_by('-college_collegeyear.year', '-start_date')
     c2_years = [y.collegeyear for y in c2_list]
     common = [c for c in c1_years if c in c2_years]
-    return render_to_response('coaches/coach_common.html', {'coach': coach, 'coach2': coach2, 'common': common })
+    return render_to_response('coaches/coach_common.html', {'coach': coach, 'coach2': coach2, 'common': common }, context_instance=RequestContext(request))
     
 def assistant_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
