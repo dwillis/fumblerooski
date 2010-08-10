@@ -1,11 +1,12 @@
 from django.test import TestCase
 from django.test.client import Client
-from fumblerooski.college.models import College, Coach, CoachForm, CoachingJob, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, Ranking, RankingType, PlayerGame, PlayerSummary
+from fumblerooski.college.models import College, Coach, CoachForm, CoachingJob, CollegeCoach, Position, State, Game, Conference, Player, StateForm, CollegeYear, GameOffense, GameDefense, Week, City, DriveOutcome, GameDrive, PlayerRush, PlayerPass, PlayerReceiving, PlayerTackle, PlayerTacklesLoss, PlayerPassDefense, PlayerScoring, PlayerReturn, PlayerFumble, BowlGame, PlayerGame, PlayerSummary
+from fumblerooski.rankings.models import Ranking, RankingType
 
 class CollegeTestCase(TestCase):
     def setUp(self):
         self.florida = College.objects.create(name="Florida", slug='florida', drive_slug='florida',state_id='FL', updated=True)
-        self.florida09 = CollegeYear.objects.create(college_id=self.florida.id, year=2009, wins=6, losses=0, ties=0, conference_wins=3, conference_losses=0, conference_ties=0)
+        self.florida09 = CollegeYear.objects.create(college_id=self.florida.id, season=2009, wins=6, losses=0, ties=0, conference_wins=3, conference_losses=0, conference_ties=0)
         
     def testURL(self):
         self.assertEquals(self.florida.get_absolute_url(), '/college/teams/florida/')
@@ -17,7 +18,7 @@ class CollegeTestCase(TestCase):
 class CollegeYearTestCase(TestCase):
     def setUp(self):
         self.florida = College.objects.create(name="Florida", slug='florida', drive_slug='florida',state_id='FL', updated=True)
-        self.florida09 = CollegeYear.objects.create(college_id=self.florida.id, year=2009, wins=6, losses=0, ties=0, conference_wins=3, conference_losses=0, conference_ties=0)
+        self.florida09 = CollegeYear.objects.create(college_id=self.florida.id, season=2009, wins=6, losses=0, ties=0, conference_wins=3, conference_losses=0, conference_ties=0)
         
     def test_gamecount(self):
         self.assertEquals(self.florida09.game_count(), 6)
@@ -31,9 +32,9 @@ class CoachTestCase(TestCase):
         self.urban.save()
         self.job = CoachingJob.objects.create(id= 1, name='Head Coach', slug='head-coach')
         self.florida = College.objects.create(name="Florida", slug='florida', drive_slug='florida',state_id='FL', updated=True)
-        self.florida09 = CollegeYear.objects.create(college_id=self.florida.id, year=2009, wins=6, losses=0, ties=0, conference_wins=3, conference_losses=0, conference_ties=0)
-        self.fl09coach = CollegeCoach.objects.create(coach_id = 2, collegeyear=self.florida09)
-        self.fl09coach.jobs = [self.job]
+        self.florida10 = CollegeYear.objects.create(college_id=self.florida.id, season=2010, wins=6, losses=0, ties=0, conference_wins=3, conference_losses=0, conference_ties=0)
+        self.fl10coach = CollegeCoach.objects.create(coach = self.urban, collegeyear=self.florida10)
+        self.fl10coach.jobs = [self.job]
     
     def test_save(self):
         self.assertEquals(self.urban.slug, '2-urban-meyer')
@@ -42,7 +43,7 @@ class CoachTestCase(TestCase):
         self.assertEquals(self.urban.current_school(), self.florida)
         
     def test_seasons_at_school(self):
-        self.assertEquals(self.urban.seasons_at_school(self.florida), [[2009]])
+        self.assertEquals(self.urban.seasons_at_school(self.florida), [[2010]])
     
     def test_seasons_at_current_school(self):
         self.assertEquals(self.urban.seasons_at_current_school(), 1)
