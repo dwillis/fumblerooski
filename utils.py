@@ -16,19 +16,34 @@ The functions here are a collection of utilities that help with data loading
 or otherwise populate records that are not part of the scraping process.
 """
 
-def prepare_new_season(year):
-    create_weeks(year)
-    game_weeks(year)
-    add_college_year(year)
-    game_updater(year, None, 15)
-    games = Game.objects.filter(season=year, coach1__isnull=True, coach2__isnull=True)
+def create_missing_collegeyears(year):
+    """
+    Create collegeyears where they are missing (legacy data only).
+    >>> create_missing_collegeyears(2009)
+    """
+    games = Game.objects.filter(season=year)
     for game in games:
-        populate_head_coaches(game)
-    
+        try:
+            game.team1
+        except CollegeYear.DoesNotExist:
+            try:
+                c = College.objects.get(pk=game.team1_id)
+                cy, created = CollegeYear.objects.get_or_create(college=c, season=year)
+                if created:
+                    print "created CollegeYear for %s in %s" % (c, year)
+            except:
+                print "Could not find a college for %s" % game.team1_id
 
 def opposing_coaches(coach):
     coach_list = Coach.objects.raw("SELECT college_coach.id, college_coach.slug, count(college_game.*) as games from college_coach inner join college_game on college_coach.id = college_game.coach2_id where coach1_id = %s group by 1,2 order by 3 desc", [coach.id])
     return coach_list
+
+def calculate_team_year(year, month):
+    if int(month) < 8:
+        team_year = int(year)-1
+    else:
+        team_year = int(year)
+    return team_year
 
 def calculate_record(totals):
     """
@@ -134,14 +149,24 @@ def next_coach_id():
     c = Coach.objects.aggregate(Max("id"))
     return c['id__max']+1
 
+def update_conference_membership(year):
+    # check prev year conference and update current year with it, then mark conf games.
+    previous_year = year-1
+    teams = CollegeYear.objects.filter(season=previous_year, conference__isnull=False)
+    for team in teams:
+        cy = CollegeYear.objects.get(season=year, college=team.college)
+        cy.conference = team.conference
+        cy.save()
+    
+
 def update_conf_games(year):
     """
     Marks a game as being a conference game if teams are both in the same conference.
     """
-    games = Game.objects.filter(season=year, team1__updated=True, team2__updated=True)
+    games = Game.objects.filter(season=year, team1__college__updated=True, team2__college__updated=True)
     for game in games:
         try:
-            if game.team1.collegeyear_set.get(year=year).conference == game.team2.collegeyear_set.get(year=year).conference:
+            if game.team1.conference == game.team2.conference:
                 game.is_conference_game = True
                 game.save()
         except:
@@ -166,7 +191,7 @@ def update_college_year(year):
     """
     Updates season and conference records for teams. Run at the end of a game loader.
     """
-    teams = CollegeYear.objects.select_related().filter(year=year, college__updated=True).order_by('college_college.id')
+    teams = CollegeYear.objects.select_related().filter(season=year, college__updated=True).order_by('college_college.id')
     for team in teams:
         games = Game.objects.filter(team1=team.college, season=year, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
         d = {}
@@ -214,9 +239,9 @@ def add_college_years(year):
     """
     Creates college years for teams. Used at the beginning of a new season or to backfill.
     """
-    teams = College.objects.filter(updated=True).order_by('id')
+    teams = College.objects.all().order_by('id')
     for team in teams:
-        cy, created = CollegeYear.objects.get_or_create(year=year, college=team)
+        cy, created = CollegeYear.objects.get_or_create(season=year, college=team)
 
 def create_weeks(year):
     """
@@ -233,7 +258,7 @@ def create_weeks(year):
             end_date = date + datetime.timedelta(days=dd)
         else:
             end_date = date
-        new_week, created = Week.objects.get_or_create(year=min.year, week_num = week, end_date = end_date)
+        new_week, created = Week.objects.get_or_create(season=min.year, week_num = week, end_date = end_date)
         date += datetime.timedelta(days=7)
         week += 1      
 
@@ -241,7 +266,7 @@ def game_weeks(year):
     """
     Populates week foreign key for games.
     """
-    weeks = Week.objects.filter(year=year).order_by('week_num')
+    weeks = Week.objects.filter(season=year).order_by('week_num')
     for week in weeks:
         games = Game.objects.filter(season=year, date__lte=week.end_date, week__isnull=True)
         for game in games:
