@@ -1,5 +1,5 @@
 from fumblerooski.college.models import College
-from fumblerooski.utils import update_college_year
+from fumblerooski.utils import *
 from fumblerooski.scrapers.games import game_updater
 
 def full_load(year, week):
@@ -24,5 +24,17 @@ def partial_loader(year, id, week):
     """
     teams = College.objects.filter(updated=True, id__gte=id).order_by('id')
     game_updater(year, teams, week)
+
+def prepare_new_season(year):
+    add_college_years(year)
+    update_conference_membership(year)
+    game_updater(year, None, 15)
+    create_weeks(year)
+    game_weeks(year)
+    update_conf_games(year)
+    games = Game.objects.filter(season=year, coach1__isnull=True, coach2__isnull=True)
+    for game in games:
+        populate_head_coaches(game)
+
 
 

@@ -22,12 +22,12 @@ def game_updater(year, teams, week, nostats=False):
     >>> game_updater(2010, teams, 12)
     """
     if not teams:
-        teams = College.objects.filter(updated=True).order_by('id')
+        teams = CollegeYear.objects.filter(season=year, college__updated=True).order_by('id')
     
     games = []
     
     for team in teams:
-        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.id, year, week)
+        url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.college.id, year, week)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
         try:
@@ -57,22 +57,24 @@ def game_updater(year, teams, week, nostats=False):
                     t2 = int(row.findAll('td')[1].find('a')['href'].split('=')[1].split('&')[0])
                     try:
                         if t2 == 115:   # hack job to cover for ncaa change
-                            team2 = College.objects.get(id=30416)
+                            team2 = CollegeYear.objects.get(college__id=30416, season=year)
                         elif t2 == 357: # another one like the above - Lincoln Univ. PA
-                            team2 = College.objects.get(id=30417)
+                            team2 = CollegeYear.objects.get(college__id=30417, season=year)
                         else:
-                            team2 = College.objects.get(id=t2)
+                            team2 = CollegeYear.objects.get(college__id=t2, season=year)
                     except:
                         name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
                         slug = slugify(name)
-                        team2, created = College.objects.get_or_create(name=name, slug=slug)
+                        new_college, created = College.objects.get_or_create(name=name, slug=slug)
+                        team2 = CollegeYear.objects.get_or_create(college=new_college, season=year)
                 except:
-                    # handle blank rows
-                    if row.findAll('td')[1].contents == []:
+                    if len(row.findAll('td')[1].contents) > 0 and row.findAll('td')[1].contents[0] != '':
+                        name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
+                        slug = slugify(name)
+                        new_college, created = College.objects.get_or_create(name=name, slug=slug)
+                        team2, created = CollegeYear.objects.get_or_create(college=new_college, season=year)
+                    else:
                         continue
-                    name = row.findAll('td')[1].contents[0].replace("*","").strip().title()
-                    slug = slugify(name)
-                    team2, created = College.objects.get_or_create(name=name, slug=slug)
                 print team, team2, date, team1_score, team2_score, t1_result
                 g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
                 g.team1_score = team1_score
@@ -143,44 +145,63 @@ def load_ncaa_game_xml(game):
     try:
         print "trying game # %s: %s-%s" % (game.id, soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
-            t1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
+            c1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
+            t1, created = CollegeYear.objects.get_or_create(college=c1, year=game.season)
         except College.DoesNotExist:
             if soup.teams.home.orgid.contents[0] == '505632':
-                t1 = College.objects.get(id=30647)
+                c1 = College.objects.get(id=30647)
+                t1, created = CollegeYear.objects.get_or_create(college=c1, season=game.season)
         if soup.teams.visitor.orgid.contents[0] == '506027':
-            t2 = College.objects.get(id=30504) # special case for ncaa error on southern oregon
+            c2 = College.objects.get(college__id=30504) # special case for ncaa error on southern oregon
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '505632':
-            t2 = College.objects.get(id=30505)
+            c2 = College.objects.get(id=30505)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '506123':
-            t2 = College.objects.get(id=30506)
+            c2 = College.objects.get(id=30506)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '500405':
-            t2 = College.objects.get(id=30513)
+            c2 = College.objects.get(id=30513)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '30077':
-            t2 = College.objects.get(id=1083)
+            c2 = College.objects.get(id=1083)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '506112':
-            t2 = College.objects.get(id=30514)
+            c2 = College.objects.get(id=30514)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '501982':
-            t2 = College.objects.get(id=30510)
+            c2 = College.objects.get(id=30510)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '505632':
-            t2 = College.objects.get(id=30647)
+            c2 = College.objects.get(id=30647)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '506116':
-            t2 = College.objects.get(id=30509)
+            c2 = College.objects.get(id=30509)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '506037':
-            t2 = College.objects.get(id=30636)
+            c2 = College.objects.get(id=30636)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '506083':
-            t2 = College.objects.get(id=30488)
+            c2 = College.objects.get(id=30488)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '506105':
-            t2 = College.objects.get(id=30635)
+            c2 = College.objects.get(id=30635)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '505260':
-            t2 = College.objects.get(id=30515)
+            c2 = College.objects.get(id=30515)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '504135':
-            t2 = College.objects.get(id=30561)
+            c2 = College.objects.get(id=30561)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '501555':
-            t2 = College.objects.get(id=30432)
+            c2 = College.objects.get(id=30432)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '115':
-            t2 = College.objects.get(id=30416)
+            c2 = College.objects.get(id=30416)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         else:
-            t2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
+            c2 = College.objects.get(id = int(soup.teams.visitor.orgid.contents[0]))
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
         gd = datetime.date(d[0], d[1], d[2])
     except:

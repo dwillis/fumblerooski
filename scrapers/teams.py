@@ -7,25 +7,17 @@ from time import strptime, strftime
 import time
 from BeautifulSoup import BeautifulSoup
 from fumblerooski.college.models import College, Game, CollegeYear, Player, Position
-
-def create_teams(year):
-    """
-    Scrapes basic team information and creates College instances. Used most often to populate an empty db.
-    >>> create_teams(2010)
-    """
-    
-    
     
 
 def load_skeds(year, teams):
     """
     Loads the game schedules for teams for a given year. Defaults to all teams where updated = True,
     but can be passed in a selection of teams.
-    >>> teams = College.objects.filter(id__IN=(123,345,435))
+    >>> teams = CollegeYear.objects.filter(college__id__IN=(123,345,435))
     >>> load_skeds(2009, teams)
     """
     if not teams:
-        teams = College.objects.filter(updated=True).order_by('id')
+        teams = CollegeYear.objects.filter(college__updated=True).order_by('id')
     
     for team in teams:
         url = "http://web1.ncaa.org/football/exec/rankingSummary?year=%s&org=%s" % (year, team.id)
@@ -39,15 +31,17 @@ def load_skeds(year, teams):
             try:
                 t2 = int(row.findAll('td')[2].find('a')['href'].split('=')[1].split('&')[0])
                 try:
-                    team2 = College.objects.get(id=t2)
+                    team2 = CollegeYear.objects.get(college__id=t2, year=year)
                 except:
                     name = row.findAll('td')[2].find('a').contents[0].strip()
                     slug = row.findAll('td')[2].find('a').contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').replace("'","").lower().strip()
-                    team2, created = College.objects.get_or_create(name=name, slug=slug)
+                    c2, created = College.objects.get_or_create(name=name, slug=slug)
+                    team2, created = CollegeYear.objects.get_or_create(college=c2, year=year)
             except:
                 name = row.findAll('td')[2].contents[0].strip()
                 slug = row.findAll('td')[2].contents[0].replace(' ','-').replace(',','').replace('.','').replace(')','').replace('(','').lower().strip()
-                team2, created = College.objects.get_or_create(name=name, slug=slug)
+                c2, created = College.objects.get_or_create(name=name, slug=slug)
+                team2, created = CollegeYear.objects.get_or_create(college=c2, year=year)
             g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
             if "@" in row.findAll('td')[1].find('a').contents[0]:
                 g.t1_game_type = 'A'
@@ -74,19 +68,18 @@ def load_team(team_id, year):
     and also gets/creates individual Player objects and updates with the number of games played.
     >>> load_team(235, 2009)
     """
-    team = College.objects.get(id=team_id)
-    url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team.id)
+    team = CollegeYear.objects.get(college__id=team_id, season=year)
+    url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team_id)
     html = urllib.urlopen(url).read()
     soup = BeautifulSoup(html)
     try:
         classes = soup.find("th").contents[0].split(":")[1].split(',') # retrieve class numbers for team
         fr, so, jr, sr = [int(c.strip()[0:2]) for c in classes] # assign class numbers
-        t, created = CollegeYear.objects.get_or_create(college=team, year=year)
-        t.freshmen = fr
-        t.sophomores = so
-        t.juniors = jr
-        t.seniors = sr
-        t.save()
+        team.freshmen = fr
+        team.sophomores = so
+        team.juniors = jr
+        team.seniors = sr
+        team.save()
         rows = soup.findAll("tr")[5:]
         for row in rows:
             cells = row.findAll("td")
@@ -98,9 +91,9 @@ def load_team(team_id, year):
                 pos, created = Position.objects.get_or_create(abbrev=cells[2].contents[0].strip())
             cl = cells[3].contents[0].strip()
             gp = int(cells[4].contents[0].strip())
-            py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, year=year, position=pos, number=unif, status=cl)
+            py, created = Player.objects.get_or_create(name=name, slug=name.lower().replace(' ','-').replace('.','').replace("'","-"), team=team, season=year, position=pos, number=unif, status=cl)
             py.games_played=gp
             py.save()
     except:
-        team.updated = False
-        team.save()
+        team.college.updated = False
+        team.college.save()
