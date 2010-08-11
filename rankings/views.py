@@ -16,7 +16,7 @@ from fumblerooski.rankings.models import *
 if datetime.date.today().month < 8:
     CURRENT_SEASON = datetime.date.today().year-1
 else:
-    CURRENT_SEASON = datetime.date.today().year-1
+    CURRENT_SEASON = datetime.date.today().year
 
 def rankings_index(request):
     ranking_list = RankingType.objects.filter(typename='T').order_by('name')
