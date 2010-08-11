@@ -22,7 +22,6 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('fumblerooski.college.views',
      url(r'^coaches/$', 'coach_index'),
-     url(r'^coaches/lookup/$', 'coach_lookup'),
      url(r'^coaches/active/$', 'active_coaches'),
      url(r'^coaches/feeds/recent_hires/$', 'recent_hires_feed'),
      url(r'^coaches/detail/(?P<coach>\d+-[-a-z]+)/$', 'coach_detail', name="coach_detail"),
