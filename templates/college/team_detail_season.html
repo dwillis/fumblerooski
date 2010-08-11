@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h3>{{ team.name }}</h3>
+<h3><a href="{{ team.get_absolute_url }}">{{ team.name }}</a></h3>
 {% if season_record.conference %}
 <h2><a href="{{ season_record.get_conference_url }}">{{ season_record.conference.name }}</a></h2>
 {% endif %}
@@ -19,7 +19,7 @@ Head Coach:
 <table>
     <th>Date</th><th>Opponent</th><th>Location</th><th>Result</th>
     {% for game in game_list %}
-    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td>{% if game.team2.updated %}<a href="{{ game.team2.get_absolute_url }}">{% endif %}{{ game.team2.name }}</a> {% if game.is_conference_game %}*{% endif %}</td><td>{{ game.get_t1_game_type_display }}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a> {% if game.overtime %}{{ game.overtime }}{% endif %}{% else %}{% endif %}</td></tr>
+    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td>{% if game.team2.college.updated %}<a href="{{ game.team2.get_absolute_url }}">{% endif %}{{ game.team2.college.name }}</a> {% if game.is_conference_game %}*{% endif %}</td><td>{{ game.get_t1_game_type_display }}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a> {% if game.overtime %}{{ game.overtime }}{% endif %}{% else %}{% endif %}</td></tr>
     {% endfor %}
 </table>
 * conference game<br />

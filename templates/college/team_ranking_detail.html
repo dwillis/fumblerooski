@@ -3,11 +3,11 @@
 {% load humanize %}
 {% load charts %}
 
-{% block title %}Fumblerooski: {{ season_record.college.name }} {{ season_record.year }} Rankings - {{ ranking_type.name }}{% endblock %}
+{% block title %}Fumblerooski: {{ season_record.college.name }} {{ season_record.season }} Rankings - {{ ranking_type.name }}{% endblock %}
 
 {% block content %}
 
-<h3>{{ season_record.college.name }} {{ season_record.year }} Rankings - {{ ranking_type.name }}</h3>
+<h3>{{ season_record.college.name }} {{ season_record.season }} Rankings - {{ ranking_type.name }}</h3>
 
 <h2>Best Ranking: {{ best.rank }}, {{ best.week.end_date|date:"N d, Y" }}</h2>
 <h2>Worst Ranking: {{ worst.rank }}, {{ worst.week.end_date|date:"N d, Y" }}</h2>

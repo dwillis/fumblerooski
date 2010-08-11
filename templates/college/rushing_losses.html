@@ -12,7 +12,7 @@
 <table>
   <th>Rank</th><th>Name</th><th>School</th><th>Position</th><th>Class</th><th>Games Played</th><th>Net Yards</th><th>Yards Lost</th>
   {% for player in player_list %}
-  <tr><td>{{ forloop.counter }}</td><td><a href="{{ player.get_absolute_url }}">{{ player.name }}</a></td><td><a href="{{ player.team.get_absolute_url }}">{{ player.team.name }}</a></td><td><a href="positions/{{ player.position.abbrev|lower }}/">{{ player.position.abbrev }}</a></td><td>{{ player.status }}</td><td>{{ player.games_played }}</td><td>{{ player.net_total|intcomma }}</td><td>{{ player.loss_total }}</td></tr>
+  <tr><td>{{ forloop.counter }}</td><td><a href="{{ player.get_absolute_url }}">{{ player.name }}</a></td><td><a href="{{ player.team.get_absolute_url }}">{{ player.team.college.name }}</a></td><td>{{ player.position.abbrev }}</td><td>{{ player.status }}</td><td>{{ player.games_played }}</td><td>{{ player.net_total|intcomma }}</td><td>{{ player.loss_total }}</td></tr>
   {% endfor %}
 </table>
 

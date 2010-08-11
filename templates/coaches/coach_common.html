@@ -11,7 +11,7 @@
 <table>
 	<th>School</th><th>Season</th><th>Record</th>
 	{% for year in common %}
-	<tr><td><a href="{% url team_detail year.college.slug %}">{{ year.college }}</a></td><td><a href="{% url team_detail_season year.college.slug year.year %}">{{ year.year }}</a></td><td>{{ year.record }}</td></tr>
+	<tr><td><a href="{% url team_detail year.college.slug %}">{{ year.college }}</a></td><td><a href="{% url team_detail_season year.college.slug year.season %}">{{ year.season }}</a></td><td>{{ year.record }}</td></tr>
 	{% endfor %}
 </table>
 

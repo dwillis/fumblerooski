@@ -16,7 +16,7 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}<
 <table>
     <th>Season</th><th>Wins</th><th>Losses</th><th>Ties*</th>
     {% for season in college_years %}
-    <tr><td><a href="{{ season.year }}/">{{ season.year }}</a></td><td>{{ season.wins }}</td><td>{{ season.losses }}</td><td>{{ season.ties }}</td></tr>
+    <tr><td><a href="{{ season.season }}/">{{ season.season }}</a></td><td>{{ season.wins }}</td><td>{{ season.losses }}</td><td>{{ season.ties }}</td></tr>
     {% endfor %}
 </table>
 * Ties were eliminated beginning in 1996.

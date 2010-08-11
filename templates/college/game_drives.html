@@ -8,7 +8,7 @@
 
 {% if game %}
 
-<h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.name }}</a>: {{ game.season }}</h3>
+<h3><a href="{{ team_1.get_absolute_url }}">{{ team_1.college.name }}</a> vs. <a href="{{ team_2.get_absolute_url }}">{{ team_2.college.name }}</a>: {{ game.season }}</h3>
 (<a href="{{ game.get_matchup_url }}">See all games between these teams</a>)
 
 <table>
@@ -26,11 +26,11 @@
   {% endfor %}
 </table>
 
-<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.id }}&V={{ team_2.id }}&date={{ game.date|date:"d-b-y"|upper }}">
-
+<img src="http://web1.ncaa.org/d1mfb/servlet/driveSummary.gif?acadyr={{ game.season }}&H={{ team_1.college.id }}&V={{ team_2.college.id }}&date={{ game.date|date:"d-b-y"|upper }}">
+<br />
 {% endif %}
 
-(<a href="{{ game.get_reverse_url }}drives/">see {{ team_2.name }}'s drives</a> for this game)
+(<a href="{{ game.get_reverse_url }}drives/">see {{ team_2.college.name }}'s drives</a> for this game)
 
 
 {% else %}
