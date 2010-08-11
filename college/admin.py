@@ -9,8 +9,8 @@ class CollegeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class CollegeYearAdmin(admin.ModelAdmin):
-    list_filter = ('year',)
-    list_display = ('college', 'year', 'wins','losses')
+    list_filter = ('season',)
+    list_display = ('college', 'season', 'wins','losses')
     search_fields = ('college__name',)
     ordering = ('-id',)
 
@@ -46,13 +46,13 @@ class GameAdmin(admin.ModelAdmin):
 
 class PlayerAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ('name', 'team', 'year','position', 'status')
-    list_filter = ('year','position', 'status')
+    list_display = ('name', 'team', 'season','position', 'status')
+    list_filter = ('season','position', 'status')
     search_fields = ('name',)
 
 class WeekAdmin(admin.ModelAdmin):
-    list_display = ('year', 'week_num', 'end_date')
-    list_filter = ('year',)
+    list_display = ('season', 'week_num', 'end_date')
+    list_filter = ('season',)
 
 class DriveOutcomeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}

@@ -86,15 +86,15 @@ class City(models.Model):
     
 
 class Week(models.Model):
-    year = models.IntegerField()
+    season = models.IntegerField()
     week_num = models.IntegerField()
     end_date = models.DateField()
     
     def __unicode__(self):
-        return "Week %s, %s" % (self.week_num, self.year)
+        return "Week %s, %s" % (self.week_num, self.season)
     
     def week_games_url(self):
-        return "/college/seasons/%s/week/%s/" % (self.year, self.week_num)
+        return "/college/seasons/%s/week/%s/" % (self.season, self.week_num)
 
 class Conference(models.Model):
     abbrev = models.CharField(max_length=10)
@@ -123,7 +123,7 @@ class College(models.Model):
         return '/college/teams/%s/' % self.slug
     
     def current_record(self):
-        current_season = self.collegeyear_set.get(year=datetime.date.today()).year
+        current_season = self.collegeyear_set.get(season=datetime.date.today()).year
         return "(%d-%d)" % (current_season.wins, current_season.losses)
     
     class Meta:
@@ -132,7 +132,7 @@ class College(models.Model):
 
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)
-    year = models.IntegerField()
+    season = models.IntegerField()
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
     ties = models.IntegerField(default=0)
@@ -147,20 +147,20 @@ class CollegeYear(models.Model):
     division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
     
     def __unicode__(self):
-        return "%s - %s" % (self.college.name, str(self.year))
+        return "%s - %s" % (self.college.name, str(self.season))
     
     def game_count(self):
         return self.wins+self.losses+self.ties
     
     def get_ncaa_week_url(self):
-        return 'http://web1.ncaa.org/football/exec/rankingSummary?year=%d&org=%d&week=' % (self.year, self.college.id)
+        return 'http://web1.ncaa.org/football/exec/rankingSummary?year=%d&org=%d&week=' % (self.season, self.college.id)
     
     def get_absolute_url(self):
-        return "/college/teams/%s/%s/" % (self.college.slug, self.year)
+        return "/college/teams/%s/%s/" % (self.college.slug, self.season)
     
     def get_conference_url(self):
         if self.conference:
-            return "/college/conferences/%s/%s/" % (self.conference.abbrev, self.year)
+            return "/college/conferences/%s/%s/" % (self.conference.abbrev, self.season)
     
     def coaching_staff_url(self):
         return self.get_absolute_url()+'coaches/'
@@ -181,7 +181,7 @@ class CollegeYear(models.Model):
         return len(self.collegecoach_set.filter(end_date__isnull=True))
     
     class Meta:
-        ordering = ['college', '-year']
+        ordering = ['college', '-season']
 
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
@@ -212,13 +212,13 @@ class Coach(models.Model):
     
     def current_school(self):
         try:
-            current_school = self.collegecoach_set.get(collegeyear__year__exact = CURRENT_SEASON, end_date = None).collegeyear.college
+            current_school = self.collegecoach_set.get(collegeyear__season__exact = CURRENT_SEASON, end_date = None).collegeyear.college
         except:
             current_school = None
         return current_school
     
     def seasons_at_school(self,school):
-        return [sorted([cy.collegeyear.year for cy in self.collegecoach_set.all() if cy.collegeyear.college == school])]
+        return [sorted([cy.collegeyear.season for cy in self.collegecoach_set.all() if cy.collegeyear.college == school])]
         
     
     def seasons_at_current_school(self):
@@ -296,7 +296,7 @@ class CollegeCoach(models.Model):
         return ", ".join([x.name for x in self.jobs.all()])
     
     def is_current_job(self):
-        if self.collegeyear.year == CURRENT_SEASON and self.end_date == None:
+        if self.collegeyear.season == CURRENT_SEASON and self.end_date == None:
             return True
         else:
             return False
@@ -325,12 +325,12 @@ class CollegeCoach(models.Model):
             
 
     class Meta:
-        ordering = ['coach__last_name','-collegeyear__year']
+        ordering = ['coach__last_name','-collegeyear__season']
         verbose_name_plural = 'College coaches'
 
 class CollegeTotal(models.Model):
     college = models.ForeignKey(College)
-    year = models.IntegerField()
+    season = models.IntegerField()
     third_down_attempts = models.IntegerField(default=0)
     third_down_conversions = models.IntegerField(default=0)
     fourth_down_attempts = models.IntegerField(default=0)
@@ -402,11 +402,9 @@ class BowlGame(models.Model):
 
 class Game(models.Model):
     season = models.IntegerField()
-    team1 = models.ForeignKey(College, related_name='first_team')
-    first_team = models.ForeignKey(College, related_name='team1')
+    team1 = models.ForeignKey(CollegeYear, related_name='team1')
     coach1 = models.ForeignKey(Coach, null=True, related_name='first_coach')
-    team2 = models.ForeignKey(College, related_name='second_team')
-    second_team = models.ForeignKey(College, related_name='team2')
+    team2 = models.ForeignKey(CollegeYear, related_name='team2')
     coach2 = models.ForeignKey(Coach, null=True, related_name='second_coach')
     date = models.DateField()
     week = models.ForeignKey(Week)
@@ -430,13 +428,13 @@ class Game(models.Model):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
     
     def get_absolute_url(self):
-        return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team1.slug, self.team2.slug, self.date.year, self.date.month, self.date.day)
+        return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team1.college.slug, self.team2.college.slug, self.date.year, self.date.month, self.date.day)
 
     def get_matchup_url(self):
-        return '/college/teams/%s/vs/%s/' % (self.team1.slug, self.team2.slug)
+        return '/college/teams/%s/vs/%s/' % (self.team1.college.slug, self.team2.college.slug)
     
     def get_reverse_url(self):
-        return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.slug, self.team1.slug, self.date.year, self.date.month, self.date.day)
+        return '/college/teams/%s/vs/%s/%s/%s/%s/' % (self.team2.college.slug, self.team1.college.slug, self.date.year, self.date.month, self.date.day)
         
     def get_ncaa_xml_url(self):
         return 'http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/%s.xml' % (self.season, self.ncaa_xml.strip())
@@ -457,9 +455,10 @@ class Game(models.Model):
             return "%s %s, %s %s" % (self.team2, self.team2_score, self.team1, self.team1_score)
 
 class QuarterScore(models.Model):
-    "Represents a team's scoring during a quarter of a game. OT periods begin with 5"
+    "Represents a team's scoring during a quarter of a game. OT periods begin with 5."
+    "Not implemented yet."
     game = models.ForeignKey(Game)
-    team = models.ForeignKey(College)
+    team = models.ForeignKey(CollegeYear)
     season = models.IntegerField()
     quarter = models.IntegerField(default=CURRENT_SEASON)
     points = models.PositiveIntegerField(default=0)
@@ -479,7 +478,7 @@ class DriveOutcome(models.Model):
 class GameDrive(models.Model):
     season = models.IntegerField()
     game = models.ForeignKey(Game)
-    team = models.ForeignKey(College)
+    team = models.ForeignKey(CollegeYear)
     drive = models.IntegerField()
     quarter = models.PositiveSmallIntegerField()
     start_how = models.CharField(max_length=25)
@@ -497,24 +496,10 @@ class GameDrive(models.Model):
     def __unicode__(self):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
 
-
-#class SeasonTotal(models.Model):
-#    college_year = models.ForeignKey(CollegeYear)
-#    drives = models.IntegerField()
-    
-
-#class Score(models.Model):
-#    game = models.ForeignKey(Game)
-#    year = models.IntegerField()
-    
-
-#class BigPlay(models.Model):
-    
-
 class GameOffense(models.Model):
     game = models.ForeignKey(Game)
-    team = models.ForeignKey(College)
-    year = models.IntegerField()
+    team = models.ForeignKey(CollegeYear)
+    season = models.IntegerField()
     third_down_attempts = models.IntegerField(default=0)
     third_down_conversions = models.IntegerField(default=0)
     fourth_down_attempts = models.IntegerField(default=0)
@@ -599,7 +584,8 @@ class GameOffense(models.Model):
 
 class GameDefense(models.Model):
     game = models.ForeignKey(Game)
-    team = models.ForeignKey(College)
+    team = models.ForeignKey(CollegeYear)
+    season = models.IntegerField()
     safeties = models.IntegerField(default=0)
     unassisted_tackles = models.IntegerField(default=0)
     assisted_tackles = models.IntegerField(default=0)
@@ -624,18 +610,27 @@ class GameDefense(models.Model):
 class Player(models.Model):
     name = models.CharField(max_length=120)
     slug = models.SlugField(max_length=120)
-    team = models.ForeignKey(College)
-    year = models.IntegerField()
+    team = models.ForeignKey(CollegeYear)
+    season = models.IntegerField()
     position = models.ForeignKey(Position)
     number = models.CharField(max_length=4)
     games_played = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
 
     def __unicode__(self):
-        return "%s - %s" % (self.name, self.team)
+        return u"%s - %s" % (self.name, self.team)
     
     def get_absolute_url(self):
-        return '/college/teams/%s/%s/players/%s/' % (self.team.slug, self.year, self.slug)
+        return '/college/teams/%s/%s/players/%s/' % (self.team.college.slug, self.season, self.slug)
+    
+    def get_team_position_url(self):
+        return '/college/teams/%s/%s/players/positions/%s/' % (self.team.college.slug, self.season, self.position.abbrev.lower())
+    
+    def get_team_class_url(self):
+        return '/college/teams/%s/%s/players/class/%s/' % (self.team.college.slug, self.season, self.status.lower())
+    
+    class Meta:
+        ordering = ['id']
 
 class PlayerCollegeCareer(models.Model):
     player = models.ForeignKey(Player)
@@ -823,7 +818,7 @@ class PlayerSummary(models.Model):
     reception_td = models.IntegerField(null=True)
 
     def __unicode__(self):
-        return "%s - %s" % (self.player.name, self.player.year)
+        return "%s - %s" % (self.player.name, self.player.season)
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)
