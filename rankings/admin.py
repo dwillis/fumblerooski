@@ -5,17 +5,17 @@ class RankingTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class RankingAdmin(admin.ModelAdmin):
-    list_filter = ('year',)
+    list_filter = ('season',)
 
 class RushingSummaryAdmin(admin.ModelAdmin):
-    list_display = ('player', 'year', 'rank', 'carries', 'net', 'yards_per_game')
-    list_filter = ('year', 'rank')
-    ordering = ('-year', 'rank')
+    list_display = ('player', 'season', 'rank', 'carries', 'net', 'yards_per_game')
+    list_filter = ('season', 'rank')
+    ordering = ('-season', 'rank')
 
 class PassEfficiencyAdmin(admin.ModelAdmin):
-    list_display = ('player', 'year', 'rank', 'rating')
-    list_filter = ('year', 'rank', 'week')
-    ordering = ('-year', 'rank')
+    list_display = ('player', 'season', 'rank', 'rating')
+    list_filter = ('season', 'rank', 'week')
+    ordering = ('-season', 'rank')
 
 admin.site.register(RankingType, RankingTypeAdmin)
 admin.site.register(Ranking, RankingAdmin)

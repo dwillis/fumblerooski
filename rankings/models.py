@@ -34,7 +34,7 @@ class RankingType(models.Model):
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)
     collegeyear = models.ForeignKey(CollegeYear)
-    year = models.IntegerField()
+    season = models.IntegerField()
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
     is_tied = models.BooleanField()
@@ -51,7 +51,7 @@ class Ranking(models.Model):
 
 class RushingSummary(models.Model):
     player = models.ForeignKey(Player)
-    year = models.IntegerField()
+    season = models.IntegerField()
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
     is_tied = models.BooleanField()
@@ -66,7 +66,7 @@ class RushingSummary(models.Model):
 
 class PassEfficiency(models.Model):
     player = models.ForeignKey(Player)
-    year = models.IntegerField()
+    season = models.IntegerField()
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
     attempts = models.PositiveIntegerField()
