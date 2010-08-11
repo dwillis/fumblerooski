@@ -35,6 +35,3 @@ def prepare_new_season(year):
     games = Game.objects.filter(season=year, coach1__isnull=True, coach2__isnull=True)
     for game in games:
         populate_head_coaches(game)
-
-
-
