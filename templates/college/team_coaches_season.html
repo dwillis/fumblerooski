@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Fumblerooski: {{ team.name }} {{ season_record.year }} Coaching Staff{% endblock %}
+{% block title %}Fumblerooski: {{ team.name }} {{ season_record.season }} Coaching Staff{% endblock %}
 
 {% block content %}
 
-<h3><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> - <a href="{{ season_record.get_absolute_url }}">{{ season_record.year }}</a></h3>
+<h3><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> - <a href="{{ season_record.get_absolute_url }}">{{ season_record.season }}</a></h3>
 {% if season_record.conference %}
 <h2><a href="{{ season_record.get_conference_url }}">{{ season_record.conference.name }}</a></h2>
 {% endif %}
