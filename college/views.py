@@ -23,7 +23,7 @@ def homepage(request):
     team_count = College.objects.count()
     game_count = Game.objects.count()
     try:
-        upcoming_week = Week.objects.filter(year=CURRENT_SEASON, end_date__gte=datetime.date.today()).order_by('end_date')[0]
+        upcoming_week = Week.objects.filter(season=CURRENT_SEASON, end_date__gte=datetime.date.today()).order_by('end_date')[0]
     except:
         upcoming_week = Week.objects.none()
     latest_games = Game.objects.select_related().filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
