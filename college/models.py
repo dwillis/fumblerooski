@@ -450,9 +450,9 @@ class Game(models.Model):
     
     def display(self):
         if self.margin() > 0:
-            return "%s %s, %s %s" % (self.team1.college, self.team1_score, self.team2, self.team2_score)
+            return "%s %s, %s %s" % (self.team1.college, self.team1_score, self.team2.college, self.team2_score)
         else:
-            return "%s %s, %s %s" % (self.team2.college, self.team2_score, self.team1, self.team1_score)
+            return "%s %s, %s %s" % (self.team2.college, self.team2_score, self.team1.college, self.team1_score)
 
 class QuarterScore(models.Model):
     "Represents a team's scoring during a quarter of a game. OT periods begin with 5."
