@@ -27,6 +27,7 @@ def game_updater(year, teams, week, nostats=False):
     games = []
     
     for team in teams:
+        unmatched = []
         url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.college.id, year, week)
         html = urllib.urlopen(url).read()
         soup = BeautifulSoup(html)
@@ -109,9 +110,10 @@ def game_updater(year, teams, week, nostats=False):
                     populate_head_coaches(g)
                 g.save()
         except:
-            raise
+             unmatched.append(team.college.id)
     update_college_year(year)
-
+    for team in unmatched:
+        print "Could not find games for %s" % team.id
 
 def update_player_game_stats(s):
     """
@@ -198,6 +200,9 @@ def load_ncaa_game_xml(game):
             t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '501207':
             c2 = College.objects.get(id=30425)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
+        elif soup.teams.visitor.orgid.contents[0] == '506024':
+            c2 = College.objects.get(id=30695)
             t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '115':
             c2 = College.objects.get(id=30416)
@@ -478,19 +483,19 @@ def player_game_stats(game):
             each.replaceWith("0")
         if game.t1_game_type != 'A':
             try:
-                team = College.objects.get(id=int(soup.teams.home.orgid.contents[0]))
+                team = CollegeYear.objects.get(season=game.season, college__id=int(soup.teams.home.orgid.contents[0]))
                 players = soup.teams.home.players.findAll('player')
             except:
                 players = None
                 pass
         else:
             try:
-                team = College.objects.get(id=int(soup.teams.visitor.orgid.contents[0]))
+                team = CollegeYear.objects.get(season=game.season, college__id=int(soup.teams.visitor.orgid.contents[0]))
                 players = soup.teams.visitor.players.findAll('player')
             except:
                 players = None
                 pass
-        if players and team.updated == True:
+        if players and team.college.updated == True:
             for p in players:
                 uniform = str(p.find("uniform").contents[0])
                 name = str(p.find("name").contents[0])
