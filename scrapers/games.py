@@ -196,6 +196,9 @@ def load_ncaa_game_xml(game):
         elif soup.teams.visitor.orgid.contents[0] == '501555':
             c2 = College.objects.get(id=30432)
             t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
+        elif soup.teams.visitor.orgid.contents[0] == '501207':
+            c2 = College.objects.get(id=30425)
+            t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
         elif soup.teams.visitor.orgid.contents[0] == '115':
             c2 = College.objects.get(id=30416)
             t2, created = CollegeYear.objects.get_or_create(college=c2, season=game.season)
