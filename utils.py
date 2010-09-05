@@ -124,7 +124,7 @@ def populate_head_coaches(game):
     try:
         hc2 = game.team2.collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
         if hc2.count() > 0:
-            if hc2.coun() == 1:
+            if hc2.count() == 1:
                 game.coach2 = hc2[0].coach
             else:
                 coach1, coach2 = [c for c in hc2]
