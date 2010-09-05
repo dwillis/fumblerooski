@@ -102,7 +102,7 @@ def populate_head_coaches(game):
     ...
     """
     try:
-        hc = game.team1.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
+        hc = game.team1.collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
         if hc.count() > 0:
             if hc.count() == 1:
                 game.coach1 = hc[0].coach
@@ -122,7 +122,7 @@ def populate_head_coaches(game):
     game.save()
     
     try:
-        hc2 = game.team2.collegeyear_set.get(year=game.season).collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
+        hc2 = game.team2.collegecoach_set.filter(is_head_coach=True).order_by('-start_date')
         if hc2.count() > 0:
             if hc2.coun() == 1:
                 game.coach2 = hc2[0].coach
