@@ -193,7 +193,7 @@ def update_college_year(year):
     """
     teams = CollegeYear.objects.select_related().filter(season=year, college__updated=True).order_by('college_college.id')
     for team in teams:
-        games = Game.objects.filter(team1=team.college, season=year, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+        games = Game.objects.filter(team1=team, season=year, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
         d = {}
         for i in range(games.count()):
             d[games[i]['t1_result']] = games[i]['count']
@@ -210,7 +210,7 @@ def update_college_year(year):
         except KeyError:
             ties = 0
         if team.conference:
-            conf_games = Game.objects.select_related().filter(team1=team.college, season=year, is_conference_game=True, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
+            conf_games = Game.objects.select_related().filter(team1=team, season=year, is_conference_game=True, t1_result__isnull=False).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
             if conf_games:
                 c = {}
                 for i in range(conf_games.count()):
