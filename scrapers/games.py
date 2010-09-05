@@ -146,7 +146,7 @@ def load_ncaa_game_xml(game):
         print "trying game # %s: %s-%s" % (game.id, soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
         try:
             c1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
-            t1, created = CollegeYear.objects.get_or_create(college=c1, year=game.season)
+            t1, created = CollegeYear.objects.get_or_create(college=c1, season=game.season)
         except College.DoesNotExist:
             if soup.teams.home.orgid.contents[0] == '505632':
                 c1 = College.objects.get(id=30647)
@@ -492,7 +492,7 @@ def player_game_stats(game):
                 uniform = str(p.find("uniform").contents[0])
                 name = str(p.find("name").contents[0])
                 try:
-                    player = Player.objects.get(team=team, year=game.season, name=name, number=uniform)
+                    player = Player.objects.get(team=team, season=game.season, name=name, number=uniform)
                 except:
                     player = None
                     pass
