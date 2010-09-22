@@ -426,9 +426,9 @@ def game_drive_loader(game):
             drive = int(cells[0].find("a").contents[0])
             print cells[2].contents[0]
             try:
-                team = College.objects.get(slug=cells[2].contents[0].lower())
+                team = CollegeYear.objects.get(season=game.season, college__slug=cells[2].contents[0].lower())
             except:
-                team = College.objects.get(drive_slug=str(cells[2].contents[0]))
+                team = CollegeYear.objects.get(season=game.season, college__drive_slug=str(cells[2].contents[0]))
             quarter = int(cells[1].contents[0])
             start_how = cells[3].contents[0]
             start_time = datetime.time(0, int(cells[4].contents[0].split(":")[0]), int(cells[4].contents[0].split(":")[1][:2]))

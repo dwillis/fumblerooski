@@ -440,10 +440,10 @@ class Game(models.Model):
         return 'http://web1.ncaa.org/d1mfb/%s/Internet/worksheets/%s.xml' % (self.season, self.ncaa_xml.strip())
     
     def get_ncaa_drive_url(self):
-        return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
+        return "http://web1.ncaa.org/mfb/driveSummary.jsp?acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.college.id, self.team2.college.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
     
     def get_play_by_play_url(self):
-        return "http://web1.ncaa.org/mfb/driveSummary.jsp?expand=A&acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.id, self.team2.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
+        return "http://web1.ncaa.org/mfb/driveSummary.jsp?expand=A&acadyr=%s&h=%s&v=%s&date=%s&game=%s" % (self.season, self.team1.college.id, self.team2.college.id, self.date.strftime("%d-%b-%y").upper(), self.ncaa_xml.strip())
     
     def margin(self):
         return self.team1_score-self.team2_score
