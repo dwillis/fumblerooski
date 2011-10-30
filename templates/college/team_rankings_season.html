@@ -15,7 +15,7 @@
 
 <h5>Other Weeks:</h5>
 {% for week in other_weeks %}
-<a href="{{ season_record.get_absolute_url }}rankings/week/{{ week.week_num }}/">{{ week.week_num }}</a> {% if forloop.last %}{% else %}|{% endif %} 
+<a href="{{ season_record.get_absolute_url }}rankings/week/{{ week.week_num }}/">{{ week.week_num }}</a> {% if forloop.last %}{% else %}|{% endif %}
 {% endfor %}
 
 <h4>Best Category: {{ best.ranking_type.name }} - {{ best.rank|ordinal }}</h4>
