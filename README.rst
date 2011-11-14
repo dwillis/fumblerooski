@@ -1,7 +1,7 @@
 Fumblerooski
 =============
 
-Fumblerooski is a college football statistics application written in Python using the Django framework, based on data provided by the NCAA and editor input. Most statistics are from 2000 onward, although some teams have game scores dating back to 1988. The code here is licensed under the BSD license (see LICENSE for more details). As of August 2010, this repository is frozen as-is and will not be updated.
+Fumblerooski is a college football statistics application written in Python using the Django framework, based on data provided by the NCAA and editor input. Most statistics are from 2000 onward, although some teams have game scores dating back to 1988. The code here is licensed under the BSD license (see LICENSE for more details). As of August 2010, this repository is frozen as-is and will not be updated. For further development, check out https://github.com/gcaprio/cfbreference_com, which is based on the original Fumblerooski code base.
 
 Requirements
 ------------
