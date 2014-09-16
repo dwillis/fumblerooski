@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load blog_utils %}
 {% load markup %}
- 
+
 {% block title %}{{ post.title }} | {{ block.super }}{% endblock %}
- 
+
 {% block content %}
 <h1>{{ post.title }}</h1>
 <div class="story first">
@@ -11,7 +11,7 @@
 
 </div>
 <div class="story">
- 
+
 <h2>Entry Details</h2>
 <p>Published: <strong>{{ post.pub_date|date:"M j, Y" }} at {{ post.pub_date|time:"f A" }}</strong></p>
 </div>
