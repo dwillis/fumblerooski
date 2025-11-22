@@ -25,10 +25,10 @@ def homepage(request):
         upcoming_week = Week.objects.filter(season=CURRENT_SEASON, end_date__gte=datetime.date.today()).order_by('end_date')[0]
     except:
         upcoming_week = Week.objects.none()
-    latest_games = Game.objects.select_related().filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
+    latest_games = Game.objects.select_related('team1__college', 'team2__college', 'week').filter(team1_score__gt=0, team2_score__gt=0).order_by('-date')
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    recent_departures = CollegeCoach.objects.select_related().filter(end_date__gte=two_months_ago).order_by('-end_date')[:10]
-    recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago).order_by('-start_date')[:10]
+    recent_departures = CollegeCoach.objects.select_related('coach', 'collegeyear__college').filter(end_date__gte=two_months_ago).order_by('-end_date')[:10]
+    recent_hires = CollegeCoach.objects.select_related('coach', 'collegeyear__college').filter(start_date__gte=two_months_ago).order_by('-start_date')[:10]
     return render_to_response('college/homepage.html', {'teams': team_count, 'games': game_count, 'latest_games':latest_games[:10], 'upcoming_week':upcoming_week, 'recent_departures': recent_departures, 'recent_hires': recent_hires, 'current_season': CURRENT_SEASON, 'previous_season': CURRENT_SEASON-1})
 
 @csrf_protect
@@ -50,7 +50,7 @@ def state_index(request):
 
 def season_week(request, season, week):
     week = get_object_or_404(Week, week_num=week, season=season)
-    game_list = Game.objects.select_related().filter(week=week).order_by('date', 'team1')
+    game_list = Game.objects.select_related('team1__college', 'team2__college', 'week').filter(week=week).order_by('date', 'team1')
     return render_to_response('college/season_week.html', {'season': season, 'week': week, 'games': game_list})
 
 def bowl_games(request):
@@ -59,7 +59,7 @@ def bowl_games(request):
     return render_to_response('college/bowl_games.html', {'game_list': game_list, 'bowl_seasons': bowl_seasons})
 
 def bowl_game_season(request, season):
-    game_list = Game.objects.select_related().filter(is_bowl_game=True, season=season).order_by('date', 'bowl_game__name')
+    game_list = Game.objects.select_related('team1__college', 'team2__college', 'bowl_game', 'week').filter(is_bowl_game=True, season=season).order_by('date', 'bowl_game__name')
     return render_to_response('college/bowl_game_season.html', {'season': season, 'game_list': game_list})
 
 def bowl_game_detail(request, bowl):
@@ -75,7 +75,7 @@ def conference_detail(request, conf, season=None):
     if not season:
         season = datetime.date.today().year
     c = get_object_or_404(Conference, abbrev=conf)
-    team_list = CollegeYear.objects.filter(conference=c, season=season).select_related().order_by('college_college.name')
+    team_list = CollegeYear.objects.filter(conference=c, season=season).select_related('college', 'conference').order_by('college__name')
     return render_to_response('college/conference_detail.html', {'conference': c, 'team_list': team_list, 'season':season })
 
 def team_index(request):
@@ -84,45 +84,49 @@ def team_index(request):
 
 def team_detail(request, team):
     t = get_object_or_404(College, slug=team)
-    college_years = CollegeYear.objects.filter(college=t).order_by('-season')
+    college_years = CollegeYear.objects.filter(college=t).select_related('conference').order_by('-season')
     try:
-        current_head_coach = CollegeCoach.objects.get(collegeyear=college_years[0], end_date__isnull=True, jobs__name='Head Coach')
+        current_head_coach = CollegeCoach.objects.select_related('coach').get(collegeyear=college_years[0], end_date__isnull=True, jobs__name='Head Coach')
     except CollegeCoach.DoesNotExist:
         current_head_coach = CollegeCoach.objects.none()
-    college_years = CollegeYear.objects.filter(college=t).order_by('-season')
-    game_list = Game.objects.select_related().filter(team1=t).order_by('-date')
+    game_list = Game.objects.select_related('team1__college', 'team2__college', 'week').filter(team1__college=t).order_by('-date')
     popular_opponents = game_list.values("team2").annotate(games=Count("id")).order_by('-games')
+    # Batch fetch all opponent colleges to avoid N+1 query
+    opponent_ids = [team['team2'] for team in popular_opponents[:10]]
+    colleges_dict = {c.id: c for c in CollegeYear.objects.filter(id__in=opponent_ids).select_related('college')}
     p_o = []
     for team in popular_opponents[:10]:
-        c = College.objects.get(id=team['team2'])
-        c.number = team['games']
-        p_o.append(c)
+        cy = colleges_dict.get(team['team2'])
+        if cy:
+            c = cy.college
+            c.number = team['games']
+            p_o.append(c)
     return render_to_response('college/team_detail.html', {'team': t, 'coach': current_head_coach, 'recent_games': game_list[:10], 'popular_opponents': p_o, 'college_years': college_years})
 
 def team_detail_season(request, team, season):
     season_record = get_object_or_404(CollegeYear, college__slug=team, season=season)
     try:
-        current_coach = CollegeCoach.objects.filter(collegeyear=season_record, end_date__isnull=True, jobs__name='Head Coach').order_by('-start_date')[0]
+        current_coach = CollegeCoach.objects.select_related('coach').filter(collegeyear=season_record, end_date__isnull=True, jobs__name='Head Coach').order_by('-start_date')[0]
     except IndexError:
         current_coach = CollegeCoach.objects.none()
-    game_list = Game.objects.filter(team1=season_record, season=season).order_by('date')
-    player_list = Player.objects.filter(team=season_record.college, season=season)
+    game_list = Game.objects.select_related('team1__college', 'team2__college', 'week').filter(team1=season_record, season=season).order_by('date')
+    player_list = Player.objects.select_related('position', 'team__college').filter(team=season_record, season=season)
     return render_to_response('college/team_detail_season.html', {'team': season_record.college, 'coach': current_coach, 'season_record': season_record, 'game_list': game_list, 'player_list':player_list, 'season':season })
 
 def team_coaches_season(request, team, season):
     cy = get_object_or_404(CollegeYear, college__slug=team, season=season)
-    coaches = CollegeCoach.objects.filter(collegeyear=cy).order_by('coach__last_name', 'coach__first_name')
+    coaches = CollegeCoach.objects.select_related('coach').prefetch_related('jobs').filter(collegeyear=cy).order_by('coach__last_name', 'coach__first_name')
     return render_to_response('college/team_coaches_season.html', {'team': cy.college, 'season_record': cy, 'coaches': coaches })
 
 def team_bowl_games(request, team):
     t = get_object_or_404(College, slug=team)
-    game_list = Game.objects.filter(team1=t, is_bowl_game=True).order_by('-date')
+    game_list = Game.objects.select_related('team1__college', 'team2__college', 'bowl_game', 'week').filter(team1__college=t, is_bowl_game=True).order_by('-date')
     return render_to_response('college/team_bowl_games.html', {'team': t, 'game_list': game_list })
 
 def team_drives_season(request, team, season):
     t = get_object_or_404(College, slug=team)
     season_record = get_object_or_404(CollegeYear, college=t, season=season)
-    do = DriveOutcome.objects.select_related().filter(gamedrive__season=season, gamedrive__team=t)
+    do = DriveOutcome.objects.filter(gamedrive__season=season, gamedrive__team=season_record)
     outcomes = do.annotate(Count('gamedrive')).order_by('-gamedrive__count')
     d = {}
     for outcome in outcomes:
@@ -140,7 +144,7 @@ def team_rankings_season(request, team, season, week=None):
         except:
             latest_week = Week.objects.filter(season=season).order_by('-end_date')[0]
     other_weeks = Week.objects.filter(season=season).exclude(week_num__gte=latest_week.week_num).order_by('end_date')
-    latest_rankings = Ranking.objects.select_related().filter(collegeyear=cy, season=season, week=latest_week).select_related().order_by('-college_week.week_num')
+    latest_rankings = Ranking.objects.select_related('ranking_type', 'collegeyear__college', 'week').filter(collegeyear=cy, season=season, week=latest_week).order_by('-week__week_num')
     if latest_rankings:
         best = latest_rankings.order_by('rank')[0]
         worst = latest_rankings.order_by('-rank')[0]
@@ -151,7 +155,7 @@ def team_rankings_season(request, team, season, week=None):
 def team_ranking_detail(request, team, season, rankingtype):
     cy = get_object_or_404(CollegeYear, college__slug=team, season=season)
     ranking_type = get_object_or_404(RankingType,slug=rankingtype)
-    rankings = Ranking.objects.filter(college=cy.college, season=season, ranking_type=ranking_type).select_related().order_by('college_week.week_num')
+    rankings = Ranking.objects.select_related('ranking_type', 'collegeyear__college', 'week').filter(collegeyear=cy, season=season, ranking_type=ranking_type).order_by('week__week_num')
     best = rankings.order_by('rank')[0]
     worst = rankings.order_by('-rank')[0]
     ranks = [r.rank for r in rankings]
@@ -160,24 +164,29 @@ def team_ranking_detail(request, team, season, rankingtype):
 
 def team_opponents(request, team):
     t = get_object_or_404(College, slug=team)
-    game_list = Game.objects.select_related().filter(team1=t).order_by('college_college.name').values("team2").annotate(games=Count("id")).order_by('-games')
+    game_list = Game.objects.filter(team1__college=t).values("team2").annotate(games=Count("id")).order_by('-games')
+    # Batch fetch all opponent colleges to avoid N+1 query
+    opponent_ids = [team['team2'] for team in game_list]
+    colleges_dict = {c.id: c for c in CollegeYear.objects.filter(id__in=opponent_ids).select_related('college')}
     opp_list = []
     for team in game_list:
-        c = College.objects.get(id=team['team2'])
-        c.number = team['games']
-        opp_list.append(c)
+        cy = colleges_dict.get(team['team2'])
+        if cy:
+            c = cy.college
+            c.number = team['games']
+            opp_list.append(c)
     return render_to_response('college/team_opponents.html', {'team': t, 'opponent_list': opp_list})
 
 def team_first_downs(request, team):
     t = get_object_or_404(College, slug=team)
-    offense_list = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('-college_game.date')
+    offense_list = GameOffense.objects.select_related('game__team1__college', 'game__team2__college', 'team__college').filter(team__college=t).order_by('-game__date')
     most = offense_list.order_by('-first_downs_total')[0]
     least = offense_list.order_by('first_downs_total')[0]
     return render_to_response('college/first_downs.html', {'team': t, 'offense_list': offense_list, 'most': most, 'least': least })
 
 def team_penalties(request, team):
     t = get_object_or_404(College, slug=team)
-    least = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('penalties')[0]
+    least = GameOffense.objects.select_related('game__team1__college', 'game__team2__college', 'team__college').filter(team__college=t).order_by('penalties')[0]
     most = least.reverse()[0]
     return render_to_response('college/first_downs.html', {'team': t, 'most': most, 'least': least })
 
@@ -187,7 +196,7 @@ def team_offense(request, team):
 
 def team_offense_rushing(request, team):
     t = get_object_or_404(College, slug=team)
-    offense = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('-rush_net')
+    offense = GameOffense.objects.select_related('game__team1__college', 'game__team2__college', 'team__college').filter(team__college=t).order_by('-rush_net')
     return render_to_response('college/offense_rushing.html', {'team': t, 'offense_list':offense[:10] })
 
 def team_defense(request, team):
@@ -201,23 +210,27 @@ def team_passing(request, team):
 
 def team_coaching_history(request, team):
     t = get_object_or_404(College, slug=team)
-    c_list = CollegeCoach.objects.filter(collegeyear__college=t)
-    coaches = []
-    [coaches.append(c.coach) for c in c_list if c.coach not in coaches]
+    c_list = CollegeCoach.objects.select_related('coach', 'collegeyear__college').filter(collegeyear__college=t)
+    # Use a dict to avoid N lookups and maintain unique coaches
+    coaches_dict = {}
+    for c in c_list:
+        if c.coach.id not in coaches_dict:
+            coaches_dict[c.coach.id] = c.coach
+    coaches = list(coaches_dict.values())
     for coach in coaches:
         coach.years = coach.seasons_at_school(t)[0]
     return render_to_response('college/team_coaching_history.html', {'team': t, 'coaches': coaches})
 
 def alums_in_coaching(request, team):
     t = get_object_or_404(College, slug=team)
-    coaches = Coach.objects.select_related().filter(college=t)
+    coaches = Coach.objects.select_related('college__state').filter(college=t)
     return render_to_response('college/alums_in_coaching.html', {'team': t, 'coaches': coaches})
 
 def team_first_downs_category(request, team, category):
     t = get_object_or_404(College, slug=team)
     cat = category.title()
     cat_key = 'first_downs_'+category
-    offense_list = GameOffense.objects.select_related(depth=1).filter(team=t).order_by('-college_game.date')
+    offense_list = GameOffense.objects.select_related('game__team1__college', 'game__team2__college', 'team__college').filter(team__college=t).order_by('-game__date')
     least = offense_list.order_by(cat_key)
     most = least.reverse()
     return render_to_response('college/first_downs_category.html', {'team': t, 'offense_list': offense_list, 'most': most.values(cat_key)[0][cat_key], 'm_game': most[0], 'least': least.values(cat_key)[0][cat_key], 'l_game': least[0], 'category': cat })
@@ -236,9 +249,9 @@ def team_vs(request, team1, team2, outcome=None):
     except:
         team_2 = College.objects.none()
     if outcome:
-        games = Game.objects.select_related().filter(team1__in=team_1.collegeyear_set.all(), team2__in=team_2.collegeyear_set.all(), t1_result=outcome[0].upper()).order_by('-date')
+        games = Game.objects.select_related('team1__college', 'team2__college', 'week').filter(team1__in=team_1.collegeyear_set.all(), team2__in=team_2.collegeyear_set.all(), t1_result=outcome[0].upper()).order_by('-date')
     else:
-        games = Game.objects.select_related().filter(team1__in=team_1.collegeyear_set.all(), team2__in=team_2.collegeyear_set.all()).order_by('-date')
+        games = Game.objects.select_related('team1__college', 'team2__college', 'week').filter(team1__in=team_1.collegeyear_set.all(), team2__in=team_2.collegeyear_set.all()).order_by('-date')
     totals = Game.objects.filter(team1__in=team_1.collegeyear_set.all(), team2__in=team_2.collegeyear_set.all(), date__lte=datetime.date.today()).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
     wins, losses, ties = calculate_record(totals)
     last_home_loss, last_road_win = last_home_loss_road_win(games)
@@ -324,7 +337,7 @@ def game_index(request):
     pass # do calendar-based view here
 
 def undefeated_teams(request, season):
-    unbeaten = CollegeYear.objects.select_related().filter(college__updated=True, season=int(season), losses=0, wins__gt=0).order_by('college_college.name', '-wins')
+    unbeaten = CollegeYear.objects.select_related('college', 'conference').filter(college__updated=True, season=int(season), losses=0, wins__gt=0).order_by('college__name', '-wins')
     return render_to_response('college/undefeated.html', {'teams': unbeaten, 'season':season})
 
 def state_detail(request, state):
@@ -334,7 +347,7 @@ def state_detail(request, state):
 
 def team_players(request, team, season):
     t = get_object_or_404(CollegeYear, college__slug=team, season=season)
-    player_list = Player.objects.filter(team=t).select_related()
+    player_list = Player.objects.select_related('position', 'team__college').filter(team=t)
     return render_to_response('college/team_players.html', {'team': t, 'year': season, 'player_list': player_list })
 
 def team_positions(request, team):
@@ -363,35 +376,35 @@ def team_class_detail(request, team, season, cls):
 
 def player_detail(request, team, season, player):
     cy = get_object_or_404(CollegeYear, college__slug=team, season=season)
-    p = Player.objects.get(team=cy, season=cy.season, slug=player)
+    p = Player.objects.select_related('position', 'team__college').get(team=cy, season=cy.season, slug=player)
     starts = PlayerGame.objects.filter(player=p, game__season=season, starter=True).count()
-    ps = PlayerScoring.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    pret = PlayerReturn.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    pf = PlayerFumble.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    pr = PlayerRush.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    ps = PlayerScoring.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
+    pret = PlayerReturn.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
+    pf = PlayerFumble.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
+    pr = PlayerRush.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
     if pr:
         rush_totals = pr.aggregate(Sum('net'),Sum('gain'),Sum('loss'),Sum('rushes'),Sum('td'))
         rush_tot_avg = float(rush_totals['net__sum'])/float(rush_totals['rushes__sum'])
     else:
         rush_totals = {'rushes__sum': None, 'gain__sum': None, 'loss__sum': None, 'td__sum': None, 'net__sum': None}
         rush_tot_avg = None
-    pp = PlayerPass.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    pp = PlayerPass.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
     if pp:
         pass_totals = pp.aggregate(Sum('td'), Sum('yards'), Sum('attempts'), Sum('completions'), Sum('interceptions'), Avg('pass_efficiency'))
         comp_pct = float(pass_totals['completions__sum'])/float(pass_totals['attempts__sum'])*100
     else:
         pass_totals = {'interceptions__sum': None, 'td__sum':None, 'attempts__sum': None, 'completions__sum': None, 'yards__sum': None, 'pass_efficiency__avg': None}
         comp_pct = None
-    prec = PlayerReceiving.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    prec = PlayerReceiving.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
     if prec:
         rec_totals = prec.aggregate(Sum('receptions'), Sum('yards'), Sum('td'))
         rec_tot_avg = float(rec_totals['yards__sum'])/float(rec_totals['receptions__sum'])
     else:
         rec_totals = {'receptions__sum': None, 'yards__sum': None, 'td__sum': None}
         rec_tot_avg = None
-    pt = PlayerTackle.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    ptfl = PlayerTacklesLoss.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
-    ppd = PlayerPassDefense.objects.filter(player=p, game__season=season).select_related().order_by('-college_game.date')
+    pt = PlayerTackle.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
+    ptfl = PlayerTacklesLoss.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
+    ppd = PlayerPassDefense.objects.select_related('game__team1__college', 'game__team2__college', 'player').filter(player=p, game__season=season).order_by('-game__date')
     other_seasons = Player.objects.filter(team__college=cy.college, slug=p.slug).exclude(season=season).order_by('-season')
     return render_to_response('college/player_detail.html', {'team': cy.college, 'year': season, 'cy': cy, 'player': p, 'starts': starts, 'other_seasons': other_seasons, 'scoring': ps, 'returns': pret, 'fumbles': pf, 
         'rushing': pr, 'passing':pp, 'receiving': prec, 'tackles':pt, 'tacklesloss': ptfl, 'passdefense':ppd, 
@@ -401,14 +414,14 @@ def player_detail(request, team, season, player):
         'rec_tot_receptions': rec_totals['receptions__sum'], 'rec_tot_yards': rec_totals['yards__sum'], 'rec_tot_td': rec_totals['td__sum'], 'rec_tot_avg': rec_tot_avg})
 
 def rushing_losses(request, season):
-    players = Player.objects.filter(season=season).select_related().annotate(net_total=Sum('playerrush__net'),gain_total=Sum('playerrush__gain'),loss_total=Sum('playerrush__loss'),rush_total=Sum('playerrush__rushes'),td_total=Sum('playerrush__td')).filter(net_total__gte=1000, loss_total__lte=100).order_by('loss_total', '-net_total')
+    players = Player.objects.select_related('team__college', 'position').filter(season=season).annotate(net_total=Sum('playerrush__net'),gain_total=Sum('playerrush__gain'),loss_total=Sum('playerrush__loss'),rush_total=Sum('playerrush__rushes'),td_total=Sum('playerrush__td')).filter(net_total__gte=1000, loss_total__lte=100).order_by('loss_total', '-net_total')
     return render_to_response('college/rushing_losses.html', {'season': season, 'player_list': players})
 
 @csrf_protect
 def coach_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    recent_departures = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('-end_date')[:10]
-    recent_hires = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', start_date__gte=two_months_ago).order_by('-start_date')[:10]
+    recent_departures = CollegeCoach.objects.select_related('coach', 'collegeyear__college').filter(jobs__name='Head Coach', end_date__gte=two_months_ago).order_by('-end_date')[:10]
+    recent_hires = CollegeCoach.objects.select_related('coach', 'collegeyear__college').filter(jobs__name='Head Coach', start_date__gte=two_months_ago).order_by('-start_date')[:10]
     if request.method == 'POST':
         if 'coach_name' in request.POST:
             query = request.POST['coach_name']
@@ -421,20 +434,20 @@ def coach_index(request):
     return render_to_response('coaches/coach_index.html', {'recent_departures': recent_departures, 'recent_hires': recent_hires, 'coach_list': coach_list, 'current_season': CURRENT_SEASON, 'next_season': CURRENT_SEASON+1 }, context_instance=RequestContext(request))
 
 def departures(request,season):
-    casualties = CollegeCoach.objects.select_related().filter(end_date__isnull=False, collegeyear__season__exact=season).order_by('-end_date')
+    casualties = CollegeCoach.objects.select_related('coach', 'collegeyear__college').prefetch_related('jobs').filter(end_date__isnull=False, collegeyear__season__exact=season).order_by('-end_date')
     return render_to_response('coaches/casualties.html', {'casualties': casualties, 'year': season, 'count': len(casualties) })
 
 def coaching_hires(request, season):
-    new_coaches = CollegeCoach.objects.select_related().filter(start_date__isnull=False, collegeyear__season__exact=season).order_by('-start_date')
+    new_coaches = CollegeCoach.objects.select_related('coach', 'collegeyear__college').prefetch_related('jobs').filter(start_date__isnull=False, collegeyear__season__exact=season).order_by('-start_date')
     return render_to_response('coaches/hires.html', {'new_coaches': new_coaches, 'year': season, 'count': len(new_coaches) })
 
 def active_coaches(request):
-    active_hc = CollegeCoach.objects.select_related().filter(jobs__name='Head Coach', end_date__isnull=True, collegeyear__season__exact=CURRENT_SEASON).order_by('-start_date')
+    active_hc = CollegeCoach.objects.select_related('coach', 'collegeyear__college').prefetch_related('jobs').filter(jobs__name='Head Coach', end_date__isnull=True, collegeyear__season__exact=CURRENT_SEASON).order_by('-start_date')
     return render_to_response('coaches/active_coaches.html', {'active_coaches': active_hc, 'season': CURRENT_SEASON })
 
 def coach_detail(request, coach):
     c = get_object_or_404(Coach, slug=coach)
-    college_list = CollegeCoach.objects.filter(coach=c).select_related().order_by('-college_collegeyear.season', '-start_date')
+    college_list = CollegeCoach.objects.select_related('collegeyear__college', 'collegeyear__conference').prefetch_related('jobs').filter(coach=c).order_by('-collegeyear__season', '-start_date')
     if request.method == 'POST':
         c2 = Coach.objects.get(id=int(request.POST['coaches']))
         return HttpResponseRedirect('/coaches/common/%s/%s/' % (c.slug, c2.slug)) # tried reverse(), but no luck
@@ -450,7 +463,7 @@ def coach_vs(request, coach):
 def coach_compare(request, coach, coach2):
     coach = get_object_or_404(Coach, slug=coach)
     coach2 = get_object_or_404(Coach, slug=coach2)
-    game_list = Game.objects.select_related().filter(coach1=coach, coach2=coach2).order_by('-date')
+    game_list = Game.objects.select_related('team1__college', 'team2__college', 'coach1', 'coach2', 'week').filter(coach1=coach, coach2=coach2).order_by('-date')
     totals = game_list.filter(date__lte=datetime.date.today()).values("t1_result").annotate(count=Count("id")).order_by('t1_result')
     wins, losses, ties = calculate_record(totals)
     last_home_loss, last_road_win = last_home_loss_road_win(game_list)
@@ -460,26 +473,26 @@ def coach_compare(request, coach, coach2):
 def coach_common(request, coach, coach2):
     coach = get_object_or_404(Coach, slug=coach)
     coach2 = get_object_or_404(Coach, slug=coach2)
-    college_list = CollegeCoach.objects.select_related().filter(coach=coach).select_related().order_by('-college_collegeyear.season', '-start_date')
+    college_list = CollegeCoach.objects.select_related('collegeyear__college').filter(coach=coach).order_by('-collegeyear__season', '-start_date')
     c1_years = [y.collegeyear for y in college_list]
-    c2_list = CollegeCoach.objects.select_related().filter(coach=coach2).select_related().order_by('-college_collegeyear.season', '-start_date')
+    c2_list = CollegeCoach.objects.select_related('collegeyear__college').filter(coach=coach2).order_by('-collegeyear__season', '-start_date')
     c2_years = [y.collegeyear for y in c2_list]
     common = [c for c in c1_years if c in c2_years]
     return render_to_response('coaches/coach_common.html', {'coach': coach, 'coach2': coach2, 'common': common }, context_instance=RequestContext(request))
     
 def assistant_index(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__season__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
-    recent_departures = CollegeCoach.objects.select_related().filter(end_date__gte=two_months_ago).exclude(jobs__name='Head Coach').order_by('-end_date')[:10]
+    recent_hires = CollegeCoach.objects.select_related('coach', 'collegeyear__college').prefetch_related('jobs').filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__season__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
+    recent_departures = CollegeCoach.objects.select_related('coach', 'collegeyear__college').prefetch_related('jobs').filter(end_date__gte=two_months_ago).exclude(jobs__name='Head Coach').order_by('-end_date')[:10]
     return render_to_response('coaches/assistant_index.html', {'recent_hires': recent_hires, 'recent_departures': recent_departures })
     
 def recent_hires_feed(request):
     two_months_ago = datetime.date.today()-datetime.timedelta(60)
-    recent_hires = CollegeCoach.objects.select_related().filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__season__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
+    recent_hires = CollegeCoach.objects.select_related('coach', 'collegeyear__college').prefetch_related('jobs').filter(start_date__gte=two_months_ago, end_date__isnull=True, collegeyear__season__exact=CURRENT_SEASON).exclude(jobs__name='Head Coach').order_by('-start_date')[:10]
     xml = render_to_string('coaches/recent_hires_feed.xml', { 'recent_hires': recent_hires })
     return HttpResponse(xml, mimetype='application/xml')
     
 def admin_coach_totals(request):
-    team_list = CollegeYear.objects.select_related().filter(season=2010, college__updated=True).order_by('college_college.name')
+    team_list = CollegeYear.objects.select_related('college', 'conference').filter(season=2010, college__updated=True).order_by('college__name')
     return render_to_response('admin/coach_totals.html', {'team_list': team_list})
     

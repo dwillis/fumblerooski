@@ -29,12 +29,12 @@ class RankingType(models.Model):
         return "/rankings/%s/" % self.slug
         
     def year_list(self):
-        return list(set([y.year for y in self.ranking_set.all()]))    
+        return list(set([y.season for y in self.ranking_set.all()]))    
 
 class Ranking(models.Model):
     ranking_type = models.ForeignKey(RankingType)
     collegeyear = models.ForeignKey(CollegeYear)
-    season = models.IntegerField()
+    season = models.IntegerField(db_index=True)
     week = models.ForeignKey(Week)
     rank = models.PositiveIntegerField()
     is_tied = models.BooleanField()
