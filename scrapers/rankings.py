@@ -1,6 +1,6 @@
-import urllib
+import urllib.request
 import datetime
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from fumblerooski.college.models import College, CollegeYear, Week, Position, Player
 from fumblerooski.rankings.models import Ranking, RankingType, RushingSummary, PassEfficiency
 
@@ -10,7 +10,7 @@ def ranking_loader(year, week):
     for team in teams:
         cy = CollegeYear.objects.get(college=team, year=year)
         w = Week.objects.get(year=year, week_num=week)
-        html = urllib.urlopen(cy.get_ncaa_week_url()+str(week)).read()
+        html = urllib.request.urlopen(cy.get_ncaa_week_url()+str(week)).read()
         soup = BeautifulSoup(html)
         try:
             rankings = soup.findAll('table')[4]
@@ -39,7 +39,7 @@ def ranking_loader(year, week):
 
 def player_rushing(year):
     url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerrush&site=org" % year
-    html = urllib.urlopen(url).read()
+    html = urllib.request.urlopen(url).read()
     soup = BeautifulSoup(html)
     rankings = soup.find('table', {'class': 'statstable'})
     rows = rankings.findAll('tr')[1:]
@@ -65,7 +65,7 @@ def player_rushing(year):
 
 def pass_efficiency(year):
     url = "http://web1.ncaa.org/mfb/natlRank.jsp?year=%s&div=B&rpt=IA_playerpasseff&site=org" % year
-    html = urllib.urlopen(url).read()
+    html = urllib.request.urlopen(url).read()
     soup = BeautifulSoup(html)
     rankings = soup.find('table', {'class': 'statstable'})
     rows = rankings.findAll('tr')[1:]

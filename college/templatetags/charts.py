@@ -16,18 +16,18 @@ register = template.Library()
 @register.tag
 def chart(parser, token):
     bits = iter(token.split_contents())
-    name = bits.next()
+    name = next(bits)
     varname = None
     saveas = None
     extends = None
     for bit in bits:
         if bit == "as":
-            varname = bits.next()
+            varname = next(bits)
         elif bit == "saveas":
             raise template.TemplateSyntaxError("Sorry, 'saveas' isn't implemented yet!")
-            saveas = template.Variable(bits.next())
+            saveas = template.Variable(next(bits))
         elif bit == "extends":
-            extends = template.Variable(bits.next())
+            extends = template.Variable(next(bits))
         else:
             raise template.TemplateSyntaxError("Unknown argument to '%s': '%s'" % (name, bit))
     nodelist = parser.parse("end%s" % name)
@@ -154,8 +154,8 @@ class Chart(object):
 @register.tag(name="chart-data")
 def chart_data(parser, token):
     bits = iter(token.split_contents())
-    name = bits.next()
-    datasets = map(parser.compile_filter, bits)
+    name = next(bits)
+    datasets = list(map(parser.compile_filter, bits))
     return ChartDataNode(datasets)
 
 class ChartDataNode(template.Node):
@@ -241,8 +241,8 @@ def option(tagname, multi=None, nodeclass=ChartOptionNode):
         
         def template_tag_callback(parser, token):
             bits = iter(token.split_contents())
-            name = bits.next()
-            args = map(template.Variable, bits)
+            name = next(bits)
+            args = list(map(template.Variable, bits))
             
             if not unlimited and len(args) < min_args:
                 raise template.TemplateSyntaxError("Too few arguments to '%s'" % name)

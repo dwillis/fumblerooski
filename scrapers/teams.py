@@ -1,11 +1,10 @@
 import re
 import csv
-import urllib
+import urllib.request
 import datetime
-from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime, strftime
 import time
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from fumblerooski.college.models import College, Game, CollegeYear, Player, Position
     
 
@@ -21,7 +20,7 @@ def load_skeds(year, teams):
     
     for team in teams:
         url = "http://web1.ncaa.org/football/exec/rankingSummary?year=%s&org=%s" % (year, team.id)
-        html = urllib.urlopen(url).read()
+        html = urllib.request.urlopen(url).read()
         soup = BeautifulSoup(html)
         t = soup.findAll('table')[2]
         rows = t.findAll('tr')[2:]
@@ -70,7 +69,7 @@ def load_team(team_id, year):
     """
     team = CollegeYear.objects.get(college__id=team_id, season=year)
     url = "http://web1.ncaa.org/football/exec/roster?year=%s&org=%s" % (year, team_id)
-    html = urllib.urlopen(url).read()
+    html = urllib.request.urlopen(url).read()
     soup = BeautifulSoup(html)
     try:
         classes = soup.find("th").contents[0].split(":")[1].split(',') # retrieve class numbers for team
