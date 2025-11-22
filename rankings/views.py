@@ -33,6 +33,6 @@ def rankings_season(request, rankingtype, season, div='B', week=None):
         except:
             latest_week = Week.objects.filter(season=season).order_by('-end_date')[0]
     other_weeks = Week.objects.filter(season=season).exclude(week_num=latest_week.week_num).exclude(end_date__gte=datetime.date.today()).order_by('end_date')
-    rankings_list = Ranking.objects.filter(season=season, ranking_type=rt, week=latest_week, division=div).select_related().order_by('rank')
+    rankings_list = Ranking.objects.select_related('ranking_type', 'collegeyear__college', 'collegeyear__conference', 'week').filter(season=season, ranking_type=rt, week=latest_week, division=div).order_by('rank')
     return render_to_response('rankings/rankings_season.html', {'ranking_type': rt, 'rankings_list': rankings_list, 'season':season, 'latest_week':latest_week, 'other_weeks':other_weeks})
 

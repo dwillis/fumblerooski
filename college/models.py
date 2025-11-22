@@ -86,9 +86,9 @@ class City(models.Model):
     
 
 class Week(models.Model):
-    season = models.IntegerField()
-    week_num = models.IntegerField()
-    end_date = models.DateField()
+    season = models.IntegerField(db_index=True)
+    week_num = models.IntegerField(db_index=True)
+    end_date = models.DateField(db_index=True)
     
     def __str__(self):
         return "Week %s, %s" % (self.week_num, self.season)
@@ -132,7 +132,7 @@ class College(models.Model):
 
 class CollegeYear(models.Model):
     college = models.ForeignKey(College)
-    season = models.IntegerField()
+    season = models.IntegerField(db_index=True)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
     ties = models.IntegerField(default=0)
@@ -186,8 +186,8 @@ class CollegeYear(models.Model):
 class Coach(models.Model):
     ncaa_name = models.CharField(max_length=90)
     first_name = models.CharField(max_length=75)
-    last_name = models.CharField(max_length=75)
-    slug = models.CharField(max_length=75, editable=False)
+    last_name = models.CharField(max_length=75, db_index=True)
+    slug = models.CharField(max_length=75, editable=False, db_index=True)
     college = models.ForeignKey(College, null=True, blank=True, related_name='School')
     grad_year = models.IntegerField(null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
@@ -218,11 +218,11 @@ class Coach(models.Model):
         return current_school
     
     def seasons_at_school(self,school):
-        return [sorted([cy.collegeyear.season for cy in self.collegecoach_set.all() if cy.collegeyear.college == school])]
+        return [sorted([cy.collegeyear.season for cy in self.collegecoach_set.select_related('collegeyear__college').all() if cy.collegeyear.college == school])]
         
     
     def seasons_at_current_school(self):
-        return len([cy.collegeyear.college.id for cy in self.collegecoach_set.all() if cy.collegeyear.college.id == self.current_school().id])
+        return len([cy.collegeyear.college.id for cy in self.collegecoach_set.select_related('collegeyear__college').all() if cy.collegeyear.college.id == self.current_school().id])
     
     def current_job(self):
         if self.current_school():
@@ -241,18 +241,18 @@ class Coach(models.Model):
         return self.collegecoach_set.all().count()
     
     def years_at_alma_mater_since_2000(self):
-        return len([a for a in self.collegecoach_set.all() if self.college == a.collegeyear.college])
+        return len([a for a in self.collegecoach_set.select_related('collegeyear__college').all() if self.college == a.collegeyear.college])
     
     def states_coached_in(self):
         states = {}
-        state_list = [s.collegeyear.college.state.id for s in self.collegecoach_set.all()]
+        state_list = [s.collegeyear.college.state.id for s in self.collegecoach_set.select_related('collegeyear__college__state').all()]
         [states.setdefault(e,500) for e in state_list if e not in states]
         return states
     
     def coaching_peers(self):
         from django.db import connection
         cursor = connection.cursor()
-        year_ids = [str(c.collegeyear.id) for c in self.collegecoach_set.all()]
+        year_ids = [str(c.collegeyear.id) for c in self.collegecoach_set.select_related('collegeyear').all()]
         cursor.execute("SELECT distinct college_coach.id FROM college_coach INNER JOIN college_collegecoach ON college_coach.id=college_collegecoach.coach_id WHERE college_collegecoach.collegeyear_id IN (%s)" % ','.join(year_ids))
         results = cursor.fetchall()
         ids = [c[0] for c in results]
@@ -401,12 +401,12 @@ class BowlGame(models.Model):
     
 
 class Game(models.Model):
-    season = models.IntegerField()
+    season = models.IntegerField(db_index=True)
     team1 = models.ForeignKey(CollegeYear, related_name='team1')
     coach1 = models.ForeignKey(Coach, null=True, related_name='first_coach')
     team2 = models.ForeignKey(CollegeYear, related_name='team2')
     coach2 = models.ForeignKey(Coach, null=True, related_name='second_coach')
-    date = models.DateField()
+    date = models.DateField(db_index=True)
     week = models.ForeignKey(Week)
     t1_game_type = models.CharField(max_length=1, choices=GAME_TYPE_CHOICES)
     t1_result = models.CharField(max_length=1, choices=RESULT_CHOICES, blank=True)
@@ -609,9 +609,9 @@ class GameDefense(models.Model):
 
 class Player(models.Model):
     name = models.CharField(max_length=120)
-    slug = models.SlugField(max_length=120)
+    slug = models.SlugField(max_length=120, db_index=True)
     team = models.ForeignKey(CollegeYear)
-    season = models.IntegerField()
+    season = models.IntegerField(db_index=True)
     position = models.ForeignKey(Position)
     number = models.CharField(max_length=4)
     games_played = models.PositiveIntegerField(default=0)
