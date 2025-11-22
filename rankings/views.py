@@ -1,11 +1,11 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
-from django.contrib.syndication.feeds import Feed
+from django.contrib.syndication.views import Feed
 from django import forms
-from django.utils import simplejson
+import json
 from django.forms.models import modelformset_factory
 from operator import itemgetter
 from time import strptime

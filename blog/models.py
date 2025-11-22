@@ -1,7 +1,7 @@
 from datetime import datetime
- 
+
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
  
 class PostManager(models.Manager):
     def active(self):
@@ -17,7 +17,7 @@ class Post(models.Model):
     
     objects = PostManager()
     
-    def __unicode__(self):
+    def __str__(self):
         return self.title
     
     class Meta:
@@ -26,10 +26,10 @@ class Post(models.Model):
         ordering = ("-pub_date",)
     
     def get_absolute_url(self):
-        return ("blog_post_detail", (), {
+        from django.urls import reverse
+        return reverse("blog_post_detail", kwargs={
             "year": self.pub_date.strftime("%Y"),
             "month": self.pub_date.strftime("%b").lower(),
             "day": self.pub_date.strftime("%d"),
             "slug": self.slug,
         })
-    get_absolute_url = models.permalink(get_absolute_url)

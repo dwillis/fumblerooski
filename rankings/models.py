@@ -19,7 +19,7 @@ class RankingType(models.Model):
     typename = models.CharField(max_length=1, choices=RANKINGTYPE_CHOICES)
     ncaa_name = models.CharField(max_length=75)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
     def get_current_url(self):
@@ -43,7 +43,7 @@ class Ranking(models.Model):
     is_conf_tied = models.BooleanField()
     division = models.CharField(max_length=1)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s (%s)" % (self.ranking_type, self.collegeyear, self.week)
     
     def get_week_url(self):
@@ -61,8 +61,8 @@ class RushingSummary(models.Model):
     average = models.FloatField()
     yards_per_game = models.FloatField()
     
-    def __unicode__(self):
-        return "%s - %s, %s" (self.player, self.year, self.yards_per_game)
+    def __str__(self):
+        return "%s - %s, %s" % (self.player, self.year, self.yards_per_game)
 
 class PassEfficiency(models.Model):
     player = models.ForeignKey(Player)
@@ -80,5 +80,5 @@ class PassEfficiency(models.Model):
     attempts_per_touchdown = models.FloatField()
     rating = models.FloatField()
     
-    def __unicode__(self):
+    def __str__(self):
         return self.player.name

@@ -1,14 +1,13 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
 from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.contrib.syndication.feeds import Feed
+from django.urls import reverse
+from django.contrib.syndication.views import Feed
 from django import forms
-from django.utils import simplejson
+import json
 from django.forms.models import modelformset_factory
 from operator import itemgetter
 from time import strptime
@@ -35,7 +34,7 @@ def homepage(request):
 @csrf_protect
 def state_index(request):
     if request.method == 'POST':
-        if request.POST.has_key('name'):
+        if 'name' in request.POST:
             abbrev = request.POST['name']
             try:
                 state = State.objects.get(id=abbrev)
@@ -128,7 +127,7 @@ def team_drives_season(request, team, season):
     d = {}
     for outcome in outcomes:
         d[outcome.name] = outcome.gamedrive__count
-    return render_to_response('college/team_drives_season.html', {'team': t, 'season_record': season_record, 'season': season, 'total_drives': len(do), 'outcomes': outcomes, 'keys': d.keys(), 'values': d.values(), 'items' : d.iteritems()})
+    return render_to_response('college/team_drives_season.html', {'team': t, 'season_record': season_record, 'season': season, 'total_drives': len(do), 'outcomes': outcomes, 'keys': d.keys(), 'values': d.values(), 'items' : d.items()})
 
 def team_rankings_season(request, team, season, week=None):
     cy = get_object_or_404(CollegeYear, college__slug=team, season=season)

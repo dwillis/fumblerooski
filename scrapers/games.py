@@ -1,12 +1,11 @@
 import re
 import csv
-import urllib
+import urllib.request
 import datetime
-from django.utils.encoding import smart_unicode, force_unicode
 from time import strptime, strftime
 import time
-from urlparse import urljoin
-from BeautifulSoup import BeautifulSoup
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 from fumblerooski.college.models import *
 from fumblerooski.utils import update_college_year, populate_head_coaches
 from django.template.defaultfilters import slugify
@@ -29,7 +28,7 @@ def game_updater(year, teams, week, nostats=False):
     for team in teams:
         unmatched = []
         url = "http://web1.ncaa.org/football/exec/rankingSummary?org=%s&year=%s&week=%s" % (team.college.id, year, week)
-        html = urllib.urlopen(url).read()
+        html = urllib.request.urlopen(url).read()
         soup = BeautifulSoup(html)
         try:
             t = soup.findAll('table')[2]
@@ -76,7 +75,7 @@ def game_updater(year, teams, week, nostats=False):
                         team2, created = CollegeYear.objects.get_or_create(college=new_college, season=year)
                     else:
                         continue
-                print team, team2, date, team1_score, team2_score, t1_result
+                print(team, team2, date, team1_score, team2_score, t1_result)
                 g, new_game = Game.objects.get_or_create(season=year, team1=team, team2=team2, date=date)
                 g.team1_score = team1_score
                 g.team2_score=team2_score
@@ -113,7 +112,7 @@ def game_updater(year, teams, week, nostats=False):
              unmatched.append(team.college.id)
     update_college_year(year)
     for team in unmatched:
-        print "Could not find games for %s" % team.id
+        print("Could not find games for %s" % team.id)
 
 def update_player_game_stats(s):
     """
@@ -137,7 +136,7 @@ def load_ncaa_game_xml(game):
     >>> game = Game.objects.get(id=793)
     >>> load_ncaa_game_xml(game)
     """
-    doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
+    doc = urllib.request.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
     # replace all interior spaces with 0
     f = soup.findAll(text="&#160;")
@@ -145,7 +144,7 @@ def load_ncaa_game_xml(game):
         each.replaceWith("0")
 
     try:
-        print "trying game # %s: %s-%s" % (game.id, soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0])
+        print("trying game # %s: %s-%s" % (game.id, soup.teams.home.orgid.contents[0], soup.teams.visitor.orgid.contents[0]))
         try:
             c1 = College.objects.get(id = int(soup.teams.home.orgid.contents[0]))
             t1, created = CollegeYear.objects.get_or_create(college=c1, season=game.season)
@@ -213,7 +212,7 @@ def load_ncaa_game_xml(game):
         d = strptime(soup.gamedate.contents[0], "%m/%d/%y")
         gd = datetime.date(d[0], d[1], d[2])
     except:
-        print "Could not find one of the teams"
+        print("Could not find one of the teams")
         raise
     try:
         game, created = Game.objects.get_or_create(team1=t1, team2=t2, date=gd, season=CURRENT_SEASON)
@@ -232,11 +231,11 @@ def load_ncaa_game_xml(game):
         game.save()
         game_v.save()
 
-        print "Saved %s" % game
+        print("Saved %s" % game)
 
         while not game.has_stats:
 
-            quarters = len(soup.findAll('score')[1:])/2
+            quarters = len(soup.findAll('score')[1:])//2
             visitor_quarters = soup.findAll('score')[1:quarters+1]
             home_quarters = soup.findAll('score')[quarters+1:]
 
@@ -296,7 +295,7 @@ def load_ncaa_game_xml(game):
             home_offense.points=int(soup.teams.home.totals.scoring.pts.contents[0])
 
             home_offense.save()
-            print "Home Offense: %s" % home_offense
+            print("Home Offense: %s" % home_offense)
 
             # home team defense
             home_defense, created = GameDefense.objects.get_or_create(game = game, team = t1)
@@ -320,7 +319,7 @@ def load_ncaa_game_xml(game):
             home_defense.fumbles_touchdowns = int(soup.teams.home.totals.fumbles.fumblestd.contents[0])
 
             home_defense.save()
-            print "Home Defense: %s" % home_defense
+            print("Home Defense: %s" % home_defense)
 
             # visiting team offense
             visiting_offense, created = GameOffense.objects.get_or_create(game=game_v, team=t2)
@@ -375,7 +374,7 @@ def load_ncaa_game_xml(game):
             visiting_offense.points=int(soup.teams.visitor.totals.scoring.pts.contents[0])
 
             visiting_offense.save()
-            print "Visiting Offense: %s" % visiting_offense
+            print("Visiting Offense: %s" % visiting_offense)
 
             # visiting team defense
             visiting_defense, created = GameDefense.objects.get_or_create(game = game_v, team = t2)
@@ -399,7 +398,7 @@ def load_ncaa_game_xml(game):
             visiting_defense.fumbles_touchdowns = int(soup.teams.visitor.totals.fumbles.fumblestd.contents[0])
 
             visiting_defense.save()
-            print "Visiting Defense: %s" % visiting_defense
+            print("Visiting Defense: %s" % visiting_defense)
 
             game.has_stats = True
             game.save()
@@ -418,13 +417,13 @@ def game_drive_loader(game):
     >>> game_drive_loader(game)
     """
     if game.has_drives == False:
-        contents = urllib.urlopen(game.get_ncaa_drive_url().strip()).read()
+        contents = urllib.request.urlopen(game.get_ncaa_drive_url().strip()).read()
         soup = BeautifulSoup(contents)
         rows = soup.findAll('table')[1].findAll("tr")[2:] # grabbing too many rows. need to tighten.
         for row in rows:
             cells = row.findAll('td')
             drive = int(cells[0].find("a").contents[0])
-            print cells[2].contents[0]
+            print(cells[2].contents[0])
             try:
                 team = CollegeYear.objects.get(season=game.season, college__slug=cells[2].contents[0].lower())
             except:
@@ -463,7 +462,7 @@ def game_drive_loader(game):
             try:
                 d, created = GameDrive.objects.get_or_create(game=game, drive=drive, team=team, quarter=quarter,start_how=str(start_how), start_time=start_time, start_position=start_position, start_side=start_side, end_result=end_result, end_time=end_time, end_position=end_position, end_side=end_side, plays=plays, yards=yards,time_of_possession=time_of_possession, season=game.season)
             except:
-                print "Could not save drive %s, %s, %s" % (drive, game, team)
+                print("Could not save drive %s, %s, %s" % (drive, game, team))
         game.has_drives = True
         game.save()
 
@@ -476,7 +475,7 @@ def player_game_stats(game):
     >>> player_game_stats(game)
     """
     while not game.has_player_stats:
-        html = urllib.urlopen(game.get_ncaa_xml_url()).read()
+        html = urllib.request.urlopen(game.get_ncaa_xml_url()).read()
         soup = BeautifulSoup(html)
         f = soup.findAll(text="&#160;")
         for each in f:

@@ -58,7 +58,7 @@ class State(models.Model):
     id = models.CharField(max_length=2, editable=False, primary_key=True)
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -72,7 +72,7 @@ class City(models.Model):
     slug = models.SlugField(max_length=75)
     state = models.ForeignKey(State, null=True, blank=True)
     
-    def __unicode__(self):
+    def __str__(self):
         if self.state:
             return "%s, %s" % (self.name, self.state.id)
         else:
@@ -90,7 +90,7 @@ class Week(models.Model):
     week_num = models.IntegerField()
     end_date = models.DateField()
     
-    def __unicode__(self):
+    def __str__(self):
         return "Week %s, %s" % (self.week_num, self.season)
     
     def week_games_url(self):
@@ -100,7 +100,7 @@ class Conference(models.Model):
     abbrev = models.CharField(max_length=10)
     name = models.CharField(max_length=90)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -116,7 +116,7 @@ class College(models.Model):
     official_rss = models.CharField(max_length=120, blank=True)
     updated = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -146,7 +146,7 @@ class CollegeYear(models.Model):
     conference = models.ForeignKey(Conference, null=True, blank=True)
     division = models.CharField(max_length=1, choices=DIVISION_CHOICES)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.college.name, str(self.season))
     
     def game_count(self):
@@ -196,13 +196,13 @@ class Coach(models.Model):
     losses = models.IntegerField(default=0, blank=True)
     ties = models.IntegerField(default=0, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.first_name + " " + self.last_name
-    
-    def save(self):
-        super(Coach, self).save()
+
+    def save(self, *args, **kwargs):
+        super(Coach, self).save(*args, **kwargs)
         self.slug = '%s-%s-%s' % (str(self.id), slugify(self.first_name), slugify(self.last_name))
-        super(Coach, self).save()
+        super(Coach, self).save(*args, **kwargs)
     
     def get_absolute_url(self):
         return '/coaches/detail/%s/' % self.slug
@@ -275,7 +275,7 @@ class CoachingJob(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class CollegeCoach(models.Model):
@@ -286,7 +286,7 @@ class CollegeCoach(models.Model):
     end_date = models.DateField(null=True, blank=True)
     is_head_coach = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.coach, self.collegeyear)
         
     def get_absolute_url(self):
@@ -381,7 +381,7 @@ class Position(models.Model):
     plural_name = models.CharField(max_length=25)
     position_type = models.CharField(max_length=1, choices=POSITION_TYPE_CHOICES)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.abbrev
 
     def get_absolute_url(self):
@@ -393,7 +393,7 @@ class BowlGame(models.Model):
     slug = models.CharField(max_length=75)
     city = models.ForeignKey(City)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
     def get_absolute_url(self):
@@ -424,7 +424,7 @@ class Game(models.Model):
     is_bowl_game = models.BooleanField()
     bowl_game = models.ForeignKey(BowlGame, null=True, blank=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return '%s vs. %s, %s' % (self.team1, self.team2, self.date)
     
     def get_absolute_url(self):
@@ -463,8 +463,8 @@ class QuarterScore(models.Model):
     quarter = models.IntegerField(default=CURRENT_SEASON)
     points = models.PositiveIntegerField(default=0)
     
-    def __unicode__(self):
-        return "%s - %s" (self.team, self.quarter)
+    def __str__(self):
+        return "%s - %s" % (self.team, self.quarter)
     
 
 class DriveOutcome(models.Model):
@@ -472,7 +472,7 @@ class DriveOutcome(models.Model):
     name = models.CharField(max_length=50, null=True)
     slug = models.SlugField(max_length=50, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class GameDrive(models.Model):
@@ -493,7 +493,7 @@ class GameDrive(models.Model):
     yards = models.IntegerField()
     time_of_possession = models.TimeField()
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s drive %s" % (self.game, self.team, self.drive)
 
 class GameOffense(models.Model):
@@ -545,7 +545,7 @@ class GameOffense(models.Model):
     field_goals_made = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.game, self.team)
     
     def third_down_rate(self):
@@ -604,7 +604,7 @@ class GameDefense(models.Model):
     fumbles_yards = models.IntegerField(default=0)
     fumbles_touchdowns = models.IntegerField(default=0)
     
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.game, self.team)
 
 class Player(models.Model):
@@ -617,8 +617,8 @@ class Player(models.Model):
     games_played = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES)
 
-    def __unicode__(self):
-        return u"%s - %s" % (self.name, self.team)
+    def __str__(self):
+        return "%s - %s" % (self.name, self.team)
     
     def get_absolute_url(self):
         return '/college/teams/%s/%s/players/%s/' % (self.team.college.slug, self.season, self.slug)
@@ -638,7 +638,7 @@ class PlayerCollegeCareer(models.Model):
     last_season = models.ForeignKey(CollegeYear, related_name='last_season')
     total_games = models.IntegerField(null=True, blank=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.player.name.full_name()
 
 class PlayerGame(models.Model):
@@ -649,7 +649,7 @@ class PlayerGame(models.Model):
     total_plays = models.IntegerField()
     total_yards = models.IntegerField()
     
-    def __unicode__(self):
+    def __str__(self):
         return self.player.name
     
 
@@ -666,7 +666,7 @@ class PlayerRush(models.Model):
     total_plays = models.IntegerField(default=0)
     total_yards = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
     
     class Meta:
@@ -685,7 +685,7 @@ class PlayerPass(models.Model):
     total_yards = models.IntegerField(default=0)
     pass_efficiency = models.FloatField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
     
     def comp_att(self):
@@ -703,7 +703,7 @@ class PlayerReceiving(models.Model):
     long_yards = models.IntegerField(default=0)
     average = models.FloatField(default=0)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
 
 class PlayerScoring(models.Model):
@@ -723,7 +723,7 @@ class PlayerScoring(models.Model):
     safeties = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
 
 
@@ -733,7 +733,7 @@ class PlayerTackle(models.Model):
     unassisted_tackles = models.IntegerField(default=0)
     assisted_tackles = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
 
     def total_tackles(self):
@@ -750,7 +750,7 @@ class PlayerTacklesLoss(models.Model):
     assisted_sacks = models.IntegerField(default=0)
     sack_yards = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
     
     def total_sacks(self):
@@ -770,7 +770,7 @@ class PlayerPassDefense(models.Model):
     interception_td = models.IntegerField(default=0)
     pass_breakups = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
 
 
@@ -782,7 +782,7 @@ class PlayerFumble(models.Model):
     fumbles_yards = models.IntegerField(default=0)
     fumbles_td = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
 
 class PlayerReturn(models.Model):
@@ -795,7 +795,7 @@ class PlayerReturn(models.Model):
     kickoff_return_yards = models.IntegerField(default=0)
     kickoff_return_td = models.IntegerField(default=0)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.game)
 
 class PlayerSummary(models.Model):
@@ -817,14 +817,14 @@ class PlayerSummary(models.Model):
     reception_yards = models.IntegerField(null=True)
     reception_td = models.IntegerField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.player.name, self.player.season)
 
 class Poll(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
         
 
@@ -834,5 +834,5 @@ class PollResults(models.Model):
     team = models.ForeignKey(College)
     rank = models.IntegerField()
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s %s" % (self.poll, self.week, self.team)

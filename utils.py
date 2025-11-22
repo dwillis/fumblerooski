@@ -1,13 +1,12 @@
 import re
 import csv
-import urllib
+import urllib.request
 import datetime
-from django.utils.encoding import smart_unicode, force_unicode
 from django.db.models import Avg, Sum, Min, Max, Count
 from time import strptime, strftime
 import time
-from urlparse import urljoin
-from BeautifulSoup import BeautifulSoup
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 from fumblerooski.college.models import *
 from fumblerooski.rankings.models import *
 
@@ -30,9 +29,9 @@ def create_missing_collegeyears(year):
                 c = College.objects.get(pk=game.team1_id)
                 cy, created = CollegeYear.objects.get_or_create(college=c, season=year)
                 if created:
-                    print "created CollegeYear for %s in %s" % (c, year)
+                    print("created CollegeYear for %s in %s" % (c, year))
             except:
-                print "Could not find a college for %s" % game.team1_id
+                print("Could not find a college for %s" % game.team1_id)
 
 def opposing_coaches(coach):
     coach_list = Coach.objects.raw("SELECT college_coach.id, college_coach.slug, count(college_game.*) as games from college_coach inner join college_game on college_coach.id = college_game.coach2_id where coach1_id = %s group by 1,2 order by 3 desc", [coach.id])
@@ -176,9 +175,9 @@ def update_quarter_scores(game):
     """
     Utility to update quarter scores for existing games. New games handled via ncaa_loader.
     """
-    doc = urllib.urlopen(game.get_ncaa_xml_url()).read()
+    doc = urllib.request.urlopen(game.get_ncaa_xml_url()).read()
     soup = BeautifulSoup(doc)
-    quarters = len(soup.findAll('score')[1:])/2
+    quarters = len(soup.findAll('score')[1:])//2
     t2_quarters = soup.findAll('score')[1:quarters+1] #visiting team
     t1_quarters = soup.findAll('score')[quarters+1:] #home team
     for i in range(quarters):
