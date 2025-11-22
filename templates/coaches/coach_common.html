@@ -6,18 +6,24 @@
 {% block content %}
 
 {% if common %}
-<h3>Seasons in Common: <a href="{% url coach_detail coach.slug %}">{{ coach.full_name }}</a> and <a href="{% url coach_detail coach2.slug %}">{{ coach2.full_name }}</a></h3>
+<h3>Seasons in Common: <a href="{% url 'coach_detail' coach.slug %}">{{ coach.full_name }}</a> and <a href="{% url 'coach_detail' coach2.slug %}">{{ coach2.full_name }}</a></h3>
 
 <table>
-	<th>School</th><th>Season</th><th>Record</th>
-	{% for year in common %}
-	<tr><td><a href="{% url team_detail year.college.slug %}">{{ year.college }}</a></td><td><a href="{% url team_detail_season year.college.slug year.season %}">{{ year.season }}</a></td><td>{{ year.record }}</td></tr>
-	{% endfor %}
+    <thead>
+        <tr>
+            <th>School</th><th>Season</th><th>Record</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for year in common %}
+        <tr><td><a href="{% url 'team_detail' year.college.slug %}">{{ year.college }}</a></td><td><a href="{% url 'team_detail_season' year.college.slug year.season %}">{{ year.season }}</a></td><td>{{ year.record }}</td></tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 {% else %}
 
-<h3><a href="{% url coach_detail coach.slug %}">{{ coach.full_name }}</a> and <a href="{% url coach_detail coach2.slug %}">{{ coach2.full_name }}</a> have not worked together during the past 10 seasons.</h3>
+<h3><a href="{% url 'coach_detail' coach.slug %}">{{ coach.full_name }}</a> and <a href="{% url 'coach_detail' coach2.slug %}">{{ coach2.full_name }}</a> have not worked together during the past 10 seasons.</h3>
 
 {% endif %}
 

@@ -9,15 +9,20 @@
 
 {% if coach %}
 Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}</a>
-{% else %}
 {% endif %}
 
 <h3>Season Records Since 1988</h3>
 <table>
-    <th>Season</th><th>Wins</th><th>Losses</th><th>Ties*</th>
-    {% for season in college_years %}
-    <tr><td><a href="{{ season.season }}/">{{ season.season }}</a></td><td>{{ season.wins }}</td><td>{{ season.losses }}</td><td>{{ season.ties }}</td></tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Season</th><th>Wins</th><th>Losses</th><th>Ties*</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for season in college_years %}
+        <tr><td><a href="{{ season.season }}/">{{ season.season }}</a></td><td>{{ season.wins }}</td><td>{{ season.losses }}</td><td>{{ season.ties }}</td></tr>
+        {% endfor %}
+    </tbody>
 </table>
 * Ties were eliminated beginning in 1996.
 
@@ -30,7 +35,7 @@ Coach: <a href="{{ coach.coach.get_absolute_url }}">{{ coach.coach.full_name }}<
  (<a href="opponents/">Browse all opponents since 1988</a>)
 
 
-<h3><a href="{% url tch team.slug %}">Coaching History</a></h3>
-<h3><a href="{% url alum_coach team.slug %}">Alumni in Coaching</a></h3>
+<h3><a href="{% url 'tch' team.slug %}">Coaching History</a></h3>
+<h3><a href="{% url 'alum_coach' team.slug %}">Alumni in Coaching</a></h3>
 
 {% endblock %}

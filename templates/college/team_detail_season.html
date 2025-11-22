@@ -15,12 +15,18 @@ Head Coach:
 {% endif %}
 <a href="coaches/">Coaching Staff</a>
 
-<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
+<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% if season_record.ties != 0 %}-{{ season_record.ties }}{% endif %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
 <table>
-    <th>Date</th><th>Opponent</th><th>Location</th><th>Result</th>
-    {% for game in game_list %}
-    <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td>{% if game.team2.college.updated %}<a href="{{ game.team2.get_absolute_url }}">{% endif %}{{ game.team2.college.name }}</a> {% if game.is_conference_game %}*{% endif %}</td><td>{{ game.get_t1_game_type_display }}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a> {% if game.overtime %}{{ game.overtime }}{% endif %}{% else %}{% endif %}</td></tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Date</th><th>Opponent</th><th>Location</th><th>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for game in game_list %}
+        <tr><td>{{ game.date|date:"F d, Y" }}</a></td><td>{% if game.team2.college.updated %}<a href="{{ game.team2.get_absolute_url }}">{% endif %}{{ game.team2.college.name }}</a> {% if game.is_conference_game %}*{% endif %}</td><td>{{ game.get_t1_game_type_display }}</td><td>{% if game.t1_result %}<a href="{{ game.get_absolute_url }}">{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }}</a> {% if game.overtime %}{{ game.overtime }}{% endif %}{% endif %}</td></tr>
+        {% endfor %}
+    </tbody>
 </table>
 * conference game<br />
 <h3><a href="drives/">Drive Outcomes</a></h3>

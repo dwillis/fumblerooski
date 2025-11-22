@@ -12,7 +12,7 @@
 <h2><a href="{{ season_record.get_conference_url }}">{{ season_record.conference.name }}</a></h2>
 {% endif %}
 
-<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
+<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% if season_record.ties != 0 %}-{{ season_record.ties }}{% endif %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
 
 <h3>Drive Outcome Summary</h3>
 

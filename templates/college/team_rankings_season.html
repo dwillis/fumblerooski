@@ -9,7 +9,7 @@
 <h3><a href="{{ season_record.college.get_absolute_url }}">{{ season_record.college.name }}</a> - {{ season_record.season }}</h3>
 <h4>{{ season_record.conference.name }}</h4>
 
-<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% ifnotequal season_record.ties 0 %}-{{ season_record.ties }}{% endifnotequal %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
+<h3>Season Record: {{ season_record.wins }}-{{ season_record.losses }}{% if season_record.ties != 0 %}-{{ season_record.ties }}{% endif %} {% if season_record.conference %}({{ season_record.conference_wins }}-{{ season_record.conference_losses }} conference){% endif %}</h3>
 
 <h4>Latest Week: {{ latest_week.week_num }} (through {{ latest_week.end_date|date:"F d, Y" }})</h4>
 

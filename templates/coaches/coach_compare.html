@@ -8,18 +8,22 @@
 
 <h3><a href="{{ coach.get_absolute_url }}">{{ coach.full_name }}</a> vs. <a href="{{ coach2.get_absolute_url }}">{{ coach2.full_name }}</a></h3>
 
-<h4>Record against {{ coach2.full_name }} since 2000: {{ wins }}-{{ losses }}{% ifnotequal ties 0 %}-{{ ties }}{% endifnotequal %}</h4>
+<h4>Record against {{ coach2.full_name }} since 2000: {{ wins }}-{{ losses }}{% if ties != 0 %}-{{ ties }}{% endif %}</h4>
 
 {% if last_home_loss %}Last home loss against {{ coach2.full_name }}: {{ last_home_loss.date|date:"F d, Y" }}<br />{% endif %}
 {% if last_road_win %}Last road win against {{ coach2.full_name }}: {{ last_road_win.date|date:"F d, Y" }}{% endif %}
 
 <table>
-<tr>
-  <th>Season</th><th>{{ coach.full_name }} School</th><th>{{ coach2.full_name }} School</th><th>Outcome</th><th>Location</th>
-</tr>
-  {% for game in game_list %}
-  <tr><td>{{ game.season }}</td><td><a href="{% url team_detail game.team1.college.slug %}">{{ game.team1.college }}</a></td><td><a href="{% url team_detail game.team2.college.slug %}">{{ game.team2.college }}</a></td><td>{% if game.t1_result %}{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }} (<a href="{{ game.get_absolute_url }}">see details</a>){% else %}{{ game.date|date:"F d, Y" }}{% endif %}</td><td>{% ifequal game.t1_game_type 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endifequal %}</td></tr>
-  {% endfor %}
+    <thead>
+        <tr>
+            <th>Season</th><th>{{ coach.full_name }} School</th><th>{{ coach2.full_name }} School</th><th>Outcome</th><th>Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for game in game_list %}
+        <tr><td>{{ game.season }}</td><td><a href="{% url 'team_detail' game.team1.college.slug %}">{{ game.team1.college }}</a></td><td><a href="{% url 'team_detail' game.team2.college.slug %}">{{ game.team2.college }}</a></td><td>{% if game.t1_result %}{{ game.get_t1_result_display }}, {{ game.team1_score }}-{{ game.team2_score }} (<a href="{{ game.get_absolute_url }}">see details</a>){% else %}{{ game.date|date:"F d, Y" }}{% endif %}</td><td>{% if game.t1_game_type == 'N' %}{{ game.site }}{% else %}{{ game.get_t1_game_type_display }}{% endif %}</td></tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 {% else %}

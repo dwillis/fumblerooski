@@ -6,13 +6,19 @@
 {% block content %}
 
 {% if opposing_coaches %}
-<h3><a href="{% url coach_detail coach.slug %}">{{ coach.full_name }}</a> vs.: Head-to-Head Records Since 2000</h3>
+<h3><a href="{% url 'coach_detail' coach.slug %}">{{ coach.full_name }}</a> vs.: Head-to-Head Records Since 2000</h3>
 
 <table>
-	<th>Coach</th><th>Current School</th><th>Games</th>
-	{% for c in opposing_coaches %}
-	<tr><td><a href="{% url coach_detail c.slug %}">{{ c.full_name }}</a></td><td>{% if c.current_school %}<a href="{% url team_detail c.current_school.slug %}">{{ c.current_school }}</a>{% endif %}</td><td><a href="{% url coach_compare coach.slug c.slug %}">{{ c.games }}</a></td></tr>
-	{% endfor %}
+    <thead>
+        <tr>
+            <th>Coach</th><th>Current School</th><th>Games</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in opposing_coaches %}
+        <tr><td><a href="{% url 'coach_detail' c.slug %}">{{ c.full_name }}</a></td><td>{% if c.current_school %}<a href="{% url 'team_detail' c.current_school.slug %}">{{ c.current_school }}</a>{% endif %}</td><td><a href="{% url 'coach_compare' coach.slug c.slug %}">{{ c.games }}</a></td></tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 {% endif %}

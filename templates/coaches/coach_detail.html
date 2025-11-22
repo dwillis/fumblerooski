@@ -18,12 +18,17 @@
 {% if college_list %}
 <h3>College Coaching History (2000-present)</h3>
 <table>
-  <th>School</th><th>Job(s)</th><th>Season</th><th>Record</th><th>Start Date</th><th>End Date</th>
-    {% for school in college_list %}
-    <tr><td><a href="{{ school.collegeyear.college.get_absolute_url }}">{{ school.collegeyear.college.name }}</a></td><td>{{ school.jobs_display }}</td><td>{{ school.collegeyear.season }}</td><td>{{ school.collegeyear.record }}</td><td>{{ school.start_date|date:"F d, Y" }}</td><td>{{ school.end_date|date:"F d, Y" }}</td></tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>School</th><th>Job(s)</th><th>Season</th><th>Record</th><th>Start Date</th><th>End Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for school in college_list %}
+        <tr><td><a href="{{ school.collegeyear.college.get_absolute_url }}">{{ school.collegeyear.college.name }}</a></td><td>{{ school.jobs_display }}</td><td>{{ school.collegeyear.season }}</td><td>{{ school.collegeyear.record }}</td><td>{{ school.start_date|date:"F d, Y" }}</td><td>{{ school.end_date|date:"F d, Y" }}</td></tr>
+        {% endfor %}
+    </tbody>
 </table>
-{% else %}
 {% endif %}
 
 {% if mapdata %}
@@ -47,6 +52,6 @@
 
 {% endif %}
 
-<h3>{{ coach.full_name }} vs.: <a href="{% url coach_vs coach.slug %}">Head-to-Head Records</a></h3>
+<h3>{{ coach.full_name }} vs.: <a href="{% url 'coach_vs' coach.slug %}">Head-to-Head Records</a></h3>
 
 {% endblock %}

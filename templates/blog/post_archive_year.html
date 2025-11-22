@@ -5,6 +5,6 @@
 {% block content %}
 <h1>{{ year }} Archive</h1>
 {% for date in date_list %}
-<p><a href="{% url blog_archive_month date|date:"Y",date|date:"b" %}">{{ date|date:"F" }}</a></p>
+<p><a href="{% url 'blog_archive_month' date|date:"Y" date|date:"b" %}">{{ date|date:"F" }}</a></p>
 {% endfor %}
 {% endblock %}

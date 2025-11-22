@@ -10,7 +10,7 @@
 <h4><a href="{{ team.get_absolute_url }}">{{ team.name }}</a> - <a href="{{ cy.get_absolute_url }}">{{ year }}</a></h4>
 <h4>Games Played: {{ player.games_played }} of {{ cy.game_count }} ({{ starts }} starts)</h4>
 
-{% ifequal player.position.position_type 'O' %}
+{% if player.position.position_type == 'O' %}
 
 <h3>{{ year }} Offensive Game Stats</h3>
 
@@ -104,7 +104,7 @@
 
 
 
-{% endifequal %}
+{% endif %}
 
 {% if other_seasons %}
 <h4>Other Seasons for this player at this school</h4>
