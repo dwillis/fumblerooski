@@ -3,13 +3,21 @@ Fumblerooski
 
 Fumblerooski is a college football statistics application written in Python using the Django framework, based on data provided by the NCAA and editor input. Most statistics are from 2000 onward, although some teams have game scores dating back to 1988. The code here is licensed under the BSD license (see LICENSE for more details). As of August 2010, this repository is frozen as-is and will not be updated. For further development, check out https://github.com/gcaprio/cfbreference_com, which is based on the original Fumblerooski code base.
 
+**Note:** This repository has been upgraded to Python 3 and Django 5.x (November 2025).
+
 Requirements
 ------------
 
-  * Python 2.5+ (lower versions may work but are untested.)
-  * Django 1.2+ (aggregates support required and settings use new multi-db syntax)
-  * BeautifulSoup (HTML and XML parsing)
+  * Python 3.8+
+  * Django 5.1+ (configured with SQLite as the default database backend)
+  * BeautifulSoup4 (HTML and XML parsing)
+  * lxml (XML parser for BeautifulSoup)
+  * requests (HTTP library)
   * django-googlecharts (http://github.com/jacobian/django-googlecharts)
+
+Install dependencies with::
+
+  pip install -r requirements.txt
 
 Overview
 ------------
